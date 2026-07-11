@@ -58,6 +58,9 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 git clone https://github.com/MrTop4ik/PointerOS/
 cd PointerOS
 
+# Create logs directory
+mkdir logs
+
 # Compile and create ISO image
 make iso
 
