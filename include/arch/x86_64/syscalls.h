@@ -11,6 +11,10 @@
 #define IA32_FMASK  0xC0000084
 #define IA32_KERNEL_GS_BASE 0xC0000102
 
+#define FLAGS_IF 0x200
+#define FLAGS_DF 0x40
+#define FLAGS_TF 0x100
+
 
 typedef struct {
     uint64_t user_rsp;
@@ -21,3 +25,5 @@ struct SyscallRegisters {
     uint64_t rax, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15;
     uint64_t rip, rflags;
 }__attribute__((packed));
+
+void init_syscalls(void);
