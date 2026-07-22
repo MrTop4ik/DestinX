@@ -1,7 +1,5 @@
 #include <kernel/scheduler/scheduler.h>
 
-syscalls_stacks_t sstacks;
-
 volatile int scheduler = 0;
 
 void init_scheduler(void){

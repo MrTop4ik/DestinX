@@ -26,5 +26,7 @@ struct SyscallRegisters {
     uint64_t rip, rflags;
 }__attribute__((packed));
 
+extern syscalls_stacks_t sstacks;
+
 void init_syscalls(void);
 void init_kernel_gs_base(void);

@@ -19,6 +19,8 @@ void init_syscalls(void){
 
     uint64_t mflags = FLAGS_IF | FLAGS_DF | FLAGS_TF;
     write_msr(IA32_FMASK, (uint32_t)mflags, (uint32_t)(mflags >> 32));
+
+    init_kernel_gs_base();
 }
 
 void init_kernel_gs_base(void){
