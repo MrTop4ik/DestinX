@@ -2,6 +2,8 @@
 
 extern void syscall_entry(void);
 
+syscalls_stacks_t sstacks;
+
 void init_syscalls(void){
     uint32_t low;
     uint32_t high;
@@ -17,4 +19,8 @@ void init_syscalls(void){
 
     uint64_t mflags = FLAGS_IF | FLAGS_DF | FLAGS_TF;
     write_msr(IA32_FMASK, (uint32_t)mflags, (uint32_t)(mflags >> 32));
+}
+
+void init_kernel_gs_base(void){
+    write_msr(IA32_KERNEL_GS_BASE, (uint32_t)&sstacks, (uint32_t)((uint64_t)&syscall_entry >> 32));
 }

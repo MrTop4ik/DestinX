@@ -1,5 +1,7 @@
 #include <kernel/scheduler/scheduler.h>
 
+syscalls_stacks_t sstacks;
+
 volatile int scheduler = 0;
 
 void init_scheduler(void){
@@ -56,6 +58,7 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     current_thread = next_thread;
 
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
+    sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
 
     return next_thread->rsp;
 }

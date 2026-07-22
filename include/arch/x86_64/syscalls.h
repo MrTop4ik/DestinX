@@ -27,3 +27,4 @@ struct SyscallRegisters {
 }__attribute__((packed));
 
 void init_syscalls(void);
+void init_kernel_gs_base(void);
