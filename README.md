@@ -18,44 +18,42 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 * **Development Environment:** WSL2 Ubuntu
 
 ## Current Features
-- [x] **GDT:** Configured.
-- [x] **IDT:** Configured.
-- [x] **Paging:** 64-bit Paging Enabled.
-- [x] **Higher Half Kernel:** Implemented.
-- [x] **KMemory Allocation:**
-    - **PMM** Implemented.
-    - **VMM** Implemented.
-    - **Buddy Allocator** Implemented.
-    - **Slab Allocator** Implemented.
-    - **KMAlloc** Implemented.
-    - **KFree** Implemented.
-    - **VMalloc** Implemented.
-    - **VFree** Implemented.
-- [x] **Drivers:** 
-    - **LFB** Implemented.
-    - **QEMU Serial** Implemented.
-    - **PIT** Implemented.
-    - **LAPIC Timer** Implemented.
-- [x] **Scheduler:**
-    - **Multithreading** Implemented.
-- [x] **Synchronization:**
-    - **Spinlock** Implemented.
-    - **Mutex** Implemented.
-- [x] **Kernel Logging:**
-    - **KLog Buffer** Implemented.
-    - **Idle Thread Logging**
-- [ ] **Syscalls:** In Progress.
-- [ ] **Userspace:** In Progress.
+
+### Core & Memory Management
+- [x] **GDT** & **IDT**: Fully configured and loaded.
+- [x] **Paging**: 64-bit paging enabled with a Higher Half Kernel architecture.
+- [x] **Memory Allocators**:
+  - Physical Memory Manager (**PMM**)
+  - Virtual Memory Manager (**VMM**)
+  - **Buddy Allocator** & **Slab Allocator**
+  - Kernel Dynamic Memory allocation with `KMAlloc` / `Vmalloc`
+
+### Drivers & Subsystems
+- [x] **Graphics**: Linear Framebuffer (**LFB**) output.
+- [x] **I/O**: QEMU Serial logging interface.
+- [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
+
+### Scheduling & Sync
+- [x] **Multithreading**: Round Robin scheduler implemented.
+- [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
+
+---
+
+## Roadmap & In Progress
+
+- [ ] **Syscalls**: System call interface infrastructure.
+- [ ] **Userspace**: Task isolation and ring 3 switching.
+
+---
 ## Getting Started
 
-### Prerequisites
-| Category | Tool | Notes |
+| **Category** | **Tool** | **Notes** |
 | :--- | :--- | :--- |
-| **Cross-Compiler** | `x86_64-elf-gcc` | Required `-mno-red-zone` flag to prevent stack corruption |
-| **Assembler** | `nasm` | Used for bootloader entry and interrupt stubs |
-| **Emulator** | `QEMU` | Run with `-machine q35` and `-bios OVMF.fd` |
-| **ISO Creation** | `grub-common` | Uses `grub-mkrescue` to build the bootable image |
-| **UEFI Support** | `grub-efi-amd64-bin` | Provides modules for `UEFI` booting and `ACPI 2.0` (Debian/Ubuntu) |
+| **Cross-Compiler** | `x86_64-elf-gcc` | Requires `-mno-red-zone` flag |
+| **Assembler** | `nasm` | For `bootstrapper` and `ASM` parts |
+| **Emulator** | `QEMU` | Run with `-machine q35` & `OVMF` |
+| **ISO Tools** | `grub-common` | Uses `grub-mkrescue` |
+| **UEFI Support** | `OVMF` | Provides `ACPI 2.0` runtime modules |
 
 ### Build & Run
 ```bash
@@ -73,30 +71,13 @@ make iso
 make run
 ```
 
-## Potential Issues on Other Platforms
-Since the project is primarily built and tested under **WSL2 Ubuntu**, there may be differences or issues when running on other environments:
+### Bug Tracker
+* **Userspace Threading**: Thread `exit` routine inside Create User Thread currently panics/fails to clean up.
+* **KLog Flakiness**: `Kernel log buffer` occasionally misses rendering text frames onto the `LFB` screen, though serial output remains intact.
+* **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF). Investigating alternative linker/alignment constraints.
 
-- **Arch Linux:**  
-  - No separate `grub-efi-amd64-bin` package.  
-  - Currently there are **issues with booting on UEFI** that are being investigated and worked on.
-
-- **Pure Linux (non-WSL):**  
-  - QEMU options (`-bios OVMF.fd`, `-machine q35`) may differ depending on package versions.  
-  - Paths to `OVMF.fd` can vary between distros.
-
-
-- **Windows (without WSL2):**  
-  - Building with `nasm` and `x86_64-elf-gcc` requires a cross-toolchain setup (e.g., MSYS2 or Cygwin).  
-  - ISO creation with `grub-mkrescue` may not work out of the box.
-
-- **macOS:**  
-  - QEMU installation and EFI firmware paths differ.  
-  - GNU toolchain versions may cause incompatibilities.
-
-## Current Issues
-- **Userspace:**
-  - Thread Exit in Create User Thread function won't work.
-- **KLog:**
-  - Sometimes it doesn't printing to screen and sometimes printing.
-- **Booting on Archlinux**
-  - Currently it doesn't booting with UEFI and raises #PF.
+### Cross-Platform Notice
+The development workflow is heavily tuned for `WSL2 Ubuntu`. If you are building on other systems, keep in mind:
+* **Native Linux**: Paths to the `OVMF.fd` image vary significantly across distributions (e.g., Debian vs Fedora vs Arch).
+* **Windows (Native)**: Requires specialized environments like `WSL2/MSYS2/Cygwin` to resolve standard GNU utils, toolchains, and grub-mkrescue.
+* **macOS**: Standard QEMU syntax differs, and an explicit `cross-compiler` target configuration is strictly mandatory.
