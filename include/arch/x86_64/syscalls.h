@@ -22,7 +22,7 @@ typedef struct {
 }__attribute__((packed)) syscalls_stacks_t;
 
 struct SyscallRegisters {
-    uint64_t rax, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15;
+    uint64_t rbx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15;
     uint64_t rip, rflags;
 }__attribute__((packed));
 
@@ -30,3 +30,4 @@ extern syscalls_stacks_t sstacks;
 
 void init_syscalls(void);
 void init_kernel_gs_base(void);
+void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs);
