@@ -28,5 +28,9 @@ void init_kernel_gs_base(void){
 }
 
 void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
-    return;
+    switch (sys_num){
+        case SYS_EXIT:
+            thread_exit();
+            break;
+    }
 }

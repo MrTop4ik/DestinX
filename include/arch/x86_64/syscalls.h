@@ -4,6 +4,7 @@
 #include <arch/x86_64/drivers/video/serial.h>
 #include <drivers/lfb.h>
 #include <arch/x86_64/inlineasm.h>
+#include <kernel/scheduler/thread.h>
 
 #define IA32_EFER   0xC0000080
 #define IA32_STAR   0xC0000081
@@ -15,6 +16,7 @@
 #define FLAGS_DF 0x40
 #define FLAGS_TF 0x100
 
+#define SYS_EXIT 60
 
 typedef struct {
     uint64_t user_rsp;
