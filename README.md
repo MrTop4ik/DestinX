@@ -43,7 +43,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 - [ ] **Page Guard**: Expand user stack when needed.
 - [ ] **Syscalls**: System call interface infrastructure.
-- [ ] **Userspace**: Task isolation and ring 3 switching.
+- [ ] **Userspace**: Ring 3 switching.
+- [ ] **Processes**: Isolation of tasks from one another.
 
 ---
 ## Getting Started
