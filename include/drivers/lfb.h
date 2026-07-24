@@ -8,6 +8,7 @@
 #include <drivers/font8x16.h>
 #include <kernel/spinlock.h>
 #include <drivers/klog.h>
+#include <mm/vmalloc.h>
 
 #define LFB_ADDR 0xFFFFFFFFC0000000
 

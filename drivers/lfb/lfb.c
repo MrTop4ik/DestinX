@@ -22,7 +22,7 @@ void init_LFB(unsigned int physBootInfo){
     for (int size = 0; size < lfb.size; size += PAGE_SIZE_2MB) vmm_map_page(read_cr3(), lfb.paddr + size, size + LFB_ADDR, PAGE_SIZE_2MB, (PTE_WRITABLE | PTE_WC_HUGE));
 
     lfb.vram = (uint32_t *)LFB_ADDR;
-    lfb.buffer = kmalloc(lfb.size);
+    lfb.buffer = vmalloc(lfb.size);
 
     serial_print("[LDB] Back Buffer Address at %llx\n", (uint64_t)lfb.buffer);
 
