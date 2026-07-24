@@ -3,6 +3,8 @@
 vm_info_t *vmalloc_list_head = NULL;
 
 void *vmalloc(size_t size){
+    if (size == 0) return NULL;
+
     vm_info_t *i = kmalloc(sizeof(vm_info_t));
     if (!i) return NULL;
 
@@ -11,8 +13,7 @@ void *vmalloc(size_t size){
     if (!vmalloc_list_head){
         i->base = (void*)VMALLOC_START;
         vm_add_to_list(i);
-    }
-    else {
+    } else {
         vm_info_t *current = vmalloc_list_head;
         vm_info_t *next = vmalloc_list_head->next;
         while (1){
@@ -34,8 +35,10 @@ void *vmalloc(size_t size){
 }
 
 void vfree(void *ptr){
+    if (!vmalloc_list_head) return; 
+
     vm_info_t *current = vmalloc_list_head;
-    while (1){
+    while (current){
         if ((uint64_t)current->base == (uint64_t)ptr){
             for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
                 uint64_t paddr = vmm_unmap_page(read_cr3(), (uint64_t)current->base + i);
@@ -44,9 +47,6 @@ void vfree(void *ptr){
             vm_remove_from_list(current);
             return;
         }
-
-        if (!current->next) return;
-
         current = current->next;
     }
 }
@@ -102,11 +102,20 @@ void vm_add_to_list(vm_info_t *i){
 }
 
 void vm_remove_from_list(vm_info_t *i){
-    if (!vmalloc_list_head->next) vmalloc_list_head = NULL;
-    else {
-        i->prev->next = i->next;
+    if (!i) return;
+
+    if (vmalloc_list_head == i) {
+        vmalloc_list_head = i->next;
+    }
+
+    if (i->next) {
         i->next->prev = i->prev;
-        if (vmalloc_list_head == i) vmalloc_list_head = i->next;
-    } 
-    i->next = i->prev = NULL;
+    }
+
+    if (i->prev) {
+        i->prev->next = i->next;
+    }
+
+    i->next = NULL;
+    i->prev = NULL;
 }

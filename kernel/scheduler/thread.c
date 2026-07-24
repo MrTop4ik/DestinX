@@ -21,6 +21,8 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
 
     t->kernel_stack.bottom = stack_mem;
     t->kernel_stack.size = stack_size;
+    
+    t->user_stack.bottom = NULL;
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)stack_mem + stack_size);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
@@ -105,7 +107,7 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
 void destroy_thread(thread_t *t){
     if (t){
         if (t->kernel_stack.bottom) kfree(t->kernel_stack.bottom);
-        if (t->user_stack.bottom) user_free_stack(t->user_stack.bottom, t->user_stack.size);
+        if (t->user_stack.bottom) user_free_stack(t->user_stack.bottom);
         kfree(t);
     }
 }
