@@ -15,32 +15,13 @@ void *kernel_alloc_stack(size_t size){
 void *user_alloc_stack(size_t size){
     if (size == 0) return NULL;
 
-    us_info_t *i = (us_info_t *)vmalloc(sizeof(us_info_t));
+    us_info_t *i = (us_info_t *)kmalloc(sizeof(us_info_t));
     if (!i) return NULL;
 
     i->size = size;
-
-    if (!us_list_head){
-        i->base = (void*)USER_STACK_MAX;
-        us_add_to_list(i);
-    } else {
-        us_info_t *current = us_list_head;
-        us_info_t *next = us_list_head->next;
-        while (1){
-            if ((!next) || ((uint64_t)current->base - current->size - size >= (uint64_t)next->base)){
-                i->base = (void*)((uint64_t)current->base + current->size);
-                us_add_to_list(i);
-                break;
-            }
-
-            us_info_t *old_next = next;
-            current = old_next;
-            next = current->next;
-        }
-    }
-
     
-
+    us_add_to_list(i);
+    
     for (int j = 0; j < size; j += PAGE_SIZE_4KB) vmm_map_page(read_cr3(), pmm_alloc_page(), (uint64_t)i->base - j, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
 
     return i->base;
@@ -64,52 +45,30 @@ void user_free_stack(void *ptr){
 }
 
 void us_add_to_list(us_info_t *i){
-    if (us_list_head){
-        if (!us_list_head->next){
-            if ((uint64_t)i->base < (uint64_t)us_list_head->base){ 
-                us_list_head->next = i;
-                i->next = NULL;
-                i->prev = us_list_head;
-                return;
-            } else {
-                i->next = us_list_head;
-                i->prev = NULL;
-                us_list_head->prev = i;
-                us_list_head = i;
-                return;
-            }
-        }
+    if (!us_list_head){
+        i->base = (void*)USER_STACK_MAX;
+        i->prev = NULL;
+        i->next = NULL;
+        us_list_head = i;
+    } else {
         us_info_t *current = us_list_head;
         us_info_t *next = us_list_head->next;
-        if ((uint64_t)i->base > (uint64_t)us_list_head->base){
-            i->next = us_list_head;
-            i->prev = NULL;
-            us_list_head->prev = i;
-            us_list_head = i;
-            return;
-        }
-        while (1){
-            if (!next){
-                current->next = i;
-                i->prev = current;
-                i->next = NULL;
-                return;
-            }
-            if (((uint64_t)current->base > (uint64_t)i->base) && ((uint64_t)next->base < (uint64_t)i->base)){
-                current->next = i;
+        while (next){
+            if ((uint64_t)current->base - current->size - i->size >= (uint64_t)next->base){
+                i->base = (void *)((uint64_t)current->base - current->size);
                 i->next = next;
                 i->prev = current;
+                current->next = i;
                 next->prev = i;
                 return;
             }
-            us_info_t *old_next = next;
-            current = old_next;
+            current = next;
             next = current->next;
         }
-    } else {
-        us_list_head = i;
+        i->base = (void *)((uint64_t)current->base - current->size);
+        i->prev = current;
         i->next = NULL;
-        i->prev = NULL;
+        current->next = i;
     }
 }
 

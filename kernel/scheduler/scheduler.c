@@ -12,8 +12,8 @@ void init_scheduler(void){
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
-    create_thread(&idle_thread_entry, 0x1000);
-    create_thread(&third_thread, 0x1000);
+    create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
+    create_thread(&third_thread, DEFAULT_STACK_SIZE);
 
     scheduler = 1;
 }
