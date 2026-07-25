@@ -10,24 +10,7 @@ void *vmalloc(size_t size){
 
     i->size = size;
 
-    if (!vmalloc_list_head){
-        i->base = (void*)VMALLOC_START;
-        vm_add_to_list(i);
-    } else {
-        vm_info_t *current = vmalloc_list_head;
-        vm_info_t *next = vmalloc_list_head->next;
-        while (1){
-            if ((!next) || ((uint64_t)current->base + current->size + size <= (uint64_t)next->base)){
-                i->base = (void*)((uint64_t)current->base + current->size);
-                vm_add_to_list(i);
-                break;
-            }
-
-            vm_info_t *old_next = next;
-            current = old_next;
-            next = current->next;
-        }
-    }
+    vm_add_to_list(i);
 
     for (int j = 0; j < size; j += PAGE_SIZE_4KB) vmm_map_page(read_cr3(), pmm_alloc_page(), (uint64_t)i->base + j, PAGE_SIZE_4KB, PTE_WRITABLE);
 
@@ -52,52 +35,30 @@ void vfree(void *ptr){
 }
 
 void vm_add_to_list(vm_info_t *i){
-    if (vmalloc_list_head){
-        if (!vmalloc_list_head->next){
-            if ((uint64_t)i->base > (uint64_t)vmalloc_list_head->base){ 
-                vmalloc_list_head->next = i;
-                i->next = NULL;
-                i->prev = vmalloc_list_head;
-                return;
-            } else {
-                i->next = vmalloc_list_head;
-                i->prev = NULL;
-                vmalloc_list_head->prev = i;
-                vmalloc_list_head = i;
-                return;
-            }
-        }
+    if (!vmalloc_list_head){
+        i->base = (void*)VMALLOC_START;
+        i->prev = NULL;
+        i->next = NULL;
+        vmalloc_list_head = i;
+    } else {
         vm_info_t *current = vmalloc_list_head;
         vm_info_t *next = vmalloc_list_head->next;
-        if ((uint64_t)i->base < (uint64_t)vmalloc_list_head->base){
-            i->next = vmalloc_list_head;
-            i->prev = NULL;
-            vmalloc_list_head->prev = i;
-            vmalloc_list_head = i;
-            return;
-        }
-        while (1){
-            if (!next){
-                current->next = i;
-                i->prev = current;
-                i->next = NULL;
-                return;
-            }
-            if (((uint64_t)current->base < (uint64_t)i->base) && ((uint64_t)next->base > (uint64_t)i->base)){
-                current->next = i;
+        while (next){
+            if ((uint64_t)current->base + current->size + i->size <= (uint64_t)next->base){
+                i->base = (void *)((uint64_t)current->base + current->size);
                 i->next = next;
                 i->prev = current;
+                current->next = i;
                 next->prev = i;
                 return;
             }
-            vm_info_t *old_next = next;
-            current = old_next;
+            current = next;
             next = current->next;
         }
-    } else {
-        vmalloc_list_head = i;
-        vmalloc_list_head->next = NULL;
-        vmalloc_list_head->prev = NULL;
+        i->base = (void *)((uint64_t)current->base + current->size);
+        i->prev = current;
+        i->next = NULL;
+        current->next = i;
     }
 }
 

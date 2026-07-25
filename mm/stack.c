@@ -6,7 +6,7 @@ us_info_t *us_list_head = NULL;
 void *kernel_alloc_stack(size_t size){
     if (size == 0) return 0;
 
-    void *stack_bottom = kmalloc(size);
+    void *stack_bottom = vmalloc(size);
     if (!stack_bottom) return NULL;
 
     return stack_bottom;
