@@ -41,7 +41,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 ## Roadmap & In Progress
 
-- [ ] **Page Guard**: Expand user stack when needed.
 - [ ] **Syscalls**: System call interface infrastructure.
 - [ ] **Userspace**: Ring 3 switching.
 - [ ] **Processes**: Isolation of tasks from one another.
