@@ -22,7 +22,7 @@ void *user_alloc_stack(size_t size){
     
     us_add_to_list(i);
     
-    for (int j = 0; j < size; j += PAGE_SIZE_4KB) vmm_map_page(read_cr3(), pmm_alloc_page(), (uint64_t)i->base - j, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    for (int j = PAGE_SIZE_4KB; j < size; j += PAGE_SIZE_4KB) vmm_map_page(read_cr3(), pmm_alloc_page(), (uint64_t)i->base - j, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
 
     return i->base;
 }
