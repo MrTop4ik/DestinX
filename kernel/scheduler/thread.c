@@ -10,6 +10,8 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
     if (!t) return NULL;
 
+    memset(t, 0, sizeof(thread_t));
+
     void *stack_mem = kernel_alloc_stack(stack_size);
     if (!stack_mem){
         kfree(t);
@@ -20,9 +22,8 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     serial_print("[THREAD] Kernel Thread Stack Bottom at %llx\n", (uint64_t)stack_mem);
 
     t->kernel_stack.bottom = stack_mem;
+    t->kernel_stack.top = (void *)((uint64_t)stack_mem + stack_size);
     t->kernel_stack.size = stack_size;
-    
-    t->user_stack.bottom = NULL;
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)stack_mem + stack_size);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
@@ -55,6 +56,8 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
     if (!t) return NULL;
 
+    memset(t, 0, sizeof(thread_t));
+
     void *kernel_stack_mem = kernel_alloc_stack(kstack_size);
     if (!kernel_stack_mem){
         kfree(t);
@@ -77,7 +80,11 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
     t->kernel_stack.size = kstack_size;
 
     t->user_stack.bottom = user_stack_mem;
+    t->user_stack.top = (void *)((uint64_t)user_stack_mem + ustack_size);
     t->user_stack.size = ustack_size;
+
+    t->page_guard_max = (uint64_t)t->user_stack.bottom;
+    t->page_guard_min = t->page_guard_max - PAGE_SIZE_4KB;
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);

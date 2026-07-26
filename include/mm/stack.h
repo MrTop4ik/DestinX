@@ -5,7 +5,7 @@
 #include <drivers/lfb.h>
 
 #define DEFAULT_STACK_SIZE 0x100000
-#define USER_STACK_MAX 0x00007FFFFFFFFFFF
+#define USER_STACK_MAX 0x00007FFFFFFFF000
 
 typedef struct {
     void *top;

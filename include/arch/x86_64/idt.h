@@ -26,6 +26,8 @@ struct InterruptRegisters {
     uint64_t rip, cs, rflags, rsp, ss; 
 }__attribute__((packed));
 
+extern char *exceptions[];
+
 void remap_PIC(void);
 void init_IDT(void);
 void setIDTGate(uint8_t vector, uint64_t handler, uint8_t flags, uint8_t ist);

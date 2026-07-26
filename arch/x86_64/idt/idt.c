@@ -2,6 +2,8 @@
 
 extern void* isr_stub_table[];
 extern void* irq_stub_table[];
+
+void page_fault_handler(struct InterruptRegisters *regs);
 extern void* lapic_timer_handler();
 extern void* yield_handler();
 extern void* isr255();
@@ -122,10 +124,12 @@ void exception_handler(struct InterruptRegisters *regs){
 }
 
 void isr_handler(struct InterruptRegisters *regs){
-    if (regs->int_no < 32){
-        serial_print(exceptions[regs->int_no]);
-        serial_print("\n");
-        for (;;);
+    serial_print("[ISR] ");
+    serial_print(exceptions[regs->int_no]);
+    serial_print("\n");
+
+    if (regs->int_no == 0x0e){
+        page_fault_handler(regs);
     }
 }
 

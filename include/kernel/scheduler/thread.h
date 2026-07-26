@@ -20,6 +20,8 @@ typedef struct thread {
     thread_state_t state;
     stack_t kernel_stack;
     stack_t user_stack;
+    uint64_t page_guard_min;
+    uint64_t page_guard_max;
     struct thread *prev;
     struct thread *next;
     struct thread *next_blocked;
