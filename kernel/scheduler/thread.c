@@ -79,7 +79,7 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
     t->user_stack.bottom = user_stack_mem;
     t->user_stack.size = ustack_size;
 
-    uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem + ustack_size);
+    uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
 
     uint64_t *clean_stack_top = stack_top;
