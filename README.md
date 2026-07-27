@@ -37,11 +37,16 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Multithreading**: Round Robin scheduler implemented.
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
+### User Stack Protection
+- [x] **Page Guard**: Expand stack when needed and close on stack limit.
+
+### Syscalls
+- [x] **SYS EXIT**: Kills current thread.
+
 ---
 
 ## Roadmap & In Progress
 
-- [ ] **Syscalls**: System call interface infrastructure.
 - [ ] **Userspace**: Ring 3 switching.
 - [ ] **Processes**: Isolation of tasks from one another.
 
