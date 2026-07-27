@@ -43,11 +43,15 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ### Syscalls
 - [x] **SYS EXIT**: Kills current thread.
 
+### Usersapace
+- [x] **Switching to ring 3**: User threads can execute code.
+- [X] **TEST THREAD**: Currently there is `TEST THREAD` that was mapped to only test if it works.
+- [X] **TEST EXIT ROUTINE**: `EXIT ROUTINE` is just test version and will be improved.
+
 ---
 
 ## Roadmap & In Progress
 
-- [ ] **Userspace**: Ring 3 switching.
 - [ ] **Processes**: Isolation of tasks from one another.
 
 ---
