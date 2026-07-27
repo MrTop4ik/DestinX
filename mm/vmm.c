@@ -77,7 +77,10 @@ void vmm_map_page(uint64_t pml4_phys, uint64_t paddr, uint64_t vaddr, uint64_t p
         uint64_t new_table_phys = pmm_alloc_page();
         uint64_t *new_table = (uint64_t *)(new_table_phys + DIRECT_OFFSET);
         memset(new_table, 0, PAGE_SIZE_4KB);
-        pml4[pml4_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+        if (flags & PTE_USER) pml4[pml4_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+        else pml4[pml4_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+    } else {
+        if (flags & PTE_USER) pml4[pml4_indx] |= PTE_USER;
     }
 
     uint64_t *pdpt = (uint64_t *)((pml4[pml4_indx] & PAGE_MASK_4KB) + DIRECT_OFFSET);
@@ -86,7 +89,10 @@ void vmm_map_page(uint64_t pml4_phys, uint64_t paddr, uint64_t vaddr, uint64_t p
         uint64_t new_table_phys = pmm_alloc_page();
         uint64_t *new_table = (uint64_t *)(new_table_phys + DIRECT_OFFSET);
         memset(new_table, 0, PAGE_SIZE_4KB);
-        pdpt[pdpt_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+        if (flags & PTE_USER) pdpt[pdpt_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+        else pdpt[pdpt_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+    } else {
+        if (flags & PTE_USER) pdpt[pdpt_indx] |= PTE_USER;
     }
 
     uint64_t *pd = (uint64_t *)((pdpt[pdpt_indx] & PAGE_MASK_4KB) + DIRECT_OFFSET);
@@ -98,7 +104,10 @@ void vmm_map_page(uint64_t pml4_phys, uint64_t paddr, uint64_t vaddr, uint64_t p
             uint64_t new_table_phys = pmm_alloc_page();
             uint64_t *new_table = (uint64_t *)(new_table_phys + DIRECT_OFFSET);
             memset(new_table, 0, PAGE_SIZE_4KB);
-            pd[pd_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+            if (flags & PTE_USER) pd[pd_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+            else pd[pd_indx] = new_table_phys | (PTE_PRESENT | PTE_WRITABLE);
+        } else {
+            if (flags & PTE_USER) pd[pd_indx] |= PTE_USER;
         }
 
         uint64_t *pt = (uint64_t *)((pd[pd_indx] & PAGE_MASK_4KB) + DIRECT_OFFSET);

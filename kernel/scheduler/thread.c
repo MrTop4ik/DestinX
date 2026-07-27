@@ -1,10 +1,24 @@
 #include <kernel/scheduler/thread.h>
 
+const char user_exit_trampoline[10] = {
+    0xB8, 0x3C, 0x00, 0x00, 0x00, 
+    0x48, 0x31, 0xFF, 
+    0x0F, 0x05
+};
+
+const char user_program_code[14] = {
+    0xB8, 0x01, 0x00, 0x00, 0x00,
+    0xBB, 0x02, 0x00, 0x00, 0x00,
+    0x48, 0x01, 0xD8,
+    0xC3
+};
+
 uint64_t next_thread_id = 0;
 
 thread_t *current_thread = NULL;
 thread_t *ready_list_head = NULL;
 thread_t *dead_list_head = NULL;
+
 
 thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
@@ -88,6 +102,8 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
+
+    stack_top--; *stack_top = 0x300000;
 
     uint64_t *clean_stack_top = stack_top;
 
@@ -175,4 +191,12 @@ void idle_thread_entry(void){
 
 void third_thread(void){
     
+}
+
+void test_init(void){
+    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x300000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    memcpy((void*)0x300000, user_exit_trampoline, sizeof(user_exit_trampoline));
+
+    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x400000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    memcpy((void*)0x400000, user_program_code, sizeof(user_program_code));
 }

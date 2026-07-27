@@ -42,3 +42,4 @@ void yield(void);
 void cleanup_dead_threads(void);
 void idle_thread_entry(void);
 void third_thread(void);
+void test_init(void);

@@ -15,6 +15,10 @@ void init_scheduler(void){
     create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
     create_thread(&third_thread, DEFAULT_STACK_SIZE);
 
+    test_init();
+
+    create_user_thread((void*)0x400000, 4096, 4096);
+
     scheduler = 1;
 }
 
@@ -57,6 +61,8 @@ uint64_t scheduler_handler(uint64_t old_rsp){
 
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
+
+    //serial_print("[SCHEDULER] Switching from thread %d to thread %d\n", old_thread->tid, current_thread->tid);
 
     return next_thread->rsp;
 }
