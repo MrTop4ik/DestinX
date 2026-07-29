@@ -1,8 +1,6 @@
 #include <arch/x86_64/apic/lapic.h>
 
 void init_LAPIC(void){
-    vmm_map_page(read_cr3(), lapic_paddr, LAPIC_VIRT, 0x1000, PTE_WRITABLE | PTE_CD);
-
     uint32_t low, high;
 
     read_msr(IA32_APIC_MSR, &low, &high);
@@ -14,13 +12,13 @@ void init_LAPIC(void){
 }
 
 void lapic_eoi(void){
-    *(volatile uint32_t *)(LAPIC_VIRT + LAPIC_EOI_OFFSET) = 0;
+    *(volatile uint32_t *)(lapic_paddr + DIRECT_OFFSET + LAPIC_EOI_OFFSET) = 0;
 }
 
 uint32_t read_lapic(uint32_t reg){
-    return *(volatile uint32_t *)(LAPIC_VIRT + reg);
+    return *(volatile uint32_t *)(lapic_paddr + DIRECT_OFFSET + reg);
 }
 
 void write_lapic(uint32_t reg, uint32_t val){
-    *(volatile uint32_t *)(LAPIC_VIRT + reg) = val;
+    *(volatile uint32_t *)(lapic_paddr + DIRECT_OFFSET + reg) = val;
 }

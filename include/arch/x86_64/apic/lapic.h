@@ -5,8 +5,6 @@
 #include <mm/kmalloc.h>
 #include <arch/x86_64/inlineasm.h>
 
-#define LAPIC_VIRT  0xFFFFFFFFFC000000
-
 #define LAPIC_VER_OFFSET 0x30
 #define LAPIC_ID_OFFSET 0x20
 #define LAPIC_ICR_LOW_OFFSET 0x300

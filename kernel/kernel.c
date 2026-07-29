@@ -30,7 +30,6 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     parse_acpi(physBootInfo);
     init_LAPIC();
-    init_IOAPIC();
 
     init_scheduler();
 
