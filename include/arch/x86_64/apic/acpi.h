@@ -9,12 +9,16 @@
 
 #define MAX_ISO 16
 
-struct RSDPDescriptor20 {
+struct RSDPDescriptor {
     char Signature[8];
     uint8_t Checksum;
     char OEMID[6];
     uint8_t Revision;
     uint32_t RsdtAddress;
+}__attribute__((packed));
+
+struct RSDPDescriptor20 {
+    struct RSDPDescriptor Base;
     uint32_t Length;
     uint64_t XsdtAddress;
     uint8_t ExtendedChecksum;
@@ -73,6 +77,6 @@ extern int iso_count;
 extern struct MADT_ISO iso_list[MAX_ISO];
 
 void parse_acpi(unsigned int physBootInfo);
-struct MADT* find_madt(uint64_t xsdt_phys);
+struct MADT *find_madt(uint64_t sdt_phys, uint8_t is_xsdt);
 void parse_madt(struct MADT *madt);
 void save_iso(struct MADT_ISO *iso);

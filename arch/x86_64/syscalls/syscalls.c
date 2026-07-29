@@ -30,7 +30,7 @@ void init_kernel_gs_base(void){
 void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
     switch (sys_num){
         case SYS_EXIT:
-            serial_print("[THREAD %d] SYS EXIT\n");
+            serial_print("[THREAD %d] SYS EXIT\n", current_thread->tid);
             thread_exit();
             break;
     }

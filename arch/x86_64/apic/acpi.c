@@ -9,30 +9,46 @@ void parse_acpi(unsigned int physBootInfo){
 
     struct multiboot_tag* tag = (struct multiboot_tag *)((uint8_t *)virtBootInfo + 8);
 
+    struct MADT *madt;
     while (tag->type != MULTIBOOT_TAG_TYPE_END){
         if (tag->type == MULTIBOOT_TAG_TYPE_ACPI_NEW){
             struct multiboot_tag_new_acpi *acpi = (struct multiboot_tag_new_acpi *)tag;
             struct RSDPDescriptor20 *rsdp = (struct RSDPDescriptor20 *)(acpi->rsdp);
-            struct MADT *madt = find_madt(rsdp->XsdtAddress);
-            parse_madt(madt);
-            return;
+            madt = find_madt(rsdp->XsdtAddress, 1);
+            serial_print("[ACPI] ACPI TAG NEW was found\n");
+            break;
+        } else if (tag->type == MULTIBOOT_TAG_TYPE_ACPI_OLD){
+            struct multiboot_tag_old_acpi *acpi = (struct multiboot_tag_old_acpi *)tag;
+            struct RSDPDescriptor *rsdp = (struct RSDPDescriptor *)(acpi->rsdp);
+            madt = find_madt(rsdp->RsdtAddress, 0);
+            serial_print("[ACPI] ACPI TAG OLD was found\n");
+            break;
         }
         tag = (struct multiboot_tag *)((uintptr_t)((uint8_t*)tag + tag->size + 7) & ~7);
     }
+    parse_madt(madt);
 }
 
-struct MADT *find_madt(uint64_t xsdt_phys){
-    struct ACPISDTHeader *xsdt = (struct ACPISDTHeader *)(xsdt_phys + DIRECT_OFFSET);
+struct MADT *find_madt(uint64_t sdt_phys, uint8_t is_xsdt){
+    struct ACPISDTHeader *sdt = (struct ACPISDTHeader *)(sdt_phys + DIRECT_OFFSET);
 
-    int entries = (xsdt->Length - sizeof(struct ACPISDTHeader)) / 8;
-    uint64_t *ptrs = (uint64_t *)((uint8_t *)xsdt + sizeof(struct ACPISDTHeader));
+    int entry_size = is_xsdt ? 8 : 4;
+    int entries = (sdt->Length - sizeof(struct ACPISDTHeader)) / entry_size;
+    uint8_t *ptrs = (uint8_t *)sdt + sizeof(struct ACPISDTHeader);
 
     for (int i = 0; i < entries; i++){
-        struct ACPISDTHeader *h = (struct ACPISDTHeader *)(ptrs[i] + DIRECT_OFFSET);
+        uint64_t paddr;
+
+        if (is_xsdt) paddr = ((uint64_t *)ptrs)[i];
+        else paddr = ((uint32_t*)ptrs)[i];
+
+        struct ACPISDTHeader *h = (struct ACPISDTHeader *)(paddr + DIRECT_OFFSET);
         if (memcmp(h->Signature, "APIC", 4) == 0){
             return (struct MADT *)h;
         }
     }
+
+    return NULL;
 }
 
 void parse_madt(struct MADT *madt){
