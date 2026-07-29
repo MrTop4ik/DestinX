@@ -82,7 +82,6 @@ make run
 ```
 
 ### Bug Tracker
-* **Userspace Threading**: Thread `exit` routine inside Create User Thread currently panics/fails to clean up.
 * **KLog Flakiness**: `Kernel log buffer` occasionally misses rendering text frames onto the `LFB` screen, though serial output remains intact.
 * **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF). Investigating alternative linker/alignment constraints.
 
