@@ -17,7 +17,8 @@ void init_scheduler(void){
 
     test_init();
 
-    create_user_thread((void*)0x400000, 4096, 4096);
+    //create_user_thread((void*)0x400000, 4096, 4096);
+    create_user_process((void*)0x400000, 4096, 4096);
 
     scheduler = 1;
 }
@@ -62,7 +63,11 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
 
-    //serial_print("[SCHEDULER] Switching from thread %d to thread %d\n", old_thread->tid, current_thread->tid);
-
+    if (old_thread->process != next_thread->process && next_thread->process){
+        serial_print("%llx %llx\n", (uint64_t)old_thread->process, (uint64_t)next_thread->process);
+        write_cr3(next_thread->process->pml4);
+        us_list_head = next_thread->process->ustacks_infos;
+    }
+    
     return next_thread->rsp;
 }

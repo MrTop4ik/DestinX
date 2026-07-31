@@ -7,6 +7,8 @@
 #include <arch/x86_64/inlineasm.h>
 #include <drivers/klog.h>
 
+struct process;
+
 typedef enum {
     READY = 0,
     RUNNING,
@@ -22,6 +24,7 @@ typedef struct thread {
     stack_t user_stack;
     uint64_t page_guard_min;
     uint64_t page_guard_max;
+    struct process *process;
     struct thread *prev;
     struct thread *next;
     struct thread *next_blocked;
