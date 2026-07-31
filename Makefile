@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on -bios /usr/share/ovmf/OVMF.fd -serial stdio -display gtk
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on -serial stdio -display gtk
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o

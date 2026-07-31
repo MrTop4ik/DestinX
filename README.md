@@ -15,7 +15,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 * **Build System:** Makefile, Linker scripts
 * **Emulation:** QEMU
 * **Bootloader:** GRUB (Multiboot2)
-* **Development Environment:** WSL2 Ubuntu
+* **Development Environment:** ArchLinux
 
 ## Current Features
 
@@ -86,7 +86,7 @@ make run
 * **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF). Investigating alternative linker/alignment constraints.
 
 ### Cross-Platform Notice
-The development workflow is heavily tuned for `WSL2 Ubuntu`. If you are building on other systems, keep in mind:
+The development workflow is heavily tuned for `ArchLinux and WSL2 Ubuntu`. If you are building on other systems, keep in mind:
 * **Native Linux**: Paths to the `OVMF.fd` image vary significantly across distributions (e.g., Debian vs Fedora vs Arch).
 * **Windows (Native)**: Requires specialized environments like `WSL2/MSYS2/Cygwin` to resolve standard GNU utils, toolchains, and grub-mkrescue.
 * **macOS**: Standard QEMU syntax differs, and an explicit `cross-compiler` target configuration is strictly mandatory.
