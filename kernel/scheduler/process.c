@@ -1,6 +1,6 @@
 #include <kernel/scheduler/process.h>
 
-uint64_t next_process_id = 0;
+uint64_t next_process_id = 1;
 
 process_t *create_user_process(void (*entry_point)(void), size_t kstack_size, size_t ustack_size){
     process_t *p = (process_t*)kmalloc(sizeof(process_t));

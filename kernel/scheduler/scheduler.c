@@ -1,8 +1,18 @@
 #include <kernel/scheduler/scheduler.h>
 
+const char user_program_code[14] = {
+    0xB8, 0x01, 0x00, 0x00, 0x00,
+    0xBB, 0x02, 0x00, 0x00, 0x00,
+    0x48, 0x01, 0xD8,
+    0xC3
+};
+
 volatile int scheduler = 0;
 
 void init_scheduler(void){
+    process_t *main_process = (process_t*)kmalloc(sizeof(process_t));
+    memset(main_process, 0, sizeof(process_t));
+
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
     main_thread->tid = next_thread_id++;
     main_thread->state = RUNNING;
@@ -12,12 +22,19 @@ void init_scheduler(void){
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
+    main_process->pml4 = read_cr3();
+    main_process->threads = main_thread;
+    main_process->pid = 0;
+
     create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
     create_thread(&third_thread, DEFAULT_STACK_SIZE);
 
-    test_init();
+    init_user_thread_exit();
 
-    //create_user_thread((void*)0x400000, 4096, 4096);
+    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x400000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    memcpy((void*)0x400000, user_program_code, sizeof(user_program_code));
+
+    // create_user_thread((void*)0x400000, 4096, 4096);
     create_user_process((void*)0x400000, 4096, 4096);
 
     scheduler = 1;
