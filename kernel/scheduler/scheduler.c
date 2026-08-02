@@ -98,6 +98,8 @@ uint64_t scheduler_handler(uint64_t old_rsp){
         }
     }
 
+    if (next_thread->process) init_kernel_gs_base();
+
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
     
