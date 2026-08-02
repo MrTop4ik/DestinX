@@ -24,7 +24,7 @@ void init_syscalls(void){
 }
 
 void init_kernel_gs_base(void){
-    write_msr(IA32_KERNEL_GS_BASE, (uint32_t)&sstacks, (uint32_t)((uint64_t)&syscall_entry >> 32));
+    write_msr(IA32_KERNEL_GS_BASE, (uint32_t)&sstacks, (uint32_t)((uint64_t)&sstacks >> 32));
 }
 
 void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
