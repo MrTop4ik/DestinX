@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <mm/kmalloc.h>
 #include <drivers/lfb.h>
+#include <kernel/scheduler/process.h>
 
 #define DEFAULT_STACK_SIZE 0x100000
 #define USER_STACK_MAX 0x00007FFFFFFFF000

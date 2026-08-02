@@ -6,8 +6,7 @@
 #include <drivers/lfb.h>
 #include <arch/x86_64/inlineasm.h>
 #include <drivers/klog.h>
-
-struct process;
+#include <kernel/scheduler/process.h>
 
 typedef enum {
     READY = 0,
@@ -36,7 +35,7 @@ extern thread_t *ready_list_head;
 extern thread_t *dead_list_head;
 
 thread_t *create_thread(void (*entry_pointer)(void), size_t stack_size);
-thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_t, size_t ustack_size);
+thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), size_t kstack_t, size_t ustack_size);
 void destroy_thread(thread_t *t);
 void thread_exit(void);
 void enqueue_thread(thread_t *t);
@@ -45,4 +44,3 @@ void yield(void);
 void cleanup_dead_threads(void);
 void idle_thread_entry(void);
 void third_thread(void);
-void init_user_thread_exit(void);

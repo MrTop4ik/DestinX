@@ -1,11 +1,5 @@
 #include <kernel/scheduler/thread.h>
 
-const char user_exit_trampoline[10] = {
-    0xB8, 0x3C, 0x00, 0x00, 0x00, 
-    0x48, 0x31, 0xFF, 
-    0x0F, 0x05
-};
-
 uint64_t next_thread_id = 0;
 
 thread_t *current_thread = NULL;
@@ -59,39 +53,24 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     return t;
 }
 
-thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size_t ustack_size){
+thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), size_t kstack_size, size_t ustack_size){
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
     if (!t) return NULL;
 
     memset(t, 0, sizeof(thread_t));
 
     void *kernel_stack_mem = kernel_alloc_stack(kstack_size);
-    if (!kernel_stack_mem){
-        kfree(t);
-        return NULL;
-    }
+    if (!kernel_stack_mem){ kfree(t); return NULL; }
+
+    t->process = proc;
+
+    us_info_t *old_list = us_list_head;
+    uint64_t old_cr3 = read_cr3();
+
+    us_list_head = proc->ustacks_infos;
+    write_cr3(proc->pml4);
 
     void *user_stack_mem = user_alloc_stack(ustack_size);
-    if (!user_stack_mem){
-        kfree(kernel_stack_mem);
-        kfree(t);
-        return NULL;
-    }
-
-    serial_print("[THREAD] User Thread Address at %llx\n", (uint64_t)t);
-    serial_print("[THREAD] User Thread Kernel Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
-    serial_print("[THREAD] User Thread User Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
-
-    t->kernel_stack.bottom = kernel_stack_mem;
-    t->kernel_stack.top = kernel_stack_mem + kstack_size;
-    t->kernel_stack.size = kstack_size;
-
-    t->user_stack.bottom = user_stack_mem;
-    t->user_stack.top = (void *)((uint64_t)user_stack_mem + ustack_size);
-    t->user_stack.size = ustack_size;
-
-    t->page_guard_max = (uint64_t)t->user_stack.bottom;
-    t->page_guard_min = t->page_guard_max - PAGE_SIZE_4KB;
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
@@ -110,11 +89,30 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
         stack_top--; *stack_top = 0;
     }
 
+    proc->ustacks_infos = us_list_head;
+    us_list_head = old_list;
+    write_cr3(old_cr3);
+
+    t->kernel_stack.bottom = kernel_stack_mem;
+    t->kernel_stack.top = kernel_stack_mem + kstack_size;
+    t->kernel_stack.size = kstack_size;
+
+    t->user_stack.bottom = user_stack_mem;
+    t->user_stack.top = (void *)((uint64_t)user_stack_mem + ustack_size);
+    t->user_stack.size = ustack_size;
+
+    t->page_guard_max = (uint64_t)t->user_stack.bottom;
+    t->page_guard_min = t->page_guard_max - PAGE_SIZE_4KB;
+
     t->rsp = (uint64_t)stack_top;
     t->tid = next_thread_id++;
     t->state = READY;
     t->next = NULL;
     t->prev = NULL;
+
+    serial_print("[THREAD] User Thread Address at %llx\n", (uint64_t)t);
+    serial_print("[THREAD] User Thread Kernel Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
+    serial_print("[THREAD] User Thread User Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
 
     enqueue_thread(t);
     return t;
@@ -123,7 +121,19 @@ thread_t *create_user_thread(void (*entry_point)(void), size_t kstack_size, size
 void destroy_thread(thread_t *t){
     if (t){
         if (t->kernel_stack.bottom) kfree(t->kernel_stack.bottom);
-        if (t->user_stack.bottom) user_free_stack(t->user_stack.bottom);
+        if (t->user_stack.bottom && t->process){
+            us_info_t *old_list = us_list_head;
+            uint64_t old_cr3 = read_cr3();
+
+            us_list_head = t->process->ustacks_infos;
+            write_cr3(t->process->pml4);
+
+            user_free_stack(t->user_stack.bottom);
+
+            t->process->ustacks_infos = us_list_head;
+            us_list_head = old_list;
+            write_cr3(old_cr3);
+        }
         kfree(t);
     }
 }
@@ -184,9 +194,4 @@ void idle_thread_entry(void){
 
 void third_thread(void){
     
-}
-
-void init_user_thread_exit(void){
-    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x300000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
-    memcpy((void*)0x300000, user_exit_trampoline, sizeof(user_exit_trampoline));
 }

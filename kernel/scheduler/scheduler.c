@@ -7,12 +7,15 @@ const char user_program_code[14] = {
     0xC3
 };
 
+const char user_exit_trampoline[10] = {
+    0xB8, 0x3C, 0x00, 0x00, 0x00, 
+    0x48, 0x31, 0xFF, 
+    0x0F, 0x05
+};
+
 volatile int scheduler = 0;
 
 void init_scheduler(void){
-    process_t *main_process = (process_t*)kmalloc(sizeof(process_t));
-    memset(main_process, 0, sizeof(process_t));
-
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
     main_thread->tid = next_thread_id++;
     main_thread->state = RUNNING;
@@ -22,20 +25,23 @@ void init_scheduler(void){
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
-    main_process->pml4 = read_cr3();
-    main_process->threads = main_thread;
-    main_process->pid = 0;
-
     create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
     create_thread(&third_thread, DEFAULT_STACK_SIZE);
 
-    init_user_thread_exit();
+    process_t *proc = create_user_process();
+
+    uint64_t old_pml4_phys = read_cr3();
+    write_cr3(proc->pml4);
 
     vmm_map_page(read_cr3(), pmm_alloc_page(), 0x400000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
     memcpy((void*)0x400000, user_program_code, sizeof(user_program_code));
 
-    // create_user_thread((void*)0x400000, 4096, 4096);
-    create_user_process((void*)0x400000, 4096, 4096);
+    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x300000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    memcpy((void*)0x300000, user_exit_trampoline, sizeof(user_exit_trampoline));
+
+    write_cr3(old_pml4_phys);
+
+    create_user_thread(proc, (void*)0x400000, 4096, 4096);
 
     scheduler = 1;
 }
@@ -77,14 +83,23 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     next_thread->state = RUNNING;
     current_thread = next_thread;
 
+    if (old_thread->process != next_thread->process) {
+        if (old_thread->process) {
+            old_thread->process->ustacks_infos = us_list_head;
+        }
+
+        if (next_thread->process) {
+            us_list_head = next_thread->process->ustacks_infos;
+            if (read_cr3() != next_thread->process->pml4) {
+                write_cr3(next_thread->process->pml4);
+            }
+        } else {
+            us_list_head = NULL;
+        }
+    }
+
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
-
-    if (old_thread->process != next_thread->process && next_thread->process){
-        serial_print("%llx %llx\n", (uint64_t)old_thread->process, (uint64_t)next_thread->process);
-        write_cr3(next_thread->process->pml4);
-        us_list_head = next_thread->process->ustacks_infos;
-    }
     
     return next_thread->rsp;
 }
