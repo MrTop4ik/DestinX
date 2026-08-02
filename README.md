@@ -1,4 +1,4 @@
-# PointerOS: A 64-bit x86 Hobby Operating System
+# DestinX: A 64-bit x86 Hobby Operating System
 
 A hobby operating system kernel written from scratch in **C** and **x86 Assembly**.
 
@@ -68,8 +68,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ### Build & Run
 ```bash
 # Clone the repository
-git clone https://github.com/MrTop4ik/PointerOS/
-cd PointerOS
+git clone https://github.com/MrTop4ik/DestinX/
+cd DestinX
 
 # Create logs directory
 mkdir logs
