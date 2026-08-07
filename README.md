@@ -47,12 +47,15 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Switching to ring 3**: User threads can execute code.
 - [X] **TEST THREAD**: Currently there is `TEST THREAD` that was mapped to only test if it works.
 - [X] **TEST EXIT ROUTINE**: `EXIT ROUTINE` is just test version and will be improved.
+- [x] **Processes**: Isolation of tasks from one another.
 
 ---
 
 ## Roadmap & In Progress
 
-- [ ] **Processes**: Isolation of tasks from one another.
+- [ ] **FS Support**: Add support for file systems.
+- [ ] **VFS**: Provide single, uniform interface for programs to use files.
+- [ ] **ELF parser**: Parse ELF files to load them properly.
 
 ---
 ## Getting Started
