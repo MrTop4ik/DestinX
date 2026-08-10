@@ -15,6 +15,7 @@
 #include <kernel/mutex.h>
 #include <mm/vmalloc.h>
 #include <arch/x86_64/syscalls.h>
+#include <drivers/ahci.h>
 
 void kernel_main(uint64_t magic, unsigned int physBootInfo){
     serial_init();
@@ -37,6 +38,8 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_lapic_timer(0xEF, 1);
 
     init_syscalls();
+
+    init_ahci();
 
     sti();
 

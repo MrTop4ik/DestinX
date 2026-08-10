@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on,smm=off -serial stdio -display gtk -device ahci,id=ahci -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ahci.0
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on,smm=off -serial stdio -display gtk -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o
@@ -36,8 +36,9 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/syscalls/syscalls.c				-o syscalls.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/page_fault.c								-o page_fault.o
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/scheduler/process.c					-o process.o
-	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/pci/pci.c		-o pci.o
-	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o klog.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o
+	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/pci/pci.c				-o pci.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/storage/ahci.c						-o ahci.o
+	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o klog.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o
 	grub-file --is-x86-multiboot2 kernel.bin
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir
