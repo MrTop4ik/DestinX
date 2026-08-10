@@ -1,4 +1,5 @@
 *.o
 *.iso
-logs/qemu.log
-isodir/boot/kernel.bin
+*.log
+*.bin
+*.img

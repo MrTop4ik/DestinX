@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/x86_64/drivers/video/serial.h>
+#include <arch/x86_64/drivers/serial.h>
 #include <mm/pmm.h>
 #include <mm/vmm.h>
 #include <mm/buddy.h>

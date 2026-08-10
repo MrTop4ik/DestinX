@@ -1,4 +1,4 @@
-#include <arch/x86_64/drivers/timers/lapic_timer.h>
+#include <arch/x86_64/drivers/lapic_timer.h>
 
 uint64_t lapic_timer_ticks;
 

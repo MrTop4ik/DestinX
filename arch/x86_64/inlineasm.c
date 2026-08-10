@@ -10,6 +10,16 @@ uint8_t inb(uint16_t port){
     return res;
 }
 
+void outl(uint16_t port, uint32_t val){
+    __asm__ volatile ("outl %0, %1" : : "a" (val), "dN"(port));
+}
+
+uint8_t inl(uint16_t port){
+    uint32_t res;
+    __asm__ volatile("inl %1, %0" : "=a" (res) : "dN" (port));
+    return res;
+}
+
 void invalidate(uint64_t vaddr){
     __asm__ volatile ("invlpg (%0)" : : "r" (vaddr) : "memory");
 }

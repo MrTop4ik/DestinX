@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <mm/vmalloc.h>
-#include <arch/x86_64/drivers/video/serial.h>
+#include <arch/x86_64/drivers/serial.h>
 #include <drivers/lfb.h>
 #include <arch/x86_64/idt.h>
 #include <kernel/scheduler/thread.h>

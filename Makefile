@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on,smm=off -serial stdio -display gtk
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -machine q35,acpi=on,smm=off -serial stdio -display gtk -device ahci,id=ahci -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ahci.0
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o
@@ -41,6 +41,13 @@ iso:
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir
 	rm *.o
+
+disk:
+	mkfs.dfs disk.img 32
+	dfs-tools disk.img mkdir /usr
+	dfs-tools disk.img mkdir /usr/bin
+	dfs-tools disk.img add files/test.txt /test.txt
+
 
 run: kernel.iso
 	qemu-system-x86_64 -cdrom kernel.iso $(QEMUFLAGS)

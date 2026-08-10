@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <arch/x86_64/idt.h>
-#include <arch/x86_64/drivers/video/serial.h>
-#include <arch/x86_64/drivers/timers/pit.h>
+#include <arch/x86_64/drivers/serial.h>
+#include <arch/x86_64/drivers/pit.h>
 #include <drivers/lfb.h>
 #include <arch/x86_64/inlineasm.h>
 #include <mm/kmalloc.h>

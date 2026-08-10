@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <multiboot2.h>
 #include <libc/string.h>
-#include <arch/x86_64/drivers/video/serial.h>
+#include <arch/x86_64/drivers/serial.h>
 #include <kernel/spinlock.h>
 
 #define KERNEL_OFFSET 0xFFFFFFFF80000000

@@ -4,7 +4,7 @@
 #include <multiboot2.h>
 #include <arch/x86_64/inlineasm.h>
 #include <libc/string.h>
-#include <arch/x86_64/drivers/video/serial.h>
+#include <arch/x86_64/drivers/serial.h>
 #include <kernel/spinlock.h>
 #include <mm/kmalloc.h>
 #include <drivers/lfb.h>

@@ -67,6 +67,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 | **Emulator** | `QEMU` | Run with `-machine q35` & `OVMF` |
 | **ISO Tools** | `grub-common` | Uses `grub-mkrescue` |
 | **UEFI Support** | `OVMF` | Provides `ACPI 2.0` runtime modules |
+| **FS Support** | `DFS` | Provides `DFS` uitls |
 
 ### Build & Run
 ```bash
@@ -79,6 +80,9 @@ mkdir logs
 
 # Compile and create ISO image
 make iso
+
+# Make disk image
+make disk
 
 # Run in QEMU
 make run

@@ -1,4 +1,4 @@
-#include <arch/x86_64/drivers/timers/pit.h>
+#include <arch/x86_64/drivers/pit.h>
 
 volatile uint64_t ticks;
 
