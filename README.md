@@ -72,7 +72,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ### Build & Run
 ```bash
 # Clone the repository
-git clone git@github.com:MrTop4ik/DestinX.git
+git clone https://github.com/MrTop4ik/DestinX
 cd DestinX
 
 # Create logs directory
