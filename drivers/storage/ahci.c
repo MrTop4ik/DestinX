@@ -63,6 +63,7 @@ void probe_ahci_ports(void){
             switch (port->sig){
                 case AHCI_DEV_SATA:
                     serial_print("[AHCI] Found SATA Hard Disk / SDD\n");
+                    ahci_init_port(port);
                     break;
                 case AHCI_DEV_SATAPI:
                     serial_print("[AHCI] Found SATA CD-ROM\n");
@@ -73,4 +74,46 @@ void probe_ahci_ports(void){
             }
         }
     }
+}
+
+void ahci_stop_port(volatile hba_port_t *port){
+    port->cmd &= ~(1 << 0);
+    port->cmd &= ~(1 << 4);
+
+    for (;;){
+        if (port->cmd & (1 << 15)) continue;
+        if (port->cmd & (1 << 14)) continue;
+        break;
+    }
+}
+
+void ahci_start_port(volatile hba_port_t *port){
+    for (;;){
+        if (port->tfd & ((1 << 7) | (1 << 3))) continue;
+        break;
+    }
+
+    port->cmd |= (1 << 0);
+    port->cmd |= (1 << 4);
+}
+
+void ahci_init_port(volatile hba_port_t *port){
+    ahci_stop_port(port);
+
+    uint64_t phys_page = pmm_alloc_page();
+
+    uint64_t phys_cmd_list = phys_page;
+    uint64_t phys_rcvd_fis = phys_page + 1024;
+
+    uint64_t virt_page = phys_page + DIRECT_OFFSET;
+
+    memset((void*)virt_page, 0, PAGE_SIZE_4KB);
+
+    port->clb = (phys_cmd_list & 0xFFFFFFFF);
+    port->clbu = (phys_cmd_list >> 32);
+
+    port->fb = (phys_rcvd_fis & 0xFFFFFFFF);
+    port->fbu = (phys_rcvd_fis >> 32);
+    
+    ahci_start_port(port);
 }

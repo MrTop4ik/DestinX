@@ -58,6 +58,26 @@ typedef struct {
     hba_port_t ports[32];
 } __attribute__((packed)) hba_mem_t;
 
+typedef struct {
+    uint8_t cfl:5;
+    uint8_t a:1;
+    uint8_t w:1;
+    uint8_t p:1;
+    uint8_t r:1;
+    uint8_t b:1;
+    uint8_t c:1;
+    uint8_t rsv0:1;
+    uint8_t pmp:4;
+    uint16_t prdtl;
+    volatile uint32_t prdbc;
+    uint32_t ctba;
+    uint32_t ctbau;
+    uint32_t rsv1[4];
+}__attribute((packed)) ahci_cmd_header_t;
+
 void init_ahci(void);
 void map_ahci(void);
 void probe_ahci_ports(void);
+void ahci_stop_port(volatile hba_port_t *port);
+void ahci_start_port(volatile hba_port_t *port);
+void ahci_init_port(volatile hba_port_t *port);
