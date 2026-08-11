@@ -11,8 +11,6 @@ void init_klog(void){
     klog_buffer = (log_entry_t *)kmalloc(KLOG_BUF_MAX * sizeof(log_entry_t));
     if (!klog_buffer) for(;;);
 
-    serial_print("[KLOG] Klog buffer at %llx\n", (uint64_t)klog_buffer);
-
     for (int i = 0; i < 0; i ++){
         klog_buffer[i].c = 0;
         klog_buffer[i].ready = 0;
@@ -20,6 +18,8 @@ void init_klog(void){
 
     klog_head = 0;
     klog_tail = 0;
+
+    serial_print("[KLOG] KLOG buffer was initialized\n");
 }
 
 void klog_write(const char *s, size_t len){

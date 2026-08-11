@@ -24,8 +24,6 @@ void init_LFB(unsigned int physBootInfo){
     lfb.vram = (uint32_t *)LFB_ADDR;
     lfb.buffer = vmalloc(lfb.size);
 
-    serial_print("[LDB] Back Buffer Address at %llx\n", (uint64_t)lfb.buffer);
-
     lfb.font = (uint8_t *)font8x16;
     lfb.char_width = 8;
     lfb.char_height = 16;
@@ -37,6 +35,8 @@ void init_LFB(unsigned int physBootInfo){
     init_klog();
 
     lfb_swap();
+
+    serial_print("[LFB] LFB was initialized\n");
 }
 
 void lfb_swap(void){

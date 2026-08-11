@@ -20,6 +20,8 @@ process_t *create_user_process(){
     p->pml4 = pml4_phys;
     p->pid = next_process_id++;
 
+    serial_print("[PROCESS] User Process was created\n");
+
     return p;
 }
 

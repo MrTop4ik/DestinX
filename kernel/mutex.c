@@ -5,6 +5,8 @@ void mutex_init(mutex_t *mutex){
     mutex->locked = 0;
     mutex->blocked_head = NULL;
     mutex->blocked_tail = NULL;
+
+    serial_print("[LFB] Mutex was initialized\n");
 }
 
 void mutex_lock(mutex_t *mutex){

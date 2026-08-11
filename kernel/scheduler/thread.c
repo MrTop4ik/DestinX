@@ -19,9 +19,6 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
         return NULL;
     }
 
-    serial_print("[THREAD] Kernel Thread Address at %llx\n", (uint64_t)t);
-    serial_print("[THREAD] Kernel Thread Stack Bottom at %llx\n", (uint64_t)stack_mem);
-
     t->kernel_stack.bottom = stack_mem;
     t->kernel_stack.top = (void *)((uint64_t)stack_mem + stack_size);
     t->kernel_stack.size = stack_size;
@@ -48,6 +45,8 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     t->state = READY;
     t->next = NULL;
     t->prev = NULL;
+
+    serial_print("[THREAD] Kernel Thread was created\n");
 
     enqueue_thread(t);
     return t;
@@ -110,9 +109,7 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     t->next = NULL;
     t->prev = NULL;
 
-    serial_print("[THREAD] User Thread Address at %llx\n", (uint64_t)t);
-    serial_print("[THREAD] User Thread Kernel Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
-    serial_print("[THREAD] User Thread User Stack Bottom at %llx\n", (uint64_t)user_stack_mem);
+    serial_print("[THREAD] User Thread was created\n");
 
     enqueue_thread(t);
     return t;
