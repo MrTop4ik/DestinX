@@ -18,9 +18,11 @@
 #define PTE_WRITABLE  (1ULL << 1)
 #define PTE_USER      (1ULL << 2)
 #define PTE_PAGE_SIZE (1ULL << 7)
+#define PTE_WT        (1ULL << 3)
+#define PTE_CD        (1ULL << 4)
 #define PTE_WC_4KB    (1ULL << 7)
 #define PTE_WC_HUGE   (1ULL << 12)
-#define PTE_CD        (1ULL << 4)
+
 
 void init_VMM(unsigned int bootInfoAddr);
 void vmm_init_direct_mapping(uint64_t maxAddr);

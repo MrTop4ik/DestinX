@@ -32,14 +32,14 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     parse_acpi(physBootInfo);
     init_LAPIC();
 
+    init_ahci();
+
     init_scheduler();
 
     init_PIT(10);
     init_lapic_timer(0xEF, 1);
 
     init_syscalls();
-
-    init_ahci();
 
     sti();
 
