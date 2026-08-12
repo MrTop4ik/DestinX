@@ -30,7 +30,7 @@ void mutex_lock(mutex_t *mutex){
         mutex->blocked_tail = t;
     }
     
-    __atomic_clear(&mutex->lock.lock, __ATOMIC_RELEASE);
+    spin_lock_irqrestore(&mutex->lock, rflags);
 
     yield();
 }
@@ -51,6 +51,8 @@ void mutex_unlock(mutex_t *mutex){
 
     wake_thread->state = READY;
     wake_thread->next_blocked = NULL;
+
+    enqueue_thread(wake_thread);
 
     spin_lock_irqrestore(&mutex->lock, rflags);
 }
