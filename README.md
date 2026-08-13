@@ -32,6 +32,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Graphics**: Linear Framebuffer (**LFB**) output.
 - [x] **I/O**: QEMU Serial logging interface.
 - [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
+- [x] **PCI**: Reading and writing dword.
+- [x] **AHCI**: Reading data from disk.
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
