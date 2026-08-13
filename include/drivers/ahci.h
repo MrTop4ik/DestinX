@@ -12,12 +12,9 @@
 #define AHCI_DEV_SEMB   0xC33C0101
 #define AHCI_DEV_PM     0x96690101
 
-typedef struct {
-    uint8_t bus;
-    uint8_t dev;
-    uint8_t func;
-    uint64_t abar;
-} ahci_controller_t;
+#define AHCI_MAX_PRDT 16
+
+#define ATA_CMD_READ_DMA_EXT 0x25
 
 typedef struct {
     uint32_t clb;
@@ -53,8 +50,8 @@ typedef struct {
     uint32_t em_ctl;
     uint32_t cap2;
     uint32_t bohc;
-    uint8_t  rsv[116];  
-    uint8_t  vendor[96];
+    uint8_t rsv[116];  
+    uint8_t vendor[96];
     hba_port_t ports[32];
 } __attribute__((packed)) hba_mem_t;
 
@@ -73,7 +70,56 @@ typedef struct {
     uint32_t ctba;
     uint32_t ctbau;
     uint32_t rsv1[4];
-}__attribute((packed)) ahci_cmd_header_t;
+}__attribute__((packed)) ahci_cmd_header_t;
+
+typedef struct {
+    uint32_t dba;
+    uint32_t dbau;
+    uint32_t rsv0;
+    uint32_t dbc:22;
+    uint32_t rsv1:9;
+    uint32_t i:1;
+}__attribute__((packed)) ahci_prdt_entry_t;
+
+typedef struct {
+    uint8_t fis_type;
+    uint8_t pmport:4;
+    uint8_t rsv0:3;
+    uint8_t c:1;
+    uint8_t command;
+    uint8_t featurel;
+    uint8_t lba0;
+    uint8_t lba1;
+    uint8_t lba2;
+    uint8_t device;
+    uint8_t lba3;
+    uint8_t lba4;
+    uint8_t lba5;
+    uint8_t featureh;
+    uint8_t countl;
+    uint8_t counth;
+    uint8_t icc;
+    uint8_t control;
+    uint32_t rsv1;
+}__attribute__((packed)) fis_reg_h2d_t;
+
+typedef struct {
+    uint8_t cfis[64];
+    uint8_t acmd[16];
+    uint8_t rsv[48];
+    ahci_prdt_entry_t prdt[AHCI_MAX_PRDT];
+}__attribute__((packed)) ahci_cmd_table_t;
+
+typedef struct {
+    uint8_t bus;
+    uint8_t dev;
+    uint8_t func;
+    uint64_t abar;
+
+    hba_port_t *main_port;
+} ahci_controller_t;
+
+extern ahci_controller_t main_ahci;
 
 void init_ahci(void);
 void map_ahci(void);
@@ -81,3 +127,4 @@ void probe_ahci_ports(void);
 void ahci_stop_port(volatile hba_port_t *port);
 void ahci_start_port(volatile hba_port_t *port);
 void ahci_init_port(volatile hba_port_t *port);
+int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count);

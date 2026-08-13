@@ -16,7 +16,7 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/timers/pit.c				-o pit.o
 	x86_64-elf-gcc		$(CFLAGS)		-c libc/string.c								-o string.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/video//serial.c			-o serial.o
-	x86_64-elf-gcc		$(CFLAGS)		-c drivers/lfb/lfb.c							-o lfb.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/video/lfb.c							-o lfb.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/pmm.c 									-o pmm.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/vmm.c										-o vmm.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/buddy.c									-o buddy.o
@@ -31,7 +31,7 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/scheduler/thread.c					-o thread.o
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/scheduler/scheduler.c					-o scheduler.o
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/spinlock.c							-o spinlock.o
-	x86_64-elf-gcc		$(CFLAGS)		-c drivers/lfb/klog.c							-o klog.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/video/klog.c							-o klog.o
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/mutex.c								-o mutex.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/syscalls/syscalls.c				-o syscalls.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/page_fault.c								-o page_fault.o
