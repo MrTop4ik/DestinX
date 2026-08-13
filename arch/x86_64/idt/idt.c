@@ -4,7 +4,6 @@ extern void* isr_stub_table[];
 extern void* irq_stub_table[];
 
 void page_fault_handler(struct InterruptRegisters *regs);
-extern void* lapic_timer_handler();
 extern void* yield_handler();
 extern void* isr255();
 
@@ -93,7 +92,6 @@ void init_IDT(void){
     }
 
     setIDTGate(0x81, (uint64_t)yield_handler, 0x8E, 0);
-    setIDTGate(0xEF, (uint64_t)lapic_timer_handler, 0x8E, 0);
     setIDTGate(255, (uint64_t)isr255, 0x8E, 0);
 
     __asm__ volatile ("lidt %0" : : "m" (idt_ptr));

@@ -37,7 +37,7 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_scheduler();
 
     init_PIT(10);
-    init_lapic_timer(0xEF, 1);
+    init_lapic_timer(0x20, 1);
 
     init_syscalls();
 

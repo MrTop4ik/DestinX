@@ -1,5 +1,7 @@
 #include <arch/x86_64/drivers/lapic_timer.h>
 
+extern void* lapic_timer_handler();
+
 uint64_t lapic_timer_ticks;
 
 void init_lapic_timer(uint8_t vector, uint32_t ms){
@@ -17,4 +19,6 @@ void init_lapic_timer(uint8_t vector, uint32_t ms){
 
     write_lapic(LAPIC_TIMER_LVT, vector | LAPIC_TIMER_PERIODIC);
     write_lapic(LAPIC_TIMER_INITCNT, (uint32_t)(ticks_per_ms * ms));
+
+    setIDTGate(vector, (uint64_t)lapic_timer_handler, 0x8E, 0);
 }
