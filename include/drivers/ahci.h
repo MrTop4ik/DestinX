@@ -118,10 +118,12 @@ typedef struct {
     uint8_t func;
     uint64_t abar;
 
-    hba_port_t *main_port;
+    mutex_t mutex;
+    thread_t *blcoked_thread;
 } ahci_controller_t;
 
 extern ahci_controller_t main_ahci;
+extern volatile hba_mem_t *ahci_regs;
 
 void init_ahci(void);
 void map_ahci(void);
@@ -130,3 +132,4 @@ void ahci_stop_port(volatile hba_port_t *port);
 void ahci_start_port(volatile hba_port_t *port);
 void ahci_init_port(volatile hba_port_t *port);
 int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count);
+void ahci_handler(struct InterruptRegisters *regs);

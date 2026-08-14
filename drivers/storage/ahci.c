@@ -1,5 +1,7 @@
 #include <drivers/ahci.h>
 
+extern void *ahci_handler_stub();
+
 ahci_controller_t main_ahci;
 int ahci_found = 0;
 
@@ -40,6 +42,11 @@ void init_ahci(void){
                     pci_enable_msi(bus, dev, func, 49, 0);
 
                     map_ahci();
+
+                    ahci_regs->ghc |= (1 << 1);
+
+                    setIDTGate(0x31, (uint64_t)ahci_handler_stub, 0x8E, 0);
+
                     probe_ahci_ports();
 
                     return;
@@ -64,15 +71,14 @@ void probe_ahci_ports(void){
 
             switch (port->sig){
                 case AHCI_DEV_SATA:
-                    serial_print("[AHCI] Found SATA Hard Disk / SDD\n");
+                    serial_print("[AHCI] Found SATA Hard Disk / SDD at port %d\n", i);
                     ahci_init_port(port);
-                    main_ahci.main_port = port;
                     break;
                 case AHCI_DEV_SATAPI:
-                    serial_print("[AHCI] Found SATA CD-ROM\n");
+                    serial_print("[AHCI] Found SATA CD-ROM at port %d\n", i);
                     break;
                 default:
-                    serial_print("[AHCI] Found unknown device type\n");
+                    serial_print("[AHCI] Found unknown device type at port %d\n", i);
                     break;
             }
         }
@@ -117,12 +123,16 @@ void ahci_init_port(volatile hba_port_t *port){
 
     port->fb = (phys_rcvd_fis & 0xFFFFFFFF);
     port->fbu = (phys_rcvd_fis >> 32);
+
+    port->ie |= (1 << 0) | (1 << 5);
     
     ahci_start_port(port);
 }
 
 int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count){
     if (page_count > AHCI_MAX_PRDT) return -1;
+
+    mutex_lock(&main_ahci.mutex);
 
     port->is = 0xFFFFFFFF;
 
@@ -170,21 +180,45 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
 
+    main_ahci.blcoked_thread = current_thread;
+
     port->ci = (1 << 0);
+
+    main_ahci.blcoked_thread->state = BLOCKED;
+
+    yield();
 
     int status = 0;
 
-    for (;;){
-        if ((port->ci & (1 << 0)) == 0) break;
-
-        if (port->is & (1 << 30)){
-            serial_print("[AHCI] DMA read error");
-            status = -1;
-            break;
-        }
+    if (port->is & (1 << 30)){
+        serial_print("[AHCI] DMA read error");
+        status = -1;
     }
 
     pmm_free_page(phys_cmd_table);
 
+    mutex_unlock(&main_ahci.mutex);
+
     return status;
+}
+
+void ahci_handler(struct InterruptRegisters *regs){
+    uint32_t is = ahci_regs->is;
+
+    if (is  & (1 << 0)){
+        volatile hba_port_t *port = &ahci_regs->ports[0];
+        uint32_t port_is = port->is;
+
+        port->is = port_is;
+
+        if (port_is & ((1 << 0) | (1 << 5))){
+            if (main_ahci.blcoked_thread){
+                main_ahci.blcoked_thread->state = READY;
+                enqueue_thread(main_ahci.blcoked_thread);
+                main_ahci.blcoked_thread = NULL;
+            }
+        }
+    }
+
+    ahci_regs->is = is;
 }
