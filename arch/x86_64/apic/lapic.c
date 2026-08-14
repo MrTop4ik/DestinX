@@ -9,6 +9,8 @@ void init_LAPIC(void){
 
     write_lapic(LAPIC_SVR_OFFSET, SPURIOUS_VECTOR | LAPIC_SVR_ENABLE);
     write_lapic(LAPIC_TPR_OFFSET, 0);
+
+    write_lapic(LAPIC_LVT_LINTO_OFFSET, 0x700);
 }
 
 void lapic_eoi(void){

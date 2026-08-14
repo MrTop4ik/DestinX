@@ -37,6 +37,8 @@ void init_ahci(void){
                     serial_print("[AHCI] Found AHCI Controller\n");
                     ahci_found = 1;
 
+                    pci_enable_msi(bus, dev, func, 49, 0);
+
                     map_ahci();
                     probe_ahci_ports();
 
@@ -149,8 +151,7 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
         cmd_table->prdt[i].dbau = (uint32_t)(pages[i] >> 32);
         cmd_table->prdt[i].dbc = chunk_size - 1;
 
-        if (i == page_count - 1) cmd_table->prdt[i].i = 1;
-        else cmd_table->prdt[i].i = 0;
+        cmd_table->prdt[i].i = (i == page_count - 1) ? 1 : 0;
     }
 
     fis_reg_h2d_t *fis = (fis_reg_h2d_t *)(cmd_table->cfis);

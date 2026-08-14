@@ -5,7 +5,6 @@ extern void* irq_stub_table[];
 
 void page_fault_handler(struct InterruptRegisters *regs);
 extern void* yield_handler();
-extern void* isr255();
 
 char *exceptions[] = {
     "Division By Zero.",
@@ -92,7 +91,6 @@ void init_IDT(void){
     }
 
     setIDTGate(0x81, (uint64_t)yield_handler, 0x8E, 0);
-    setIDTGate(255, (uint64_t)isr255, 0x8E, 0);
 
     __asm__ volatile ("lidt %0" : : "m" (idt_ptr));
 }
@@ -114,10 +112,6 @@ void exception_handler(struct InterruptRegisters *regs){
 
     if (regs->int_no > 31 && regs->int_no < 48){
         irq_handler(regs);
-    }
-
-    if (regs->int_no == 255){
-        lapic_eoi();
     }
 }
 

@@ -4,6 +4,8 @@
 #include <mm/vmalloc.h>
 #include <arch/x86_64/drivers/serial.h>
 #include <arch/x86_64/drivers/pci.h>
+#include <kernel/mutex.h>
+#include <kernel/scheduler/thread.h>
 
 #define VIRT_ABAR 0xFFFFF00000000000
 

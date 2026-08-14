@@ -32,7 +32,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Graphics**: Linear Framebuffer (**LFB**) output.
 - [x] **I/O**: QEMU Serial logging interface.
 - [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
-- [x] **PCI**: Reading and writing dword.
+- [x] **PCI**: Reading and writing dword, enabling MSI.
 - [x] **AHCI**: Reading data from disk.
 
 ### Scheduling & Sync
