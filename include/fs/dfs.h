@@ -12,40 +12,47 @@
 #define DFS_TYPE_DIR 2
 
 typedef struct {
-  uint32_t logical_block;
-  uint32_t length;
-  uint64_t start_block;
+    uint32_t logical_block;
+    uint32_t length;
+    uint64_t start_block;
 } __attribute__((packed)) extent_t;
 
 typedef struct {
-  uint64_t size;
-  uint16_t type;
-  uint16_t links_count;
-  uint32_t flags;
-  extent_t extents[4];
-  uint8_t reserved[48];
+    uint64_t size;
+    uint16_t type;
+    uint16_t links_count;
+    uint32_t flags;
+    extent_t extents[4];
+    uint8_t reserved[48];
 } __attribute__((packed)) inode_t;
 
 typedef struct {
-  uint64_t magic;
-  uint32_t block_size;
-  uint32_t total_blocks;
-  uint32_t total_inodes;
-  uint32_t free_blocks;
-  uint32_t free_inodes;
-  uint32_t block_bitmap_block;
-  uint32_t inode_bitmap_block;
-  uint32_t inode_table_block;
-  uint32_t data_blocks_start;
+    uint64_t magic;
+    uint32_t block_size;
+    uint32_t total_blocks;
+    uint32_t total_inodes;
+    uint32_t free_blocks;
+    uint32_t free_inodes;
+    uint32_t block_bitmap_block;
+    uint32_t inode_bitmap_block;
+    uint32_t inode_table_block;
+    uint32_t data_blocks_start;
 } __attribute__((packed)) superblock_t;
 
 typedef struct {
-  uint32_t inode_num;
-  uint8_t type;
-  uint8_t reserved[3];
-  char name[DFS_MAX_FILENAME];
+    uint32_t inode_num;
+    uint8_t type;
+    uint8_t reserved[3];
+    char name[DFS_MAX_FILENAME];
 } __attribute__((packed)) dir_entry_t;
 
-extern superblock_t *sb;
+typedef struct {
+    superblock_t *sb;
+    uint8_t *inode_bitmap;
+    uint8_t *block_bitmap;
+    inode_t *inode_table;
+} dfs_ctx_t;
+
+extern dfs_ctx_t dfs_ctx;
 
 inode_t *dfs_mount();

@@ -14,7 +14,7 @@
 #define AHCI_DEV_SEMB   0xC33C0101
 #define AHCI_DEV_PM     0x96690101
 
-#define AHCI_MAX_PRDT 16
+#define AHCI_MAX_PRDT 64
 
 #define ATA_CMD_READ_DMA_EXT 0x25
 

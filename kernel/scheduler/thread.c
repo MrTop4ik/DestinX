@@ -185,7 +185,7 @@ void idle_thread_entry(void){
     while (1){
         kring_flush_to_screen();
         cleanup_dead_threads();
-        hlt();
+        for(;;);
     }
 }
 
