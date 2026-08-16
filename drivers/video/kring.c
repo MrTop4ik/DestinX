@@ -67,9 +67,9 @@ void kring_flush_to_screen(void){
 
         __atomic_store_n(&kring_buffer[pos].ready, 0, __ATOMIC_RELEASE);
 
-        uint64_t rflags = spin_lock_irqsave(&kring_write_lock);
+        uint64_t rflags0 = spin_lock_irqsave(&kring_write_lock);
         kring_tail++;
-        spin_lock_irqrestore(&kring_write_lock, rflags);
+        spin_lock_irqrestore(&kring_write_lock, rflags0);
         printed = 1;
     }
 
