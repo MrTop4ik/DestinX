@@ -9,14 +9,14 @@
 #include <mm/kmalloc.h>
 #include <drivers/lfb.h>
 
-#define KLOG_BUF_MAX 4096
-#define KLOG_BUF_MASK (KLOG_BUF_MAX - 1)
+#define KRING_BUF_MAX 4096
+#define KRING_BUF_MASK (KRING_BUF_MAX - 1)
 
 typedef struct {
     char c;
     volatile uint8_t ready;
 } log_entry_t;
 
-void init_klog(void);
-void klog_write(const char *s, size_t len);
-void klog_flush_to_screen(void);
+void init_kring(void);
+void kring_write(const char *s, size_t len);
+void kring_flush_to_screen(void);

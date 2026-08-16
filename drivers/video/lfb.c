@@ -32,7 +32,7 @@ void init_LFB(unsigned int physBootInfo){
 
     memset(lfb.buffer, 0, lfb.size);
 
-    init_klog();
+    init_kring();
 
     lfb_swap();
 
@@ -166,7 +166,7 @@ void kprintf(const char* format, ...){
                 }
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    klog_write(local_buf, idx);
+                    kring_write(local_buf, idx);
                     idx = 0;
                 }
 
@@ -180,7 +180,7 @@ void kprintf(const char* format, ...){
                 CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    klog_write(local_buf, idx);
+                    kring_write(local_buf, idx);
                     idx = 0;
                 }
 
@@ -196,7 +196,7 @@ void kprintf(const char* format, ...){
                     CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
                     
                     if (idx > KPRINTF_BUF_MAX - 35){
-                        klog_write(local_buf, idx);
+                        kring_write(local_buf, idx);
                         idx = 0;
                     }
 
@@ -210,7 +210,7 @@ void kprintf(const char* format, ...){
                 CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    klog_write(local_buf, idx);
+                    kring_write(local_buf, idx);
                     idx = 0;
                 }
 
@@ -223,5 +223,5 @@ void kprintf(const char* format, ...){
     }
     va_end(args);
 
-    if (idx > 0) klog_write(local_buf, idx);
+    if (idx > 0) kring_write(local_buf, idx);
 }

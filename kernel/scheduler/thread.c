@@ -183,7 +183,7 @@ void cleanup_dead_threads(void){
 
 void idle_thread_entry(void){
     while (1){
-        klog_flush_to_screen();
+        kring_flush_to_screen();
         cleanup_dead_threads();
         hlt();
     }

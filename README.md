@@ -91,7 +91,7 @@ make run
 ```
 
 ### Bug Tracker
-* **KLog Flakiness**: `Kernel log buffer` occasionally misses rendering text frames onto the `LFB` screen, though serial output remains intact.
+* **KRing Flakiness**: `Kernel log buffer` occasionally misses rendering text frames onto the `LFB` screen, though serial output remains intact.
 * **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF). Investigating alternative linker/alignment constraints.
 
 ### Cross-Platform Notice

@@ -7,7 +7,7 @@
 #include <mm/kmalloc.h>
 #include <drivers/font8x16.h>
 #include <kernel/spinlock.h>
-#include <drivers/klog.h>
+#include <drivers/kring.h>
 #include <mm/vmalloc.h>
 
 #define LFB_ADDR 0xFFFFFFFFC0000000
@@ -16,7 +16,7 @@
 
 #define CHECK_AND_FLUSH() do { \
     if (idx >= KPRINTF_BUF_MAX - 1){ \
-        klog_write(local_buf, idx); \
+        kring_write(local_buf, idx); \
         idx = 0; \
     } \
 } while (0)

@@ -5,7 +5,7 @@
 #include <arch/x86_64/idt.h>
 #include <drivers/lfb.h>
 #include <arch/x86_64/inlineasm.h>
-#include <drivers/klog.h>
+#include <drivers/kring.h>
 #include <kernel/scheduler/process.h>
 
 typedef enum {

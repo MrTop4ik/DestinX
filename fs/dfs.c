@@ -25,6 +25,6 @@ inode_t *dfs_mount() {
 
     inode_t *root_inode = (inode_t *)(pages[1] + DIRECT_OFFSET + sizeof(inode_t));
 
-    serial_print("[DFS] DFS successfully mounted");
+    serial_print("[DFS] DFS successfully mounted\n");
     return root_inode;
 }
