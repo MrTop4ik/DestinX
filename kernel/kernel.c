@@ -42,9 +42,9 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_syscalls();
 
-    sti();
-
     inode_t *root_inode = dfs_mount();
+
+    sti();
 
     for (;;);
 }

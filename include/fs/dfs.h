@@ -56,3 +56,4 @@ typedef struct {
 extern dfs_ctx_t dfs_ctx;
 
 inode_t *dfs_mount();
+void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size);

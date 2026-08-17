@@ -50,7 +50,8 @@ disk:
 	mkfs.dfs disk.img 32
 	dfs-tools disk.img mkdir /usr
 	dfs-tools disk.img mkdir /usr/bin
-	dfs-tools disk.img add files/test.txt /test.txt
+	dfs-tools disk.img mkdir /usr/txt
+	dfs-tools disk.img add files/test.txt /usr/txt/test.txt
 
 
 run: kernel.iso
