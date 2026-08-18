@@ -51,13 +51,19 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [X] **TEST EXIT ROUTINE**: `EXIT ROUTINE` is just test version and will be improved.
 - [x] **Processes**: Isolation of tasks from one another.
 
+### File Systems
+- [x] **DFS**:
+  - Mounting root directory.
+  - Reading files data.
+
 ---
 
 ## Roadmap & In Progress
 
-- [ ] **FS Support**: Add support for file systems.
 - [ ] **VFS**: Provide single, uniform interface for programs to use files.
 - [ ] **ELF parser**: Parse ELF files to load them properly.
+- [ ] **User Heap**: User dynamic memory allocation.
+- [ ] **LibC**: add libc support for user programs.
 
 ---
 ## Getting Started
