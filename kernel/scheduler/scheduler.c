@@ -16,17 +16,26 @@ const char user_exit_trampoline[10] = {
 volatile int scheduler = 0;
 
 void init_scheduler(void){
+    process_t *kp = (process_t *)kmalloc(sizeof(process_t));
+    memset(kp, 0, sizeof(process_t));
+
+    kp->pml4 = read_cr3();
+
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
     main_thread->tid = next_thread_id++;
     main_thread->state = RUNNING;
     main_thread->rsp = 0;
     main_thread->kernel_stack.bottom = NULL;
+    main_thread->process = kp;
 
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
-    create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
-    create_thread(&third_thread, DEFAULT_STACK_SIZE);
+    thread_t *idle_thread = create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
+    idle_thread->process = kp;
+
+    thread_t *t = create_thread(&third_thread, DEFAULT_STACK_SIZE);
+    t->process = kp;
 
     process_t *proc = create_user_process();
 
