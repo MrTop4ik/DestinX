@@ -46,11 +46,11 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     sti();
 
-    // uint8_t *buffer = kmalloc(PAGE_SIZE_4KB);
+    uint8_t *buffer = kmalloc(PAGE_SIZE_4KB);
 
-    // dfs_read("/usr/txt/test.txt", buffer, 0, PAGE_SIZE_4KB);
+    dfs_read("/usr/txt/test.txt", buffer, 0, PAGE_SIZE_4KB);
 
-    // serial_print("%s\n", (char *)buffer);
+    serial_print("%s\n", (char *)buffer);
 
     for (;;);
 }

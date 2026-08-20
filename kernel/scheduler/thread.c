@@ -62,6 +62,8 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     if (!kernel_stack_mem){ kfree(t); return NULL; }
 
     t->process = proc;
+    t->next_pthread = t->process->threads;
+    t->process->threads = t;
 
     us_info_t *old_list = us_list_head;
     uint64_t old_cr3 = read_cr3();

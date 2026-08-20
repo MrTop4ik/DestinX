@@ -27,6 +27,7 @@ typedef struct thread {
     struct thread *prev;
     struct thread *next;
     struct thread *next_blocked;
+    struct thread *next_pthread;
 } thread_t;
 
 extern uint64_t next_thread_id;
