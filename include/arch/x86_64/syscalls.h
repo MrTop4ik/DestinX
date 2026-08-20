@@ -17,6 +17,7 @@
 #define FLAGS_TF 0x100
 
 #define SYS_EXIT 60
+#define SYS_EXIT_GROUP 231
 
 typedef struct {
     uint64_t user_rsp;

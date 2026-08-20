@@ -34,4 +34,13 @@ void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
             thread_exit();
             break;
     }
+
+    switch (SYS_EXIT_GROUP){
+        process_t *p = current_thread->process;
+        thread_t *t = p->threads;
+        while (t){
+            t->state = BLOCKED;
+            t = t->next_pthread;
+        }
+    }
 }

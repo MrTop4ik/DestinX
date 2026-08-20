@@ -63,6 +63,7 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
 
     t->process = proc;
     t->next_pthread = t->process->threads;
+    if (t->process->threads) t->process->threads->prev = t;
     t->process->threads = t;
 
     us_info_t *old_list = us_list_head;
@@ -132,6 +133,10 @@ void destroy_thread(thread_t *t){
             t->process->ustacks_infos = us_list_head;
             us_list_head = old_list;
             write_cr3(old_cr3);
+
+            if (t->next_pthread) t->next_pthread->prev = t->prev;
+            if (t->prev_pthread) t->prev_pthread->next = t->next;
+            if (t == t->process->threads) t->process->threads == t->next; 
         }
         kfree(t);
     }
