@@ -137,6 +137,8 @@ void destroy_thread(thread_t *t){
             if (t->next_pthread) t->next_pthread->prev = t->prev;
             if (t->prev_pthread) t->prev_pthread->next = t->next;
             if (t == t->process->threads) t->process->threads == t->next; 
+
+            if (!t->process->threads) kfree(t->process);
         }
         kfree(t);
     }
