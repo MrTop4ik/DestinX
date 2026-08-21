@@ -138,7 +138,10 @@ void destroy_thread(thread_t *t){
             if (t->prev_pthread) t->prev_pthread->next = t->next;
             if (t == t->process->threads) t->process->threads == t->next; 
 
-            if (!t->process->threads) kfree(t->process);
+            if (!t->process->threads){
+                kfree(t->process);
+                pmm_free_page(t->process->pml4);
+            }
         }
         kfree(t);
     }

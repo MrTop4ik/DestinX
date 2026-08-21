@@ -36,10 +36,15 @@ void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
     }
 
     switch (SYS_EXIT_GROUP){
+        serial_print("[THREAD %d] SYS EXIT GROUP\n", current_thread->tid);
         process_t *p = current_thread->process;
         thread_t *t = p->threads;
         while (t){
-            t->state = BLOCKED;
+            t->state = DEAD;
+            t->next = dead_list_head;
+            dead_list_head = t;
+            if (t == current_thread) continue;
+            dequeue_thread(t);
             t = t->next_pthread;
         }
     }
