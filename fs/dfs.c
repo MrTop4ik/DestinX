@@ -68,7 +68,7 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 		if ((cur_inode->type == DFS_TYPE_DIR) && *fp != '\0'){
 			uint32_t total_entries = cur_inode->size / sizeof(dir_entry_t);
 
-			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extents[0].start_block * 8, 8, &phys_buf, 1);
+			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extent.start_block * 8, 8, &phys_buf, 1);
 			if (status != 0){
 				pmm_free_page(phys_buf);
 				return;
@@ -110,7 +110,7 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 		uint64_t pages[pages_needed];
 
 		for (int i = 0; i < pages_needed; i++) pages[i] = first_page + i * PAGE_SIZE_4KB;
-		int status = ahci_read(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extents[0].start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
+		int status = ahci_read(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
 		if (status != 0){
 			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
 			pmm_free_page(phys_buf);
