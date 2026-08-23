@@ -39,17 +39,17 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Multithreading**: Round Robin scheduler implemented.
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
-### User Stack Protection
-- [x] **Page Guard**: Expand stack when needed and close on stack limit.
-
 ### Syscalls
 - [x] **SYS EXIT**: Kills current thread.
+- [x] **SYS EXIT GROUP**: Kills every process's thread.
 
 ### Usersapace
 - [x] **Switching to ring 3**: User threads can execute code.
+- [x] **Page Guard**: Expand stack when needed and close on stack limit.
 - [X] **TEST THREAD**: Currently there is `TEST THREAD` that was mapped to only test if it works.
 - [X] **TEST EXIT ROUTINE**: `EXIT ROUTINE` is just test version and will be improved.
 - [x] **Processes**: Isolation of tasks from one another.
+- [x] **ELF parser**: Parse ELF files and load them.
 
 ### File Systems
 - [x] **DFS**:
@@ -61,7 +61,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ## Roadmap & In Progress
 
 - [ ] **VFS**: Provide single, uniform interface for programs to use files.
-- [ ] **ELF parser**: Parse ELF files to load them properly.
 - [ ] **User Heap**: User dynamic memory allocation.
 - [ ] **LibC**: add libc support for user programs.
 
