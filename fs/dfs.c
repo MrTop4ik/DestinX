@@ -6,7 +6,7 @@
 
 dfs_ctx_t dfs_ctx;
 
-inode_t *dfs_mount(){
+inode_t *dfs_mount_root(){
     uint64_t page = pmm_alloc_page();
 
     int status = ahci_read(&ahci_regs->ports[0], 8, 8, &page, 1);

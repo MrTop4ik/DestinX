@@ -40,7 +40,8 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/pci/pci.c				-o pci.o
 	x86_64-elf-gcc		$(CFLAGS)		-c drivers/storage/ahci.c						-o ahci.o
 	x86_64-elf-gcc		$(CFLAGS)		-c fs/dfs.c										-o dfs.o
-	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o
+	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/elf/elf.c						-o elf.o
+	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o
 	grub-file --is-x86-multiboot2 kernel.bin
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir

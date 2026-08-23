@@ -42,9 +42,7 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_syscalls();
 
-    inode_t *root_inode = dfs_mount();
-
-    sti();
+    inode_t *root_inode = dfs_mount_root();
 
     uint8_t *buffer = kmalloc(PAGE_SIZE_4KB);
 
