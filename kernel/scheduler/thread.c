@@ -77,7 +77,7 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);
 
-    stack_top--; *stack_top = 0x300000;
+    stack_top--; *stack_top = 0xffffffffffff0000;
 
     uint64_t *clean_stack_top = stack_top;
 

@@ -1,5 +1,11 @@
 #include <kernel/scheduler/process.h>
 
+const char user_exit_trampoline[10] = {
+    0xB8, 0x3C, 0x00, 0x00, 0x00, 
+    0x48, 0x31, 0xFF, 
+    0x0F, 0x05
+};
+
 uint64_t next_process_id = 1;
 
 process_t *create_user_process(){
@@ -19,6 +25,14 @@ process_t *create_user_process(){
 
     p->pml4 = pml4_phys;
     p->pid = next_process_id++;
+
+    uint64_t old_pml4_phys = read_cr3();
+    write_cr3(p->pml4);
+
+    vmm_map_page(read_cr3(), pmm_alloc_page(), 0xffffffffffff0000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+    memcpy((void*)0xffffffffffff0000, user_exit_trampoline, sizeof(user_exit_trampoline));
+
+    write_cr3(old_pml4_phys);
 
     serial_print("[PROCESS] User Process was created\n");
 
