@@ -94,6 +94,11 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 	}
 
 	if (cur_inode->type == DFS_TYPE_FILE){
+		if (size == -1){
+			size = cur_inode->size;
+			offset = 0;
+		}
+
 		if (offset > cur_inode->size){
 			pmm_free_page(phys_buf);
 			return;
@@ -118,6 +123,9 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 		}
 
 		memcpy(buffer, (void*)(virt_fisrt_page + (offset % 512)), size);
+
+		// for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
+		// pmm_free_page(phys_buf);
 
 		serial_print("[DFS READ] Successfully readed from file\n");
 		return;
