@@ -21,8 +21,6 @@ lapic_timer_handler:
     push rbx
     push rax
 
-    call lapic_eoi
-
     mov rdi, rsp
     
     call scheduler_handler
@@ -44,5 +42,7 @@ lapic_timer_handler:
     pop r13
     pop r14
     pop r15
+
+    call lapic_eoi
 
     iretq

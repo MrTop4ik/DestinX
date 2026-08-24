@@ -24,7 +24,6 @@ ahci_handler_stub:
     mov rdi, rsp
     
     call ahci_handler
-    call lapic_eoi
 
     pop rax
     pop rbx
@@ -42,4 +41,5 @@ ahci_handler_stub:
     pop r14
     pop r15
 
+    call lapic_eoi
     iretq

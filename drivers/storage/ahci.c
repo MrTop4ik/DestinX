@@ -190,8 +190,8 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
 
     int status = 0;
 
-    if (port->is & (1 << 30)){
-        serial_print("[AHCI] DMA read error");
+    if (main_ahci.port_is & (1 << 30)){
+        serial_print("[AHCI] DMA read error %d\n", main_ahci.port_is);
         status = -1;
     }
 
@@ -211,7 +211,8 @@ void ahci_handler(struct InterruptRegisters *regs){
 
         port->is = port_is;
 
-        if (port_is & ((1 << 0) | (1 << 5))){
+        if ((port_is & ((1 << 0) | (1 << 5)) || port_is & ((1 << 0) | (1 << 30)))){
+            main_ahci.port_is = port_is;
             if (main_ahci.blcoked_thread){
                 main_ahci.blcoked_thread->state = READY;
                 enqueue_thread(main_ahci.blcoked_thread);

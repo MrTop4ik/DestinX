@@ -120,6 +120,7 @@ typedef struct {
 
     mutex_t mutex;
     thread_t *blcoked_thread;
+    uint32_t port_is;
 } ahci_controller_t;
 
 extern ahci_controller_t main_ahci;
