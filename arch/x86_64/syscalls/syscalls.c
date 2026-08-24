@@ -46,5 +46,6 @@ void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
                 dequeue_thread(t);
                 t = t->next_pthread;
             }
+            yield();
     }
 }

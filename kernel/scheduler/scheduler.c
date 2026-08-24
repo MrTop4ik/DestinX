@@ -1,12 +1,5 @@
 #include <kernel/scheduler/scheduler.h>
 
-const char user_program_code[14] = {
-    0xB8, 0x01, 0x00, 0x00, 0x00,
-    0xBB, 0x02, 0x00, 0x00, 0x00,
-    0x48, 0x01, 0xD8,
-    0xC3
-};
-
 volatile int scheduler = 0;
 
 void init_scheduler(void){
@@ -30,18 +23,6 @@ void init_scheduler(void){
 
     thread_t *t = create_thread(&third_thread, DEFAULT_STACK_SIZE);
     t->process = kp;
-
-    process_t *proc = create_user_process();
-
-    uint64_t old_pml4_phys = read_cr3();
-    write_cr3(proc->pml4);
-
-    vmm_map_page(read_cr3(), pmm_alloc_page(), 0x400000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
-    memcpy((void*)0x400000, user_program_code, sizeof(user_program_code));
-
-    write_cr3(old_pml4_phys);
-
-    create_user_thread(proc, (void*)0x400000, 4096, 4096);
 
     scheduler = 1;
 }

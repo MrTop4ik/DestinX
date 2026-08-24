@@ -4,6 +4,7 @@
 #include <mm/stack.h>
 #include <arch/x86_64/idt.h>
 #include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/elf.h>
 
 struct thread;
 struct us_info;
@@ -15,4 +16,4 @@ typedef struct process {
     struct us_info *ustacks_infos;
 } process_t;
 
-process_t *create_user_process();
+process_t *create_user_process(const char *fp);

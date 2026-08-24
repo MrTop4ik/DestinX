@@ -3,6 +3,7 @@
 *.log
 *.bin
 *.img
+*.elf
 .clangd
 compile_commands.json
 .cache/

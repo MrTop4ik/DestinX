@@ -1,14 +1,17 @@
 #include <arch/x86_64/elf.h>
 
 Elf64_Addr load_elf(uint8_t *elf_file_data){
+    serial_print("[ELF] Loading ELF...\n");
     Elf64_Ehdr *ehdr = (Elf64_Ehdr *)elf_file_data;
 
     if (ehdr->e_ident[0] != ELFMAG0 ||
         ehdr->e_ident[1] != ELFMAG1 ||
         ehdr->e_ident[2] != ELFMAG2 ||
         ehdr->e_ident[3] != ELFMAG3 ||
-        ehdr->e_ident[4] != ELFCLASS64
-    ) return 0;
+        ehdr->e_ident[4] != ELFCLASS64) {
+        serial_print("[ELF] ELFMAG error\n");
+        return 0;
+    }
     
     Elf64_Phdr * phdr = (Elf64_Phdr *)(elf_file_data + ehdr->e_phoff);
     for (int i = 0; i < ehdr->e_phnum; i++){

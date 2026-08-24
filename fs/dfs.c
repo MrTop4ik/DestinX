@@ -126,7 +126,7 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 
 		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
 		pmm_free_page(phys_buf);
-
+		
 		serial_print("[DFS READ] Successfully readed from file\n");
 		return;
 	}

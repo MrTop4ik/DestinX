@@ -47,13 +47,25 @@ iso:
 	grub-mkrescue -o kernel.iso isodir
 	rm *.o
 
+progs:
+	nasm -f bin files/test.s -o files/test.bin
+	nasm -f elf64 files/test.s -o files/test.o
+	x86_64-elf-ld files/test.o -o files/test.elf
+	rm files/*.o
+
 disk:
 	mkfs.dfs disk.img 32
 	dfs-tools disk.img mkdir /usr
 	dfs-tools disk.img mkdir /usr/bin
 	dfs-tools disk.img mkdir /usr/txt
 	dfs-tools disk.img add files/test.txt /usr/txt/test.txt
+	dfs-tools disk.img add files/test.bin /usr/bin/test.bin
+	dfs-tools disk.img add files/test.elf /usr/bin/test.elf
 
+all:
+	make progs
+	make disk
+	make iso
 
 run: kernel.iso
 	qemu-system-x86_64 -cdrom kernel.iso $(QEMUFLAGS)
