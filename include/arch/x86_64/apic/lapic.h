@@ -5,6 +5,8 @@
 #include <mm/kmalloc.h>
 #include <arch/x86_64/inlineasm.h>
 
+#define LAPIC_VIRT 0xffffffffffffa000
+
 #define LAPIC_VER_OFFSET 0x30
 #define LAPIC_ID_OFFSET 0x20
 #define LAPIC_ICR_LOW_OFFSET 0x300
@@ -21,7 +23,7 @@
 
 #define SPURIOUS_VECTOR 0xFF
 
-void init_LAPIC(void);
+void init_lapic(void);
 void lapic_eoi(void);
 uint32_t read_lapic(uint32_t reg);
 void write_lapic(uint32_t reg, uint32_t val);

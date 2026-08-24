@@ -38,7 +38,8 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_LFB(physBootInfo);
 
     parse_acpi(physBootInfo);
-    init_LAPIC();
+    init_lapic();
+    init_ioapic();
 
     init_ahci();
 

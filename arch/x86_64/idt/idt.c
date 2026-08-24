@@ -2,6 +2,7 @@
 
 extern void* isr_stub_table[];
 extern void* irq_stub_table[];
+extern void* isr255();
 
 void page_fault_handler(struct InterruptRegisters *regs);
 extern void* yield_handler();
@@ -91,6 +92,8 @@ void init_IDT(void){
     }
 
     setIDTGate(0x81, (uint64_t)yield_handler, 0x8E, 0);
+
+    setIDTGate(0xFF, (uint64_t)isr255, 0x8E, 0);
 
     __asm__ volatile ("lidt %0" : : "m" (idt_ptr));
 }
