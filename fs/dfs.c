@@ -124,10 +124,65 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 
 		memcpy(buffer, (void*)(virt_fisrt_page + (offset % 512)), size);
 
-		// for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-		// pmm_free_page(phys_buf);
+		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
+		pmm_free_page(phys_buf);
 
 		serial_print("[DFS READ] Successfully readed from file\n");
 		return;
 	}
+}
+
+size_t dfs_get_size(const char *path){
+	inode_t *cur_inode = &dfs_ctx.inode_table[1];
+
+	uint64_t phys_buf = pmm_alloc_page();
+	uint64_t virt_buf = phys_buf + DIRECT_OFFSET;
+	memset((void*)virt_buf, 0, PAGE_SIZE_4KB);
+
+	int len = 0;
+
+	while (*path != '\0'){
+		if (*path != '/'){
+			path++;
+			continue;
+		}
+
+		path++;
+
+		while (path[len] != '/' && path[len] != '\0') len++;
+
+		if ((cur_inode->type == DFS_TYPE_DIR) && *path != '\0'){
+			uint32_t total_entries = cur_inode->size / sizeof(dir_entry_t);
+
+			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extent.start_block * 8, 8, &phys_buf, 1);
+			if (status != 0){
+				pmm_free_page(phys_buf);
+				return -1;
+			}
+
+			dir_entry_t *entry_list = (dir_entry_t *)virt_buf;
+			int found = 0;
+			for (int i = 0; i < total_entries; i++){
+				dir_entry_t *entry = &entry_list[i];
+				if (memcmp(entry->name, path, len) == 0){
+					cur_inode = &dfs_ctx.inode_table[entry->inode_num];
+					found = 1;
+				}
+			}
+			
+			if (found) continue;
+			pmm_free_page(phys_buf);
+			return - 1;
+		} else {
+			pmm_free_page(phys_buf);
+			return - 1;
+		}
+	}
+
+	if (cur_inode->type == DFS_TYPE_FILE){
+		pmm_free_page(phys_buf);
+		return cur_inode->size;
+	}
+
+	return -1;
 }

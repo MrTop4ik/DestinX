@@ -48,7 +48,9 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     dfs_read("/usr/txt/test.txt", buffer, 0, -1);
 
-    serial_print("%s\n", (char *)buffer);
+    size_t size = dfs_get_size("/usr/txt/test.txt");
+
+    serial_print("%s %d\n", (char *)buffer, size);
 
     for (;;);
 }
