@@ -5,6 +5,8 @@ extern void *ahci_handler_stub();
 ahci_controller_t main_ahci;
 int ahci_found = 0;
 
+spinlock_t spinclock;
+
 volatile hba_mem_t *ahci_regs = (hba_mem_t *)VIRT_ABAR;
 
 void init_ahci(void){
@@ -181,10 +183,14 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
 
     main_ahci.blcoked_thread = current_thread;
-
-    port->ci = (1 << 0);
-
+    
+    uint64_t rflags = read_rflags();
+    uint64_t saved_rflags = rflags;
+    rflags &= ~0x200;
+    write_rflags(rflags);
     main_ahci.blcoked_thread->state = BLOCKED;
+    port->ci = (1 << 0);
+    write_rflags(saved_rflags);
 
     yield();
 
@@ -211,7 +217,7 @@ void ahci_handler(struct InterruptRegisters *regs){
 
         port->is = port_is;
 
-        if ((port_is & ((1 << 0) | (1 << 5)) || port_is & ((1 << 0) | (1 << 30)))){
+        if (port_is & (1UL << 30) || ((port->ci & (1 << 0)) == 0)){
             main_ahci.port_is = port_is;
             if (main_ahci.blcoked_thread){
                 main_ahci.blcoked_thread->state = READY;
