@@ -86,6 +86,9 @@ mkdir logs
 # Compile and create ISO image
 make iso
 
+# Compile amd link programs
+make progs
+
 # Make disk image
 make disk
 
