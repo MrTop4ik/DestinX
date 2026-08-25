@@ -18,13 +18,6 @@
 #include <multiboot2.h>
 #include <stdint.h>
 
-const char user_program_code[14] = {
-    0xB8, 0x01, 0x00, 0x00, 0x00,
-    0xBB, 0x02, 0x00, 0x00, 0x00,
-    0x48, 0x01, 0xD8,
-    0xC3
-};
-
 void kernel_main(uint64_t magic, unsigned int physBootInfo){
     serial_init();
     init_GDT();
@@ -54,10 +47,9 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     sti();
 
-    uint8_t *buffer = kmalloc(PAGE_SIZE_4KB);
-
-    dfs_read("/usr/txt/test.txt", buffer, 0, dfs_get_size("/usr/txt/test.txt"));
-
+    size_t size = dfs_get_size("/usr/txt/test.txt");
+    uint8_t *buffer = kmalloc(size);
+    dfs_read("/usr/txt/test.txt", buffer, 0, size);
     serial_print("%s\n", (char *)buffer);
 
     create_user_process("/usr/bin/test.elf");
