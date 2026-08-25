@@ -6,7 +6,8 @@
 #include <mm/kmalloc.h>
 
 #define MAX_ORDERS 12
-#define TOTAL_PAGES 4096
+#define START_PAGES 4096
+#define METADATA_VIRT 0xffffffff00000000
 
 typedef struct free_block {
     struct free_block *prev;
@@ -19,7 +20,7 @@ typedef struct page_metadata {
     uint8_t is_slab: 1;
 } page_metadata_t;
 
-extern page_metadata_t metadata[TOTAL_PAGES];
+extern page_metadata_t *metadata;
 
 void init_buddy(void);
 void *buddy_alloc(int order);

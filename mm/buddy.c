@@ -1,12 +1,21 @@
 #include <mm/buddy.h>
 
 free_block_t *free_areas[MAX_ORDERS + 1];
-page_metadata_t metadata[TOTAL_PAGES];
+page_metadata_t *metadata = (page_metadata_t *)METADATA_VIRT;
+uint64_t metadata_size;
+uint64_t current_heap_end;
 
 void init_buddy(void){
+    uint64_t pages_needed = (START_PAGES * sizeof(page_metadata_t) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+    uint64_t pages = pmm_alloc_pages(pages_needed);
+    for (int i = 0; i < pages_needed; i++) vmm_map_page(read_cr3(), pages + (i * PAGE_SIZE_4KB), METADATA_VIRT + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, PTE_WRITABLE);
+
+    current_heap_end = HEAP_START + (START_PAGES * PAGE_SIZE_4KB);
+    metadata_size = START_PAGES;
+
     for (int i = 0; i <= MAX_ORDERS; i++) free_areas[i] = NULL;
     
-    for (int i = 0; i < TOTAL_PAGES; i++){
+    for (int i = 0; i < START_PAGES; i++){
         metadata[i].is_free = 0;
         metadata[i].order = 0;
         metadata[i].is_slab = 0;
@@ -36,8 +45,28 @@ void *buddy_alloc(int order){
             return (void *)block_addr;
         }
     }
+    
+    uint64_t pages_needed = (START_PAGES * sizeof(page_metadata_t) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+    uint64_t pages = pmm_alloc_pages(pages_needed);
+    for (int i = 0; i < pages_needed; i++) vmm_map_page(read_cr3(), pages + (i * PAGE_SIZE_4KB), METADATA_VIRT + metadata_size + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, PTE_WRITABLE);
+    metadata_size += pages_needed * PAGE_SIZE_4KB;
+    
+    pages = pmm_alloc_pages(START_PAGES);
+    for (int i = 0; i < START_PAGES; i++){
+        vmm_map_page(read_cr3(), pages + (i * PAGE_SIZE_4KB), current_heap_end + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, PTE_WRITABLE);
+        uint64_t indx = (current_heap_end + (i * PAGE_SIZE_4KB) - HEAP_START) / PAGE_SIZE_4KB;
+        metadata[indx].order = MAX_ORDERS;
+        metadata[indx].is_free = 0;
+        metadata[indx].is_slab = 0;
+    }
 
-    return NULL;
+    buddy_list_add(current_heap_end, MAX_ORDERS);
+    current_heap_end += START_PAGES;
+
+    void *addr = buddy_alloc(order);
+    if (!addr) return NULL;
+
+    return addr;
 }
 
 void buddy_free(void *ptr){

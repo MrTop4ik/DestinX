@@ -5,8 +5,6 @@ extern void *ahci_handler_stub();
 ahci_controller_t main_ahci;
 int ahci_found = 0;
 
-spinlock_t spinclock;
-
 volatile hba_mem_t *ahci_regs = (hba_mem_t *)VIRT_ABAR;
 
 void init_ahci(void){
