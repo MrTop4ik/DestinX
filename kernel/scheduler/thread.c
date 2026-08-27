@@ -67,7 +67,7 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     if (t->process->threads) t->process->threads->prev = t;
     t->process->threads = t;
 
-    us_info_t *old_list = us_list_head;
+    vm_info_t *old_list = us_list_head;
     uint64_t old_cr3 = read_cr3();
 
     uint64_t rflags = spin_lock_irqsave(&create_thread_lock);
@@ -127,7 +127,7 @@ void destroy_thread(thread_t *t){
     if (t){
         if (t->kernel_stack.bottom) kfree(t->kernel_stack.bottom);
         if (t->user_stack.bottom && t->process){
-            us_info_t *old_list = us_list_head;
+            vm_info_t *old_list = us_list_head;
             uint64_t old_cr3 = read_cr3();
 
             us_list_head = t->process->ustacks_infos;

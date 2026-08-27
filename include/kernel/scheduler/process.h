@@ -5,15 +5,15 @@
 #include <arch/x86_64/idt.h>
 #include <arch/x86_64/inlineasm.h>
 #include <arch/x86_64/elf.h>
+#include <mm/vmalloc.h>
 
 struct thread;
-struct us_info;
 
 typedef struct process {
     uint64_t pml4;
     uint64_t pid;
     struct thread *threads;
-    struct us_info *ustacks_infos;
+    struct vm_info *ustacks_infos;
     uint64_t heap_start;
     uint64_t current_heap_end;
 } process_t;

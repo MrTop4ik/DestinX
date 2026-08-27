@@ -1,7 +1,7 @@
 #include <mm/stack.h>
 
 uint64_t user_next_top = USER_STACK_MAX;
-us_info_t *us_list_head = NULL;
+vm_info_t *us_list_head = NULL;
 
 void *kernel_alloc_stack(size_t size){
     if (size == 0) return 0;
@@ -15,7 +15,7 @@ void *kernel_alloc_stack(size_t size){
 void *user_alloc_stack(size_t size){
     if (size == 0) return NULL;
 
-    us_info_t *i = (us_info_t *)kmalloc(sizeof(us_info_t));
+    vm_info_t *i = (vm_info_t *)kmalloc(sizeof(vm_info_t));
     if (!i) return NULL;
 
     i->size = size;
@@ -30,7 +30,7 @@ void *user_alloc_stack(size_t size){
 void user_free_stack(void *ptr){
     if (!us_list_head) return; 
 
-    us_info_t *current = us_list_head;
+    vm_info_t *current = us_list_head;
     while (current){
         if ((uint64_t)current->base == (uint64_t)ptr){
             for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
@@ -44,15 +44,15 @@ void user_free_stack(void *ptr){
     }
 }
 
-void us_add_to_list(us_info_t *i){
+void us_add_to_list(vm_info_t *i){
     if (!us_list_head){
         i->base = (void*)USER_STACK_MAX;
         i->prev = NULL;
         i->next = NULL;
         us_list_head = i;
     } else {
-        us_info_t *current = us_list_head;
-        us_info_t *next = us_list_head->next;
+        vm_info_t *current = us_list_head;
+        vm_info_t *next = us_list_head->next;
         while (next){
             if ((uint64_t)current->base - current->size - i->size >= (uint64_t)next->base){
                 i->base = (void *)((uint64_t)current->base - current->size);
@@ -72,20 +72,12 @@ void us_add_to_list(us_info_t *i){
     }
 }
 
-void us_remove_from_list(us_info_t *i){
+void us_remove_from_list(vm_info_t *i){
     if (!i) return;
 
-    if (us_list_head == i) {
-        us_list_head = i->next;
-    }
-
-    if (i->next) {
-        i->next->prev = i->prev;
-    }
-
-    if (i->prev) {
-        i->prev->next = i->next;
-    }
+    if (us_list_head == i) us_list_head = i->next;
+    if (i->next) i->next->prev = i->prev;
+    if (i->prev) i->prev->next = i->next;
 
     i->next = NULL;
     i->prev = NULL;

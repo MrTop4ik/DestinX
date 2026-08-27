@@ -29,6 +29,16 @@ void init_kernel_gs_base(void){
 
 void syscall_handler(struct SyscallRegisters *regs){
     switch (regs->rax){
+        case SYS_MMAP:
+            uint64_t maddr = mmap(regs->rdi);
+            regs->rax = maddr;
+            break;
+
+        case SYS_BRK:
+            uint64_t baddr = brk(regs->rdi);
+            regs->rax = baddr;
+            break;
+
         case SYS_EXIT:
             serial_print("[THREAD %d] SYS EXIT (Exit code: %d)\n", current_thread->tid, regs->rdi);
             thread_exit();
@@ -47,11 +57,6 @@ void syscall_handler(struct SyscallRegisters *regs){
                 t = t->next_pthread;
             }
             yield();
-            break;
-
-        case SYS_BRK:
-            uint64_t addr = brk(regs->rdi);
-            regs->rax = addr;
             break;
 
         default:

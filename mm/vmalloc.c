@@ -65,17 +65,9 @@ void vm_add_to_list(vm_info_t *i){
 void vm_remove_from_list(vm_info_t *i){
     if (!i) return;
 
-    if (vmalloc_list_head == i) {
-        vmalloc_list_head = i->next;
-    }
-
-    if (i->next) {
-        i->next->prev = i->prev;
-    }
-
-    if (i->prev) {
-        i->prev->next = i->next;
-    }
+    if (vmalloc_list_head == i) vmalloc_list_head = i->next;
+    if (i->next) i->next->prev = i->prev;
+    if (i->prev) i->prev->next = i->next;
 
     i->next = NULL;
     i->prev = NULL;

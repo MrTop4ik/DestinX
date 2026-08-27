@@ -40,9 +40,10 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
 ### Syscalls
+- [x] **SYS MMAP**: Allocate big chunks of memory with size of rdi value.
+- [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current thread.
 - [x] **SYS EXIT GROUP**: Kills every process's thread.
-- [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
 
 ### Usersapace
 - [x] **Switching to ring 3**: User threads can execute code.
@@ -59,8 +60,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-
-- [ ] **SYS MMAP**: Allocate big chunks of memory in user heap.
 - [ ] **VFS**: Provide single, uniform interface for programs to use files.
 - [ ] **LibC**: add libc support for user programs.
 

@@ -29,5 +29,8 @@ void page_fault_handler(struct InterruptRegisters *regs){
             return;
         }
     }
+    serial_print("[ISR] ");
+    serial_print(exceptions[regs->int_no]);
+    serial_print("\n");
     for (;;);
 }
