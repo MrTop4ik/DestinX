@@ -33,6 +33,10 @@ void syscall_handler(struct SyscallRegisters *regs){
             uint64_t maddr = mmap(regs->rdi);
             regs->rax = maddr;
             break;
+        
+        case SYS_UNMAP:
+            munmap((void*)regs->rdi);
+            break;
 
         case SYS_BRK:
             uint64_t baddr = brk(regs->rdi);

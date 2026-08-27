@@ -1,7 +1,5 @@
 #include <mm/mmap.h>
 
-#include <mm/mmap.h>
-
 vm_info_t *mmap_list_head = NULL;
 
 uint64_t mmap(size_t size){
@@ -18,6 +16,24 @@ uint64_t mmap(size_t size){
 
     return ((uint64_t)i->base - size);
 }
+
+void munmap(void *ptr){
+    if (!mmap_list_head) return; 
+
+    vm_info_t *current = mmap_list_head;
+    while (current){
+        if (((uint64_t)current->base - current->size) == (uint64_t)ptr){
+            for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
+                uint64_t paddr = vmm_unmap_page(read_cr3(), (uint64_t)current->base - current->size + i);
+                pmm_free_page(paddr);
+            }
+            mmap_remove_from_list(current);
+            return;
+        }
+        current = current->next;
+    }
+}
+
 
 void mmap_add_to_list(vm_info_t *i){
     if (!mmap_list_head){

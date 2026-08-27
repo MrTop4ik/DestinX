@@ -34,7 +34,7 @@ void user_free_stack(void *ptr){
     while (current){
         if ((uint64_t)current->base == (uint64_t)ptr){
             for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
-                uint64_t paddr = vmm_unmap_page(read_cr3(), (uint64_t)current->base - i);
+                uint64_t paddr = vmm_unmap_page(read_cr3(), (uint64_t)current->base - current->size + i);
                 pmm_free_page(paddr);
             }
             us_remove_from_list(current);

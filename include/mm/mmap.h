@@ -10,3 +10,4 @@
 uint64_t mmap(size_t size);
 void mmap_add_to_list(vm_info_t *i);
 void mmap_remove_from_list(vm_info_t *i);
+void munmap(void *ptr);

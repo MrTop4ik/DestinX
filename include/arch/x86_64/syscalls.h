@@ -19,6 +19,7 @@
 #define FLAGS_TF 0x100
 
 #define SYS_MMAP        9
+#define SYS_UNMAP       11
 #define SYS_BRK         12
 #define SYS_EXIT        60
 #define SYS_EXIT_GROUP  231

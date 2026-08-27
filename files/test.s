@@ -14,4 +14,10 @@ _start:
     syscall
     mov qword [rax], 42
 
+    mov rbx, rax
+
+    mov rax, 11
+    mov rdi, rbx
+    syscall
+
     jmp $

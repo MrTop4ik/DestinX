@@ -41,6 +41,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 ### Syscalls
 - [x] **SYS MMAP**: Allocate big chunks of memory with size of rdi value.
+- [x] **SYS MUNMAP**: Free memory allocated with `SYS MMAP` by addr from rdi.
 - [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current thread.
 - [x] **SYS EXIT GROUP**: Kills every process's thread.
