@@ -48,8 +48,14 @@ syscall_entry:
     pop rcx
     pop r11
 
-    mov rsp, [gs:00]
-    
+    mov rbx, [gs:00]
+
+    push 0x1B
+    push rbx
+    push r11
+    push 0x23
+    push rcx
+
     swapgs
 
-    sysretq
+    iretq
