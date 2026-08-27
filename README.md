@@ -97,7 +97,8 @@ make run
 ```
 
 ### Bug Tracker
-* **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF). Investigating alternative linker/alignment constraints.
+* **Arch Linux UEFI Crash**: Booting on `Arch Linux` via `UEFI` triggers an immediate `Page Fault` (#PF).
+* **SYSRETQ**: Currently, sysretq does not work correctly, so iretq is used instead.
 
 ### Cross-Platform Notice
 The development workflow is heavily tuned for `ArchLinux and WSL2 Ubuntu`. If you are building on other systems, keep in mind:
