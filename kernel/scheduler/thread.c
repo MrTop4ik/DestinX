@@ -6,6 +6,7 @@ thread_t *current_thread = NULL;
 thread_t *ready_list_head = NULL;
 thread_t *dead_list_head = NULL;
 
+spinlock_t create_thread_lock = {0};
 
 thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
@@ -69,6 +70,8 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     us_info_t *old_list = us_list_head;
     uint64_t old_cr3 = read_cr3();
 
+    uint64_t rflags = spin_lock_irqsave(&create_thread_lock);
+
     us_list_head = proc->ustacks_infos;
     write_cr3(proc->pml4);
 
@@ -94,6 +97,8 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     proc->ustacks_infos = us_list_head;
     us_list_head = old_list;
     write_cr3(old_cr3);
+
+    spin_lock_irqrestore(&create_thread_lock, rflags);
 
     t->kernel_stack.bottom = kernel_stack_mem;
     t->kernel_stack.top = kernel_stack_mem + kstack_size;

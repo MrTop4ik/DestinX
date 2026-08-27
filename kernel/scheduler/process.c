@@ -11,6 +11,7 @@ const char user_exit_trampoline[10] = {
 };
 
 uint64_t next_process_id = 1;
+spinlock_t create_proc_lock = {0};
 
 process_t *create_user_process(const char *fp){
     process_t *p = (process_t *)kmalloc(sizeof(process_t));
@@ -39,6 +40,8 @@ process_t *create_user_process(const char *fp){
     uint8_t *virt_buf = (uint8_t *)(phys_buf + DIRECT_OFFSET);
 
     dfs_read(fp, virt_buf, 0, size);
+
+    uint64_t rflags = spin_lock_irqsave(&create_proc_lock);
     
     write_cr3(p->pml4);
 
@@ -55,6 +58,8 @@ process_t *create_user_process(const char *fp){
     }
 
     write_cr3(old_pml4_phys);
+
+    spin_lock_irqrestore(&create_proc_lock, rflags);
 
     create_user_thread(p, (void*)entry, PAGE_SIZE_2MB, PAGE_SIZE_2MB);
 
