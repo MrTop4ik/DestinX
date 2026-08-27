@@ -47,17 +47,21 @@ process_t *create_user_process(const char *fp){
 
     vmm_map_page(read_cr3(), pmm_alloc_page(), 0xffffffffffff0000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
     memcpy((void*)0xffffffffffff0000, user_exit_trampoline, sizeof(user_exit_trampoline));
-
-    uint64_t entry = load_elf(virt_buf);
+    
+    uint64_t end = 0;
+    uint64_t entry = load_elf(virt_buf, &end);
     if (!entry){
         entry = 0x400000;
         uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
         uint64_t first_phys = pmm_alloc_pages(pages_needed);
-        for (int i = 0; i < pages_needed; i++) vmm_map_page(read_cr3(), first_phys + (i * PAGE_SIZE_4KB), entry + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
+        for (int i = 0; i < pages_needed; i++){ vmm_map_page(read_cr3(), first_phys + (i * PAGE_SIZE_4KB), entry + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER)); end = entry + (i * PAGE_SIZE_4KB) + PAGE_SIZE_4KB; }
         memcpy((void*)entry, virt_buf, size);
     }
 
     write_cr3(old_pml4_phys);
+
+    p->heap_start = (end + PAGE_SIZE_4KB - 1) & PAGE_MASK_4KB;
+    p->current_heap_end = p->heap_start;
 
     spin_lock_irqrestore(&create_proc_lock, rflags);
 

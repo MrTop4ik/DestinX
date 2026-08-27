@@ -24,13 +24,14 @@ syscall_entry:
     push rsi
     push rdx
     push rbx
+    push rax
 
-    mov rdi, rax
-    mov rsi, rsp
+    mov rdi, rsp
     
     extern syscall_handler
     call syscall_handler
 
+    pop rax
     pop rbx
     pop rdx
     pop rsi

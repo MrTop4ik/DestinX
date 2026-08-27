@@ -27,10 +27,10 @@ void init_kernel_gs_base(void){
     write_msr(IA32_KERNEL_GS_BASE, (uint32_t)&sstacks, (uint32_t)((uint64_t)&sstacks >> 32));
 }
 
-void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
-    switch (sys_num){
+void syscall_handler(struct SyscallRegisters *regs){
+    switch (regs->rax){
         case SYS_EXIT:
-            serial_print("[THREAD %d] SYS EXIT\n", current_thread->tid);
+            serial_print("[THREAD %d] SYS EXIT (Exit code: %d)\n", current_thread->tid, regs->rdi);
             thread_exit();
             break;
 
@@ -47,5 +47,16 @@ void syscall_handler(uint64_t sys_num, struct SyscallRegisters *regs){
                 t = t->next_pthread;
             }
             yield();
+            break;
+
+        case SYS_BRK:
+            uint64_t addr = brk(regs->rdi);
+            regs->rax = addr;
+            break;
+
+        default:
+            serial_print("[SYSCALLS] No Such Syscall (%d)\n", regs->rax);
+            regs->rax = (uint64_t)-38;
+            break;
     }
 }

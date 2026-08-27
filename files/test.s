@@ -4,6 +4,8 @@ section .text
 global _start
 
 _start:
-    mov rax, 1
+    mov rax, 12
+    mov rdi, 0x402000
     syscall
-    ret
+    mov qword [rax], 24
+    jmp $

@@ -14,6 +14,8 @@ typedef struct process {
     uint64_t pid;
     struct thread *threads;
     struct us_info *ustacks_infos;
+    uint64_t heap_start;
+    uint64_t current_heap_end;
 } process_t;
 
 process_t *create_user_process(const char *fp);

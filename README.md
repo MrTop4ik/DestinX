@@ -42,12 +42,14 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ### Syscalls
 - [x] **SYS EXIT**: Kills current thread.
 - [x] **SYS EXIT GROUP**: Kills every process's thread.
+- [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
 
 ### Usersapace
 - [x] **Switching to ring 3**: User threads can execute code.
 - [x] **Page Guard**: Expand stack when needed and close on stack limit.
 - [x] **Processes**: Isolation of tasks from one another.
 - [x] **ELF parser**: Parse ELF files and load them.
+- [x] **Heap**: Allocate memory with `SYS BRK`.
 
 ### File Systems
 - [x] **DFS**:
@@ -58,8 +60,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 ## Roadmap & In Progress
 
+- [ ] **SYS MMAP**: Allocate big chunks of memory in user heap.
 - [ ] **VFS**: Provide single, uniform interface for programs to use files.
-- [ ] **User Heap**: User dynamic memory allocation.
 - [ ] **LibC**: add libc support for user programs.
 
 ---

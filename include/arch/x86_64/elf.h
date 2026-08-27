@@ -47,4 +47,4 @@ typedef struct {
     Elf64_Xword p_align;
 } Elf64_Phdr;
 
-Elf64_Addr load_elf(uint8_t *elf_file_data);
+Elf64_Addr load_elf(uint8_t *elf_file_data, uint64_t *end);
