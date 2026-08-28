@@ -20,4 +20,13 @@ _start:
     mov rdi, rbx
     syscall
 
+    mov rax, 1
+    mov rdi, 2
+    mov rsi, msg
+    mov rdx, 15
+    syscall
+
     jmp $
+
+section .rodata
+msg: db "Hello, World!", 10, 0

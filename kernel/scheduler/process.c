@@ -64,6 +64,9 @@ process_t *create_user_process(const char *fp){
     p->current_heap_end = p->heap_start;
     p->pages_alloced = 0;
 
+    for (int i = 0; i < MAX_FD; i++) p->fd_table[i] = NULL;
+    for (int i = 0; i < 3; i++) p->fd_table[i] = &terminal_file;
+
     spin_lock_irqrestore(&create_proc_lock, rflags);
 
     create_user_thread(p, (void*)entry, PAGE_SIZE_2MB, PAGE_SIZE_2MB);

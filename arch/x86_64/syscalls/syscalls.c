@@ -29,6 +29,11 @@ void init_kernel_gs_base(void){
 
 void syscall_handler(struct SyscallRegisters *regs){
     switch (regs->rax){
+        case SYS_WRITE:
+            uint64_t count = terminal_write(current_thread->process->fd_table[regs->rdi], (const char *)regs->rsi, regs->rdx);
+            regs->rax = count;
+            break;
+
         case SYS_MMAP:
             uint64_t maddr = mmap(regs->rdi);
             regs->rax = maddr;

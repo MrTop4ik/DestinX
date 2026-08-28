@@ -40,6 +40,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
 ### Syscalls
+- [x] **SYS WRITE**: Write messages to the screen by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively.
 - [x] **SYS MMAP**: Allocate big chunks of memory with size of rdi value.
 - [x] **SYS MUNMAP**: Free memory allocated with `SYS MMAP` by addr from rdi.
 - [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
@@ -53,7 +54,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **ELF parser**: Parse ELF files and load them.
 - [x] **Heap**: Allocate memory with `SYS BRK`.
 
-### File Systems
+### File System
+- [x] **VFS**: Provide single, uniform interface for programs to use files.
 - [x] **DFS**:
   - Mounting root directory.
   - Reading files data.
@@ -61,7 +63,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **VFS**: Provide single, uniform interface for programs to use files.
 - [ ] **LibC**: add libc support for user programs.
 
 ---

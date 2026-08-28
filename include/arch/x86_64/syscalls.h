@@ -7,6 +7,7 @@
 #include <kernel/scheduler/thread.h>
 #include <mm/brk.h>
 #include <mm/mmap.h>
+#include <drivers/console.h>
 
 #define IA32_EFER   0xC0000080
 #define IA32_STAR   0xC0000081
@@ -18,6 +19,7 @@
 #define FLAGS_DF 0x40
 #define FLAGS_TF 0x100
 
+#define SYS_WRITE       1
 #define SYS_MMAP        9
 #define SYS_UNMAP       11
 #define SYS_BRK         12
