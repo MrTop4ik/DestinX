@@ -23,10 +23,7 @@ void munmap(void *ptr){
     vm_info_t *current = mmap_list_head;
     while (current){
         if (((uint64_t)current->base - current->size) == (uint64_t)ptr){
-            for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
-                uint64_t paddr = vmm_unmap_page(read_cr3(), (uint64_t)current->base - current->size + i);
-                pmm_free_page(paddr);
-            }
+            munmap_by_info(current, current_thread->process->pml4);
             mmap_remove_from_list(current);
             return;
         }
@@ -34,6 +31,13 @@ void munmap(void *ptr){
     }
 }
 
+void munmap_by_info(vm_info_t *i, uint64_t pml4){
+    for (int j = 0; j < i->size; j += PAGE_SIZE_4KB){
+        uint64_t paddr = vmm_unmap_page(pml4, (uint64_t)i->base - i->size + j);
+        pmm_free_page(paddr);
+    }
+    mmap_remove_from_list(i);
+}
 
 void mmap_add_to_list(vm_info_t *i){
     if (!mmap_list_head){

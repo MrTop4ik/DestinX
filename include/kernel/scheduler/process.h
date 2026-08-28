@@ -17,6 +17,7 @@ typedef struct process {
     struct vm_info *mmap_infos;
     uint64_t heap_start;
     uint64_t current_heap_end;
+    uint64_t pages_alloced;
 } process_t;
 
 process_t *create_user_process(const char *fp);

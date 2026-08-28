@@ -11,3 +11,4 @@ uint64_t mmap(size_t size);
 void mmap_add_to_list(vm_info_t *i);
 void mmap_remove_from_list(vm_info_t *i);
 void munmap(void *ptr);
+void munmap_by_info(vm_info_t *i, uint64_t pml4);

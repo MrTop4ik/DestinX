@@ -62,6 +62,7 @@ process_t *create_user_process(const char *fp){
 
     p->heap_start = (end + PAGE_SIZE_4KB - 1) & PAGE_MASK_4KB;
     p->current_heap_end = p->heap_start;
+    p->pages_alloced = 0;
 
     spin_lock_irqrestore(&create_proc_lock, rflags);
 

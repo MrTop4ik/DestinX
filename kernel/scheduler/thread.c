@@ -1,5 +1,7 @@
 #include <kernel/scheduler/thread.h>
 
+void munmap_by_info(vm_info_t *i, uint64_t pml4);
+
 uint64_t next_thread_id = 0;
 
 thread_t *current_thread = NULL;
@@ -149,6 +151,15 @@ void destroy_thread(thread_t *t){
             if (t == t->process->threads) t->process->threads == t->next; 
 
             if (!t->process->threads){
+                vm_info_t *cur = t->process->mmap_infos;
+                while (cur){
+                    munmap_by_info(cur, t->process->pml4);
+                    cur = cur->next;
+                }
+                for (int i = 0; i < t->process->pages_alloced; i++){
+                    uint64_t paddr = vmm_unmap_page(t->process->pml4, t->process->heap_start + (i * PAGE_SIZE_4KB));
+                    pmm_free_page(paddr);
+                }
                 kfree(t->process);
                 pmm_free_page(t->process->pml4);
             }
