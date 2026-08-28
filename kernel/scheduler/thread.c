@@ -7,6 +7,7 @@ thread_t *ready_list_head = NULL;
 thread_t *dead_list_head = NULL;
 
 spinlock_t create_thread_lock = {0};
+spinlock_t destroy_thread_lock = {0};
 
 thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
     thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
@@ -130,6 +131,8 @@ void destroy_thread(thread_t *t){
             vm_info_t *old_list = us_list_head;
             uint64_t old_cr3 = read_cr3();
 
+            uint64_t rflagas = spin_lock_irqsave(&destroy_thread_lock);
+
             us_list_head = t->process->ustacks_infos;
             write_cr3(t->process->pml4);
 
@@ -138,6 +141,8 @@ void destroy_thread(thread_t *t){
             t->process->ustacks_infos = us_list_head;
             us_list_head = old_list;
             write_cr3(old_cr3);
+
+            spin_lock_irqrestore(&destroy_thread_lock, rflagas);
 
             if (t->next_pthread) t->next_pthread->prev = t->prev;
             if (t->prev_pthread) t->prev_pthread->next = t->next;
