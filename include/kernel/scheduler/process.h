@@ -14,6 +14,7 @@ typedef struct process {
     uint64_t pid;
     struct thread *threads;
     struct vm_info *ustacks_infos;
+    struct vm_info *mmap_infos;
     uint64_t heap_start;
     uint64_t current_heap_end;
 } process_t;

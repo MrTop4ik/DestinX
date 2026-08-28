@@ -1,5 +1,7 @@
 #include <kernel/scheduler/scheduler.h>
 
+extern vm_info_t *mmap_list_head;
+
 volatile int scheduler = 0;
 
 void init_scheduler(void){
@@ -64,18 +66,21 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     next_thread->state = RUNNING;
     current_thread = next_thread;
 
-    if (old_thread->process != next_thread->process) {
-        if (old_thread->process) {
+    if (old_thread->process != next_thread->process){
+        if (old_thread->process){
             old_thread->process->ustacks_infos = us_list_head;
+            old_thread->process->mmap_infos = mmap_list_head;
         }
 
-        if (next_thread->process) {
+        if (next_thread->process){
             us_list_head = next_thread->process->ustacks_infos;
+            mmap_list_head = next_thread->process->mmap_infos;
             if (read_cr3() != next_thread->process->pml4) {
                 write_cr3(next_thread->process->pml4);
             }
         } else {
             us_list_head = NULL;
+            mmap_list_head = NULL;
         }
     }
 
