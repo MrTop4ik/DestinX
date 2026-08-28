@@ -214,14 +214,16 @@ void cleanup_dead_threads(void){
     }
 }
 
-void idle_thread_entry(void){
+void cleanup_threads(void){
     while (1){
-        kring_flush_to_screen();
         cleanup_dead_threads();
         hlt();
     }
 }
 
-void third_thread(void){
-    for (;;);
+void kring_flush(void){
+    while (1){
+        kring_flush_to_screen();
+        hlt();
+    }
 }

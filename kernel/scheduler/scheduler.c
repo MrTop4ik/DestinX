@@ -20,11 +20,13 @@ void init_scheduler(void){
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
-    thread_t *idle_thread = create_thread(&idle_thread_entry, DEFAULT_STACK_SIZE);
-    idle_thread->process = kp;
+    thread_t *kr_thread = create_thread(&kring_flush, 4096);
+    thread_t *cln_thread = create_thread(&cleanup_threads, 4096);
 
-    thread_t *t = create_thread(&third_thread, DEFAULT_STACK_SIZE);
-    t->process = kp;
+    main_thread->next_pthread = kr_thread;
+    kr_thread->next_pthread = cln_thread;
+
+    kp->threads = main_thread;
 
     scheduler = 1;
 }
