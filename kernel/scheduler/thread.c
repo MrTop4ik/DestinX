@@ -107,11 +107,11 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     t->kernel_stack.top = kernel_stack_mem + kstack_size;
     t->kernel_stack.size = kstack_size;
 
-    t->user_stack.bottom = user_stack_mem;
-    t->user_stack.top = (void *)((uint64_t)user_stack_mem + ustack_size);
+    t->user_stack.bottom = (void *)((uint64_t)user_stack_mem - ustack_size);
+    t->user_stack.top = user_stack_mem;
     t->user_stack.size = ustack_size;
 
-    t->page_guard_max = (uint64_t)t->user_stack.bottom;
+    t->page_guard_max = (uint64_t)t->user_stack.top - PAGE_SIZE_4KB;
     t->page_guard_min = t->page_guard_max - PAGE_SIZE_4KB;
 
     t->rsp = (uint64_t)stack_top;

@@ -9,16 +9,8 @@ _start:
     syscall
     mov qword [rax], 24
 
-    mov rax, 9
-    mov rdi, 0x10000
-    syscall
-    mov qword [rax], 42
-
-    mov rbx, rax
-
-    mov rax, 11
-    mov rdi, rbx
-    syscall
+    mov rax, 0x00007fffffffd060
+    mov qword [rax], 24
 
     mov rax, 2
     mov rdi, fp

@@ -102,6 +102,7 @@ uint64_t pmm_alloc_pages(int pages_count){
 }
 
 void pmm_free_page(uint64_t paddr){
+    if (!paddr) return;
     size_t bit = paddr / PAGE_SIZE_4KB;
 
     if (bit >= total_pages) return;

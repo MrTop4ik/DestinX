@@ -16,11 +16,9 @@ void page_fault_handler(struct InterruptRegisters *regs){
                 current_thread->page_guard_min -= PAGE_SIZE_4KB;
 
                 serial_print("[THREAD %d] User Stack Expand\n", current_thread->tid);
-                serial_print("\n");
                 return;
             } else {
                 serial_print("[THREAD %d] User Stack Overflow\n", current_thread->tid);
-                serial_print("\n");
                 thread_exit();
             }
         } else if (current_thread->process->heap_start <= fault_address && fault_address < current_thread->process->current_heap_end){
