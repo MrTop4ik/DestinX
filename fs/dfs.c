@@ -1,8 +1,4 @@
-#include "arch/x86_64/drivers/serial.h"
-#include "mm/pmm.h"
-#include "mm/vmm.h"
 #include <fs/dfs.h>
-#include <stdint.h>
 
 dfs_ctx_t dfs_ctx;
 
@@ -44,8 +40,8 @@ inode_t *dfs_mount_root(){
     return root_inode;
 }
 
-void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
-	if (!buffer || !size || (offset < 0)) return;
+uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
+	if (!buffer || !size || (offset < 0)) return - 1;
 
 	inode_t *cur_inode = &dfs_ctx.inode_table[1];
 
@@ -71,7 +67,7 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extent.start_block * 8, 8, &phys_buf, 1);
 			if (status != 0){
 				pmm_free_page(phys_buf);
-				return;
+				return - 1;
 			}
 
 			dir_entry_t *entry_list = (dir_entry_t *)virt_buf;
@@ -86,10 +82,10 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 			
 			if (found) continue;
 			pmm_free_page(phys_buf);
-			return;
+			return - 1;
 		} else {
 			pmm_free_page(phys_buf);
-			return;
+			return - 1;
 		}
 	}
 
@@ -101,16 +97,16 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 
 		if (offset > cur_inode->size){
 			pmm_free_page(phys_buf);
-			return;
+			return - 1;
 		}
 
-		if (cur_inode->size < (offset + size)) size = cur_inode->size;
+		if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
 
 		uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
 		
 		uint64_t first_page = pmm_alloc_pages(pages_needed);
 		uint64_t virt_fisrt_page = first_page + DIRECT_OFFSET;
-		memset((void*)virt_fisrt_page, 0, PAGE_SIZE_4KB);
+		memset((void *)virt_fisrt_page, 0, PAGE_SIZE_4KB);
 		
 		uint64_t pages[pages_needed];
 
@@ -119,16 +115,16 @@ void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
 		if (status != 0){
 			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
 			pmm_free_page(phys_buf);
-			return;
+			return - 1;
 		}
 
-		memcpy(buffer, (void*)(virt_fisrt_page + (offset % 512)), size);
+		memcpy(buffer, (void *)(virt_fisrt_page + (offset % 512)), size);
 
 		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
 		pmm_free_page(phys_buf);
 		
-		serial_print("[DFS READ] Successfully readed from file\n");
-		return;
+		serial_print("[DFS READ] Successfully read from file\n");
+		return size;
 	}
 }
 
@@ -187,7 +183,19 @@ size_t dfs_get_size(const char *path){
 	return -1;
 }
 
-int file_close(struct FILE *file){
+int dfs_file_read(struct FILE *file, const char *buf, size_t count){
+	if (file->position >= file->size) return 0;
+	if (file->position + count > file->size) count = file->size - file->position;
+
+	uint64_t bytes_read = dfs_read(file->fp, buf, file->position, count);
+	if (bytes_read == -1) return -1;
+
+	file->position += bytes_read;
+	
+	return bytes_read;
+}
+
+int dfs_file_close(struct FILE *file){
     kfree(file);
 	return 0;
 }

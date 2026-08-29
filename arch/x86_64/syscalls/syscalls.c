@@ -29,8 +29,15 @@ void init_kernel_gs_base(void){
 
 void syscall_handler(struct SyscallRegisters *regs){
     switch (regs->rax){
+        case SYS_READ:
+            struct FILE *file = current_thread->process->fd_table[regs->rdi];
+            int bytes_read = file->ops->read(file, (const char *)regs->rsi, regs->rdx);
+            regs->rax = bytes_read;
+            break;
+
         case SYS_WRITE:
-            uint64_t count = terminal_write(current_thread->process->fd_table[regs->rdi], (const char *)regs->rsi, regs->rdx);
+            file = current_thread->process->fd_table[regs->rdi];
+            uint64_t count = file->ops->write(file, (const char *)regs->rsi, regs->rdx);
             regs->rax = count;
             break;
         

@@ -3,9 +3,9 @@
 #include <fs/dfs.h>
 
 vfs_ops_t dfs_ops = {
-    .read = NULL,
+    .read = dfs_file_read,
     .write = NULL,
-    .close = file_close
+    .close = dfs_file_close
 };
 
 spinlock_t open_lock = {0};

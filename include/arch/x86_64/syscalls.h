@@ -19,6 +19,7 @@
 #define FLAGS_DF 0x400
 #define FLAGS_TF 0x100
 
+#define SYS_READ        0
 #define SYS_WRITE       1
 #define SYS_OPEN        2
 #define SYS_CLOSE       3

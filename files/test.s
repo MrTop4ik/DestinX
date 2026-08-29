@@ -20,17 +20,26 @@ _start:
     mov rdi, rbx
     syscall
 
-    mov rax, 1
-    mov rdi, 2
-    mov rsi, msg
-    mov rdx, 15
-    syscall
-
     mov rax, 2
     mov rdi, fp
     syscall
 
     mov rbx, rax
+
+    mov rax, 0
+    mov rdi, rbx
+    mov rsi, 0x401000
+    mov rdx, 13
+    push rbx
+    syscall
+
+    mov rax, 1
+    mov rdi, 2
+    mov rsi, 0x401000
+    mov rdx, 13
+    syscall
+
+    pop rbx
 
     mov rax, 3
     mov rdi, rbx
@@ -39,5 +48,4 @@ _start:
     jmp $
 
 section .rodata
-msg: db "Hello, World!", 10, 0
 fp: db "/usr/txt/test.txt", 0
