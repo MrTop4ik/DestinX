@@ -40,12 +40,13 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
 ### Syscalls
-- [x] **SYS WRITE**: Write messages to the screen by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively.
-- [x] **SYS MMAP**: Allocate big chunks of memory with size of rdi value.
+= [x] **SYS OPEN**: Create `struct FILE` in `fd table` for file with path passed in rdi and return `fd`.
+- [x] **SYS WRITE**: Write to `file` by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively.
+- [x] **SYS MMAP**: Allocate `big chunks` of memory with size of rdi value.
 - [x] **SYS MUNMAP**: Free memory allocated with `SYS MMAP` by addr from rdi.
-- [x] **SYS BRK**: Moves current user process's heap end to addr passed in rdi.
-- [x] **SYS EXIT**: Kills current thread.
-- [x] **SYS EXIT GROUP**: Kills every process's thread.
+- [x] **SYS BRK**: Moves current user process's `heap end` to addr passed in rdi.
+- [x] **SYS EXIT**: Kills current `thread`.
+- [x] **SYS EXIT GROUP**: Kills `every` process's thread.
 
 ### Usersapace
 - [x] **Switching to ring 3**: User threads can execute code.

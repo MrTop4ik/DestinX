@@ -33,6 +33,11 @@ void syscall_handler(struct SyscallRegisters *regs){
             uint64_t count = terminal_write(current_thread->process->fd_table[regs->rdi], (const char *)regs->rsi, regs->rdx);
             regs->rax = count;
             break;
+        
+        case SYS_OPEN:
+            uint64_t fd = open((const char *)regs->rdi);
+            regs->rax = fd;
+            break;
 
         case SYS_MMAP:
             uint64_t maddr = mmap(regs->rdi);

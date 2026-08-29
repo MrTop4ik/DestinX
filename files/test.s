@@ -26,7 +26,12 @@ _start:
     mov rdx, 15
     syscall
 
+    mov rax, 2
+    mov rdi, fp
+    syscall
+
     jmp $
 
 section .rodata
 msg: db "Hello, World!", 10, 0
+fp: db "/usr/txt/test.txt", 0

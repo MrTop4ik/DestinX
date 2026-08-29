@@ -16,10 +16,11 @@
 #define IA32_KERNEL_GS_BASE 0xC0000102
 
 #define FLAGS_IF 0x200
-#define FLAGS_DF 0x40
+#define FLAGS_DF 0x400
 #define FLAGS_TF 0x100
 
 #define SYS_WRITE       1
+#define SYS_OPEN        2
 #define SYS_MMAP        9
 #define SYS_UNMAP       11
 #define SYS_BRK         12

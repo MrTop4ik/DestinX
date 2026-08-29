@@ -7,6 +7,7 @@ vfs_ops_t terminal_ops = {
 };
 
 struct FILE terminal_file = {
+    .fp = 0,
     .type = FILE_TYPE_DEVICE,
     .position = 0,
     .ops = &terminal_ops,
