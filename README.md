@@ -66,6 +66,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
+- [ ] **Rewrite SYS MMAP**: Rewrite SYS MMAP with prots, flags.
 - [ ] **LibC**: libc support for user programs.
 
 ---
