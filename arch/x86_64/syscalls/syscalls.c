@@ -38,6 +38,11 @@ void syscall_handler(struct SyscallRegisters *regs){
             uint64_t fd = open((const char *)regs->rdi);
             regs->rax = fd;
             break;
+        
+        case SYS_CLOSE:
+            int status = close(regs->rdi);
+            regs->rax = status;
+            break;
 
         case SYS_MMAP:
             uint64_t maddr = mmap(regs->rdi);

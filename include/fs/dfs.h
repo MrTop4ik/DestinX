@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <drivers/ahci.h>
 #include <mm/vmalloc.h>
+#include <fs/vfs.h>
 
 #define DFS_MAGIC 0x00534644
 #define DFS_BLOCKSIZE 0x1000
@@ -59,3 +60,4 @@ extern dfs_ctx_t dfs_ctx;
 inode_t *dfs_mount_root();
 void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size);
 size_t dfs_get_size(const char *path);
+int file_close(struct FILE *file);

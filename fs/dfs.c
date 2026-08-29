@@ -186,3 +186,8 @@ size_t dfs_get_size(const char *path){
 
 	return -1;
 }
+
+int file_close(struct FILE *file){
+    kfree(file);
+	return 0;
+}

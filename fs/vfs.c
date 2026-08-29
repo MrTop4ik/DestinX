@@ -5,7 +5,7 @@
 vfs_ops_t dfs_ops = {
     .read = NULL,
     .write = NULL,
-    .close = NULL
+    .close = file_close
 };
 
 spinlock_t open_lock = {0};
@@ -43,7 +43,17 @@ uint64_t open(const char *fp){
     file->ops = &dfs_ops;
     file->private_data = NULL;
 
-    serial_print("%s\n", file->fp);
-
     return fd;
+}
+
+int close(uint64_t fd){
+    if (fd >= 0 && fd <= 2) return 0;
+    else if (fd < 0 || fd > MAX_FD) return -1;
+    
+    struct FILE *file = current_thread->process->fd_table[fd];
+    if (!file) return -1;
+
+    int ret = file->ops->close(file);
+    current_thread->process->fd_table[fd] = NULL;
+    return ret;
 }

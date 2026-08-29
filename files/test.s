@@ -30,6 +30,12 @@ _start:
     mov rdi, fp
     syscall
 
+    mov rbx, rax
+
+    mov rax, 3
+    mov rdi, rbx
+    syscall
+
     jmp $
 
 section .rodata
