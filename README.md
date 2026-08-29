@@ -40,6 +40,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Synchronization**: `Spinlock` and `Mutex` are implemented.
 
 ### Syscalls
+- [x] **SYS READ**: Reading from `file` by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively. 
 - [x] **SYS WRITE**: Write to `file` by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively.
 - [x] **SYS OPEN**: Create `struct FILE` in `fd table` for file with path passed in rdi and return `fd`.
 - [x] **SYS CLOSE**: Remove `struct FILE` in `fd table` by `fd` passed in rdi and return `status` (0 for success).
@@ -65,7 +66,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **SYS READ**: Reading from files. 
 - [ ] **LibC**: libc support for user programs.
 
 ---
