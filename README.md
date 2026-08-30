@@ -44,7 +44,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **SYS WRITE**: Write to `file` by fd, buffer pointer, and length passed in rdi, rsi, and rdx, respectively.
 - [x] **SYS OPEN**: Create `struct FILE` in `fd table` for file with path passed in rdi and return `fd`.
 - [x] **SYS CLOSE**: Remove `struct FILE` in `fd table` by `fd` passed in rdi and return `status` (0 for success).
-- [x] **SYS MMAP**: Allocate `big chunks` of memory with size of rdi value.
+- [x] **SYS MMAP**: Allocate memory with certain flags.
 - [x] **SYS MUNMAP**: Free memory allocated with `SYS MMAP` by addr from rdi.
 - [x] **SYS BRK**: Moves current user process's `heap end` to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current `thread`.
@@ -66,7 +66,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **Rewrite SYS MMAP**: Rewrite SYS MMAP with prots, flags.
+- [ ] **Write to files**: Implement writing to files.
+- [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
 
 ---
