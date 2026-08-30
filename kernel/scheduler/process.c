@@ -65,7 +65,9 @@ process_t *create_user_process(const char *fp){
     p->pages_alloced = 0;
 
     for (int i = 0; i < MAX_FD; i++) p->fd_table[i] = NULL;
-    for (int i = 0; i < 3; i++) p->fd_table[i] = &terminal_file;
+    p->fd_table[0] = &stdin;
+    p->fd_table[1] = &stdout;
+    p->fd_table[2] = &stdout;
 
     spin_lock_irqrestore(&create_proc_lock, rflags);
 

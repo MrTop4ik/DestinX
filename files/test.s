@@ -14,6 +14,7 @@ _start:
 
     mov rax, 2
     mov rdi, fp
+    mov rsi, 0x2
     syscall
 
     mov rbx, rax

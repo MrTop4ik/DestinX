@@ -31,18 +31,20 @@ void syscall_handler(struct SyscallRegisters *regs){
     switch (regs->rax){
         case SYS_READ:
             struct FILE *file = current_thread->process->fd_table[regs->rdi];
-            int bytes_read = file->ops->read(file, (const char *)regs->rsi, regs->rdx);
+            int bytes_read = 0;
+            if (file->flags & O_RDONLY || file->flags & O_RDWR) bytes_read = file->ops->read(file, (const char *)regs->rsi, regs->rdx);
             regs->rax = bytes_read;
             break;
 
         case SYS_WRITE:
             file = current_thread->process->fd_table[regs->rdi];
-            uint64_t count = file->ops->write(file, (const char *)regs->rsi, regs->rdx);
+            uint64_t count = 0;
+            if (file->flags & O_WRONLY || file->flags & O_RDWR) count = file->ops->write(file, (const char *)regs->rsi, regs->rdx);
             regs->rax = count;
             break;
         
         case SYS_OPEN:
-            uint64_t fd = open((const char *)regs->rdi);
+            uint64_t fd = open((const char *)regs->rdi, regs->rsi);
             regs->rax = fd;
             break;
         

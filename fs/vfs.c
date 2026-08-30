@@ -10,7 +10,7 @@ vfs_ops_t dfs_ops = {
 
 spinlock_t open_lock = {0};
 
-uint64_t open(const char *fp){
+uint64_t open(const char *fp, uint64_t flags){
     size_t size = dfs_get_size(fp);
     if (size == (size_t)-1) return -1;
 
@@ -38,6 +38,7 @@ uint64_t open(const char *fp){
     memcpy(file->fp, fp, MAX_FILEPATH - 1);
     file->fp[MAX_FILEPATH - 1] = '\0';
     file->type = FILE_TYPE_REGULAR;
+    file->flags = flags;
     file->size = size;
     file->position = 0;
     file->ops = &dfs_ops;
