@@ -15,10 +15,10 @@ typedef struct {
     size_t size;
 } stack_t;
 
-extern vm_info_t *us_list_head;
+extern vm_area_t *us_list_head;
 
 void *kernel_alloc_stack(size_t size);
 void *user_alloc_stack(size_t size);
 void user_free_stack(void *stack_bottom);
-void us_add_to_list(vm_info_t *i);
-void us_remove_from_list(vm_info_t *i);
+void us_add_to_list(vm_area_t *i);
+void us_remove_from_list(vm_area_t *i);

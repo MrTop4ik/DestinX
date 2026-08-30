@@ -1,6 +1,6 @@
 #include <kernel/scheduler/scheduler.h>
 
-extern vm_info_t *mmap_list_head;
+extern vm_area_t *mmap_list_head;
 
 volatile int scheduler = 0;
 

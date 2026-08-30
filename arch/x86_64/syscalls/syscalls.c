@@ -52,7 +52,7 @@ void syscall_handler(struct SyscallRegisters *regs){
             break;
 
         case SYS_MMAP:
-            uint64_t maddr = mmap(regs->rdi);
+            uint64_t maddr = mmap(regs->rdi, regs->rsi, regs->rdx, regs->r10, regs->r8, regs->r9);
             regs->rax = maddr;
             break;
         

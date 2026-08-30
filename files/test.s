@@ -37,6 +37,17 @@ _start:
     mov rdi, rbx
     syscall
 
+    mov rax, 9
+    mov rdi, 0
+    mov rsi, 0x10000
+    mov rdx, (0x1 | 0x2)
+    mov r10, 0x2 | 0x20
+    mov r8, -1
+    mov r9, 0
+    syscall
+
+    mov qword [rax], 24 
+
     jmp $
 
 section .rodata

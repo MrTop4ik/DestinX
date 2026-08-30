@@ -6,5 +6,6 @@
 #include <arch/x86_64/idt.h>
 #include <kernel/scheduler/thread.h>
 #include <kernel/scheduler/process.h>
+#include <mm/mmap.h>
 
 void page_fault_handler(struct InterruptRegisters *regs);

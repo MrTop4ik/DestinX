@@ -27,6 +27,19 @@ void page_fault_handler(struct InterruptRegisters *regs){
             serial_print("[THREAD %d] User Heap Expand (Pages Allocated: %d)\n", current_thread->tid, current_thread->process->pages_alloced);
             return;
         }
+
+        vm_area_t *cur = current_thread->process->mmap_infos;
+        while (cur){
+            if ((fault_address >= (uint64_t)cur->base - cur->size) && (fault_address < (uint64_t)cur->base)){
+                uint64_t flags = 0;
+                flags |= PTE_USER;
+                if (cur->flags & PROT_WRITE) flags |= PTE_WRITABLE;
+                vmm_map_page(read_cr3(), pmm_alloc_page(), fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
+                serial_print("[THREAD %d] MMAP Expand\n", current_thread->tid);
+                return;
+            }
+            cur = cur->next;
+        }
     }
     serial_print("[ISR] ");
     serial_print(exceptions[regs->int_no]);

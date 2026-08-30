@@ -17,8 +17,8 @@ typedef struct process {
     uint64_t pml4;
     uint64_t pid;
     struct thread *threads;
-    struct vm_info *ustacks_infos;
-    struct vm_info *mmap_infos;
+    struct vm_area *ustacks_infos;
+    struct vm_area *mmap_infos;
     struct FILE *fd_table[MAX_FD];
     uint64_t heap_start;
     uint64_t current_heap_end;

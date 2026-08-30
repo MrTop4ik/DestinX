@@ -1,11 +1,11 @@
 #include <mm/vmalloc.h>
 
-vm_info_t *vmalloc_list_head = NULL;
+vm_area_t *vmalloc_list_head = NULL;
 
 void *vmalloc(size_t size){
     if (size == 0) return NULL;
 
-    vm_info_t *i = kmalloc(sizeof(vm_info_t));
+    vm_area_t *i = kmalloc(sizeof(vm_area_t));
     if (!i) return NULL;
 
     i->size = size;
@@ -20,7 +20,7 @@ void *vmalloc(size_t size){
 void vfree(void *ptr){
     if (!vmalloc_list_head) return; 
 
-    vm_info_t *current = vmalloc_list_head;
+    vm_area_t *current = vmalloc_list_head;
     while (current){
         if ((uint64_t)current->base == (uint64_t)ptr){
             for (int i = 0; i < current->size; i += PAGE_SIZE_4KB){
@@ -34,15 +34,15 @@ void vfree(void *ptr){
     }
 }
 
-void vm_add_to_list(vm_info_t *i){
+void vm_add_to_list(vm_area_t *i){
     if (!vmalloc_list_head){
         i->base = (void*)VMALLOC_START;
         i->prev = NULL;
         i->next = NULL;
         vmalloc_list_head = i;
     } else {
-        vm_info_t *current = vmalloc_list_head;
-        vm_info_t *next = vmalloc_list_head->next;
+        vm_area_t *current = vmalloc_list_head;
+        vm_area_t *next = vmalloc_list_head->next;
         while (next){
             if ((uint64_t)current->base + current->size + i->size <= (uint64_t)next->base){
                 i->base = (void *)((uint64_t)current->base + current->size);
@@ -62,7 +62,7 @@ void vm_add_to_list(vm_info_t *i){
     }
 }
 
-void vm_remove_from_list(vm_info_t *i){
+void vm_remove_from_list(vm_area_t *i){
     if (!i) return;
 
     if (vmalloc_list_head == i) vmalloc_list_head = i->next;
