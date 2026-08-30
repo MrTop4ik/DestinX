@@ -60,13 +60,13 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ### File System
 - [x] **VFS**: Provide single, uniform interface for programs to use files.
 - [x] **DFS**:
-  - Mounting root directory.
-  - Reading files data.
+  - **Mounting** root directory.
+  - **Reading** files data.
+  - **Writing** to files.
 
 ---
 
 ## Roadmap & In Progress
-- [ ] **Write to files**: Implement writing to files.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
 

@@ -24,7 +24,7 @@
 #define SYS_OPEN        2
 #define SYS_CLOSE       3
 #define SYS_MMAP        9
-#define SYS_UNMAP       11
+#define SYS_MUNMAP      11
 #define SYS_BRK         12
 #define SYS_EXIT        60
 #define SYS_EXIT_GROUP  231

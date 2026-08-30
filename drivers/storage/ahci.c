@@ -132,7 +132,7 @@ void ahci_init_port(volatile hba_port_t *port){
 int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count){
     if (page_count > AHCI_MAX_PRDT) return -1;
 
-    mutex_lock(&main_ahci.mutex);
+    mutex_lock(&main_ahci.read_mutex);
 
     port->is = 0xFFFFFFFF;
 
@@ -162,6 +162,8 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
         cmd_table->prdt[i].dbc = chunk_size - 1;
 
         cmd_table->prdt[i].i = (i == page_count - 1) ? 1 : 0;
+
+        bytes_left -= chunk_size;
     }
 
     fis_reg_h2d_t *fis = (fis_reg_h2d_t *)(cmd_table->cfis);
@@ -179,14 +181,13 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
 
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
-
-    main_ahci.blcoked_thread = current_thread;
     
     uint64_t rflags = read_rflags();
     uint64_t saved_rflags = rflags;
     rflags &= ~0x200;
     write_rflags(rflags);
-    main_ahci.blcoked_thread->state = BLOCKED;
+    main_ahci.read_blcoked_thread = current_thread;
+    main_ahci.read_blcoked_thread->state = BLOCKED;
     port->ci = (1 << 0);
     write_rflags(saved_rflags);
 
@@ -194,17 +195,98 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
 
     int status = 0;
 
-    if (main_ahci.port_is & (1 << 30)){
-        serial_print("[AHCI] DMA read error %d\n", main_ahci.port_is);
+    if (main_ahci.read_port_is & (1 << 30)){
+        serial_print("[AHCI] DMA read error %d\n", main_ahci.read_port_is);
         status = -1;
     }
 
     pmm_free_page(phys_cmd_table);
 
-    mutex_unlock(&main_ahci.mutex);
+    mutex_unlock(&main_ahci.read_mutex);
 
     return status;
 }
+
+int ahci_write(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count){
+    if (page_count > AHCI_MAX_PRDT) return -1;
+
+    mutex_lock(&main_ahci.write_mutex);
+
+    port->is = 0xFFFFFFFF;
+
+    uint64_t phys_cmd_list = ((uint64_t)port->clbu << 32) | port->clb;
+    ahci_cmd_header_t *cmd_header_list = (ahci_cmd_header_t *)(phys_cmd_list  + DIRECT_OFFSET);
+
+    ahci_cmd_header_t *head = &cmd_header_list[1];
+
+    uint64_t phys_cmd_table = pmm_alloc_page();
+    ahci_cmd_table_t *cmd_table = (ahci_cmd_table_t *)(phys_cmd_table + DIRECT_OFFSET);
+    memset(cmd_table, 0, PAGE_SIZE_4KB);
+
+    head->ctba = (uint32_t)(phys_cmd_table & 0xFFFFFFFF);
+    head->ctbau = (uint32_t)(phys_cmd_table >> 32);
+
+    head->cfl = 5;
+    head->w = 1;
+    head->prdtl = page_count;
+
+    uint64_t bytes_left = seccount * 512;
+
+    for (int i = 0; i < page_count; i++){
+        for (int j = 0; j < 4096; j += 64) __asm__ volatile ("clflush (%0)" :: "r"(pages[i] + DIRECT_OFFSET + j) : "memory");
+
+        uint32_t chunk_size = (bytes_left > 4096) ? 4096 : bytes_left;
+
+        cmd_table->prdt[i].dba = (uint32_t)(pages[i] & 0xFFFFFFFF);
+        cmd_table->prdt[i].dbau = (uint32_t)(pages[i] >> 32);
+        cmd_table->prdt[i].dbc = chunk_size - 1;
+
+        cmd_table->prdt[i].i = (i == page_count - 1) ? 1 : 0;
+
+        bytes_left -= chunk_size;
+    }
+
+    fis_reg_h2d_t *fis = (fis_reg_h2d_t *)(cmd_table->cfis);
+    fis->fis_type = 0x27;
+    fis->c = 1;
+    fis->command = ATA_CMD_WRITE_DMA_EXT;
+    fis->device = (1 << 6);
+
+    fis->lba0 = (uint8_t)(lba & 0xFF);
+    fis->lba1 = (uint8_t)((lba >> 8) & 0xFF);
+    fis->lba2 = (uint8_t)((lba >> 16) & 0xFF);
+    fis->lba3 = (uint8_t)((lba >> 24) & 0xFF);
+    fis->lba4 = (uint8_t)((lba >> 32) & 0xFF);
+    fis->lba5 = (uint8_t)((lba >> 40) & 0xFF);
+
+    fis->countl = (uint8_t)(seccount & 0xFF);
+    fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
+    
+    uint64_t rflags = read_rflags();
+    uint64_t saved_rflags = rflags;
+    rflags &= ~0x200;
+    write_rflags(rflags);
+    main_ahci.write_blocked_thread = current_thread;
+    main_ahci.write_blocked_thread->state = BLOCKED;
+    port->ci = (1 << 1);
+    write_rflags(saved_rflags);
+
+    yield();
+
+    int status = 0;
+
+    if (main_ahci.write_port_is & (1 << 30)){
+        serial_print("[AHCI] DMA write error %d\n", main_ahci.write_port_is);
+        status = -1;
+    }
+
+    pmm_free_page(phys_cmd_table);
+
+    mutex_unlock(&main_ahci.write_mutex);
+
+    return status;
+}
+
 
 void ahci_handler(struct InterruptRegisters *regs){
     uint32_t is = ahci_regs->is;
@@ -216,11 +298,20 @@ void ahci_handler(struct InterruptRegisters *regs){
         port->is = port_is;
 
         if (port_is & (1UL << 30) || ((port->ci & (1 << 0)) == 0)){
-            main_ahci.port_is = port_is;
-            if (main_ahci.blcoked_thread){
-                main_ahci.blcoked_thread->state = READY;
-                enqueue_thread(main_ahci.blcoked_thread);
-                main_ahci.blcoked_thread = NULL;
+            main_ahci.read_port_is = port_is;
+            if (main_ahci.read_blcoked_thread){
+                main_ahci.read_blcoked_thread->state = READY;
+                enqueue_thread(main_ahci.read_blcoked_thread);
+                main_ahci.read_blcoked_thread = NULL;
+            }
+        }
+
+        if (port_is & (1UL << 30) || ((port->ci & (1 << 1)) == 0)){
+            main_ahci.write_port_is = port_is;
+            if (main_ahci.write_blocked_thread){
+                main_ahci.write_blocked_thread->state = READY;
+                enqueue_thread(main_ahci.write_blocked_thread);
+                main_ahci.write_blocked_thread = NULL;
             }
         }
     }

@@ -16,7 +16,8 @@
 
 #define AHCI_MAX_PRDT 64
 
-#define ATA_CMD_READ_DMA_EXT 0x25
+#define ATA_CMD_READ_DMA_EXT  0x25
+#define ATA_CMD_WRITE_DMA_EXT 0x35
 
 typedef struct {
     uint32_t clb;
@@ -118,9 +119,12 @@ typedef struct {
     uint8_t func;
     uint64_t abar;
 
-    mutex_t mutex;
-    thread_t *blcoked_thread;
-    uint32_t port_is;
+    mutex_t read_mutex;
+    mutex_t write_mutex;
+    thread_t *read_blcoked_thread;
+    thread_t *write_blocked_thread;
+    uint32_t read_port_is;
+    uint32_t write_port_is;
 } ahci_controller_t;
 
 extern ahci_controller_t main_ahci;
@@ -133,4 +137,5 @@ void ahci_stop_port(volatile hba_port_t *port);
 void ahci_start_port(volatile hba_port_t *port);
 void ahci_init_port(volatile hba_port_t *port);
 int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count);
+int ahci_write(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64_t *pages, uint32_t page_count);
 void ahci_handler(struct InterruptRegisters *regs);

@@ -56,7 +56,7 @@ void syscall_handler(struct SyscallRegisters *regs){
             regs->rax = maddr;
             break;
         
-        case SYS_UNMAP:
+        case SYS_MUNMAP:
             munmap((void*)regs->rdi);
             break;
 

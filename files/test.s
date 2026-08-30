@@ -46,7 +46,13 @@ _start:
     mov r9, 0
     syscall
 
-    mov qword [rax], 24 
+    mov qword [rax], 24
+
+    mov rbx, rax
+
+    mov rax, 11
+    mov rdi, rbx
+    syscall
 
     jmp $
 
