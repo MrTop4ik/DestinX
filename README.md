@@ -33,7 +33,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **I/O**: QEMU Serial logging interface.
 - [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
 - [x] **PCI**: Reading and writing dword, enabling MSI.
-- [x] **AHCI**: Reading data from disk.
+- [x] **AHCI**: Reading and writing data to disk.
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
@@ -62,8 +62,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **DFS**:
   - **Mounting** root directory.
   - **Reading** files data.
-  - **Writing** to files.
-
 ---
 
 ## Roadmap & In Progress
