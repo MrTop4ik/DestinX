@@ -30,7 +30,6 @@ typedef struct FILE {
     char fp[MAX_FILEPATH];
     file_type_t type;
     uint64_t flags;
-    size_t size;
     size_t position;
     vfs_ops_t *ops;
     void *private_data;

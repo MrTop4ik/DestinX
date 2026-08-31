@@ -20,6 +20,7 @@ typedef struct {
 } __attribute__((packed)) extent_t;
 
 typedef struct {
+    uint32_t inode_num;
     uint64_t size;
     uint16_t type;
     uint16_t links_count;
@@ -59,6 +60,6 @@ extern dfs_ctx_t dfs_ctx;
 
 inode_t *dfs_mount_root();
 uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size);
-size_t dfs_get_size(const char *path);
+inode_t *dfs_get_inode(const char *path);
 int dfs_file_read(struct FILE *file, const char *buf, size_t count);
 int dfs_file_close(struct FILE *file);

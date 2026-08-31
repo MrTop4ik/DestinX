@@ -11,7 +11,6 @@ struct FILE stdin = {
     .type = FILE_TYPE_CHAR_DEV,
     .flags = O_RDONLY,
     .position = 0,
-    .size = 0,
     .ops = &terminal_ops,
     .private_data = NULL
 };
@@ -21,7 +20,6 @@ struct FILE stdout = {
     .type = FILE_TYPE_CHAR_DEV,
     .flags = O_WRONLY,
     .position = 0,
-    .size = 0,
     .ops = &terminal_ops,
     .private_data = NULL
 };

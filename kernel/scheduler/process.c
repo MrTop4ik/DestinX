@@ -1,7 +1,6 @@
 #include <kernel/scheduler/process.h>
+#include <fs/dfs.h>
 
-void dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size);
-size_t dfs_get_size(const char *path);
 struct thread *create_user_thread(struct process *proc, void (*entry_point)(void), size_t kstack_size, size_t ustack_size);
 
 const char user_exit_trampoline[10] = {
@@ -33,13 +32,13 @@ process_t *create_user_process(const char *fp){
 
     uint64_t old_pml4_phys = read_cr3();
     
-    size_t size = dfs_get_size(fp);
-    uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+    inode_t *inode = dfs_get_inode(fp);
+    uint64_t pages_needed = (inode->size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
 
     uint64_t phys_buf = pmm_alloc_pages(pages_needed);
     uint8_t *virt_buf = (uint8_t *)(phys_buf + DIRECT_OFFSET);
 
-    dfs_read(fp, virt_buf, 0, size);
+    dfs_read(fp, virt_buf, 0, inode->size);
 
     uint64_t rflags = spin_lock_irqsave(&create_proc_lock);
     
@@ -52,10 +51,10 @@ process_t *create_user_process(const char *fp){
     uint64_t entry = load_elf(virt_buf, &end);
     if (!entry){
         entry = 0x400000;
-        uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+        uint64_t pages_needed = (inode->size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
         uint64_t first_phys = pmm_alloc_pages(pages_needed);
         for (int i = 0; i < pages_needed; i++){ vmm_map_page(read_cr3(), first_phys + (i * PAGE_SIZE_4KB), entry + (i * PAGE_SIZE_4KB), PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER)); end = entry + (i * PAGE_SIZE_4KB) + PAGE_SIZE_4KB; }
-        memcpy((void*)entry, virt_buf, size);
+        memcpy((void*)entry, virt_buf, inode->size);
     }
 
     write_cr3(old_pml4_phys);

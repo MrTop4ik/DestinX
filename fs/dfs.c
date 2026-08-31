@@ -128,7 +128,7 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 	}
 }
 
-size_t dfs_get_size(const char *path){
+inode_t *dfs_get_inode(const char *path){
 	inode_t *cur_inode = &dfs_ctx.inode_table[1];
 
 	uint64_t phys_buf = pmm_alloc_page();
@@ -153,7 +153,7 @@ size_t dfs_get_size(const char *path){
 			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extent.start_block * 8, 8, &phys_buf, 1);
 			if (status != 0){
 				pmm_free_page(phys_buf);
-				return -1;
+				return NULL;
 			}
 
 			dir_entry_t *entry_list = (dir_entry_t *)virt_buf;
@@ -168,24 +168,23 @@ size_t dfs_get_size(const char *path){
 			
 			if (found) continue;
 			pmm_free_page(phys_buf);
-			return - 1;
+			return NULL;
 		} else {
 			pmm_free_page(phys_buf);
-			return - 1;
+			return NULL;
 		}
 	}
 
-	if (cur_inode->type == DFS_TYPE_FILE){
-		pmm_free_page(phys_buf);
-		return cur_inode->size;
-	}
+	pmm_free_page(phys_buf);
+	return cur_inode;
 
-	return -1;
+	return NULL;
 }
 
 int dfs_file_read(struct FILE *file, const char *buf, size_t count){
-	if (file->position >= file->size) return 0;
-	if (file->position + count > file->size) count = file->size - file->position;
+	inode_t *inode = (inode_t *)file->private_data;
+	if (file->position >= inode->size) return 0;
+	if (file->position + count > inode->size) count = inode->size - file->position;
 
 	uint64_t bytes_read = dfs_read(file->fp, buf, file->position, count);
 	if (bytes_read == -1) return -1;
