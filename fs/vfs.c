@@ -57,3 +57,20 @@ int close(uint64_t fd){
     current_thread->process->fd_table[fd] = NULL;
     return ret;
 }
+
+int lseek(uint64_t fd, uint64_t offset, uint64_t whence){
+    if (fd >= 0 && fd <= 2) return 0;
+    else if (fd < 0 || fd > MAX_FD) return -1;
+
+    struct FILE *file = current_thread->process->fd_table[fd];
+    if (!file) return -1;
+
+    inode_t *inode = (inode_t *)file->private_data;
+
+    if (whence == SEEK_SET) file->position = offset;
+    else if (whence == SEEK_CUR) file->position += offset;
+    else if (whence == SEEK_END) file->position = inode->size - offset;
+    else return -1;
+
+    return offset;
+}

@@ -53,6 +53,11 @@ void syscall_handler(struct SyscallRegisters *regs){
             regs->rax = status;
             break;
 
+        case SYS_LSEEK:
+            int seek = lseek(regs->rdi, regs->rsi, regs->rdx);
+            regs->rax = seek;
+            break;
+        
         case SYS_MMAP:
             uint64_t maddr = mmap(regs->rdi, regs->rsi, regs->rdx, regs->r10, regs->r8, regs->r9);
             regs->rax = maddr;

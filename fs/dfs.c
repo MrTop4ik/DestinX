@@ -189,12 +189,12 @@ int dfs_file_write(struct FILE *file, const char *buf, size_t count){
 	if (file->position >= inode->size) return 0;
 	if (file->position + count > inode->size) count = inode->size - file->position;
 
-	uint64_t bytes_read = dfs_write(file->fp, buf, file->position, count);
-	if (bytes_read == -1) return 0;
+	uint64_t bytes_written = dfs_write(file->fp, buf, file->position, count);
+	if (bytes_written == -1) return 0;
 
-	file->position += bytes_read;
+	file->position += bytes_written;
 	
-	return bytes_read;
+	return bytes_written;
 }
 
 int dfs_file_close(struct FILE *file){

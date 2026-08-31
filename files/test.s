@@ -19,6 +19,24 @@ _start:
 
     mov rbx, rax
 
+    mov rax, 1
+    mov rdi, rbx
+    mov rsi, reversed_hw
+    mov rdx, 13
+    push rbx
+    syscall
+
+    pop rbx
+
+    mov rax, 8
+    mov rdi, rbx
+    mov rsi, 0
+    mov rdx, 0
+    push rbx
+    syscall
+
+    pop rbx
+
     mov rax, 0
     mov rdi, rbx
     mov rsi, 0x401000
@@ -59,3 +77,4 @@ _start:
 
 section .rodata
 fp: db "/usr/txt/test.txt", 0
+reversed_hw: db "!dlroW ,olleH", 0

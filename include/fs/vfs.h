@@ -4,6 +4,10 @@
 
 #define MAX_FILEPATH 256
 
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
 #define O_RDONLY 0x0000
 #define O_WRONLY 0x0001
 #define O_RDWR   0x0002
@@ -37,3 +41,4 @@ typedef struct FILE {
 
 uint64_t open(const char *fp, uint64_t flags);
 int close(uint64_t fd);
+int lseek(uint64_t fd, uint64_t offset, uint64_t whence);

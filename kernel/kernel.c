@@ -47,17 +47,6 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     sti();
 
-    inode_t *inode = dfs_get_inode("/usr/txt/test.txt");
-    
-    uint8_t *buffer = kmalloc(inode->size);
-    char buf[13] = "!dlroW ,olleH";
-
-    dfs_write("/usr/txt/test.txt", buf, 0, inode->size);
-
-    dfs_read("/usr/txt/test.txt", buffer, 0, inode->size);
-
-    kfree(buffer);
-
     create_user_process("/usr/bin/test.elf");
 
     for (;;);
