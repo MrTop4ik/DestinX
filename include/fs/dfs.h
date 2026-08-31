@@ -26,7 +26,7 @@ typedef struct {
     uint16_t links_count;
     uint32_t flags;
     extent_t extent;
-    uint8_t reserved[96];
+    uint8_t reserved[92];
 } __attribute__((packed)) inode_t;
 
 typedef struct {
