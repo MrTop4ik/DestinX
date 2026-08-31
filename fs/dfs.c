@@ -41,64 +41,12 @@ inode_t *dfs_mount_root(){
 }
 
 uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
-	if (!buffer || !size || (offset < 0)) return - 1;
+	if (!buffer || !size || (offset < 0)) return 0;
 
-	inode_t *cur_inode = &dfs_ctx.inode_table[1];
-
-	uint64_t phys_buf = pmm_alloc_page();
-	uint64_t virt_buf = phys_buf + DIRECT_OFFSET;
-	memset((void*)virt_buf, 0, PAGE_SIZE_4KB);
-
-	int len = 0;
-
-	while (*(fp) != '\0'){
-		if (*fp != '/'){
-			fp++;
-			continue;
-		}
-
-		fp++;
-
-		while (fp[len] != '/' && fp[len] != '\0') len++;
-
-		if ((cur_inode->type == DFS_TYPE_DIR) && *fp != '\0'){
-			uint32_t total_entries = cur_inode->size / sizeof(dir_entry_t);
-
-			int status = ahci_read(&ahci_regs->ports[0], cur_inode->extent.start_block * 8, 8, &phys_buf, 1);
-			if (status != 0){
-				pmm_free_page(phys_buf);
-				return - 1;
-			}
-
-			dir_entry_t *entry_list = (dir_entry_t *)virt_buf;
-			int found = 0;
-			for (int i = 0; i < total_entries; i++){
-				dir_entry_t *entry = &entry_list[i];
-				if (memcmp(entry->name, fp, len) == 0){
-					cur_inode = &dfs_ctx.inode_table[entry->inode_num];
-					found = 1;
-				}
-			}
-			
-			if (found) continue;
-			pmm_free_page(phys_buf);
-			return - 1;
-		} else {
-			pmm_free_page(phys_buf);
-			return - 1;
-		}
-	}
+	inode_t *cur_inode = dfs_get_inode(fp);
 
 	if (cur_inode->type == DFS_TYPE_FILE){
-		if (size == -1){
-			size = cur_inode->size;
-			offset = 0;
-		}
-
-		if (offset > cur_inode->size){
-			pmm_free_page(phys_buf);
-			return - 1;
-		}
+		if (offset > cur_inode->size) return 0;
 
 		if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
 
@@ -114,18 +62,60 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 		int status = ahci_read(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
 		if (status != 0){
 			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-			pmm_free_page(phys_buf);
-			return - 1;
+			return 0;
 		}
 
 		memcpy(buffer, (void *)(virt_fisrt_page + (offset % 512)), size);
 
 		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-		pmm_free_page(phys_buf);
 		
 		serial_print("[DFS READ] Successfully read from file\n");
 		return size;
 	}
+
+	return 0;
+}
+
+uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
+	if (!buffer || !size || (offset < 0)) return 0;
+
+	inode_t *cur_inode = dfs_get_inode(fp);
+
+	if (cur_inode->type == DFS_TYPE_FILE){
+		if (offset > cur_inode->size) return 0;
+
+		if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
+
+		uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+		
+		uint64_t first_page = pmm_alloc_pages(pages_needed);
+		uint64_t virt_fisrt_page = first_page + DIRECT_OFFSET;
+		memset((void *)virt_fisrt_page, 0, PAGE_SIZE_4KB);
+		
+		uint64_t pages[pages_needed];
+
+		for (int i = 0; i < pages_needed; i++) pages[i] = first_page + i * PAGE_SIZE_4KB;
+		int status = ahci_read(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
+		if (status != 0){
+			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
+			return 0;
+		}
+
+		memcpy((void*)(virt_fisrt_page + (offset % 512)), buffer, size);
+
+		status = ahci_write(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
+		if (status != 0){
+			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
+			return 0;
+		}
+
+		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
+		
+		serial_print("[DFS READ] Successfully written to file\n");
+		return size;
+	}
+
+	return 0;
 }
 
 inode_t *dfs_get_inode(const char *path){
@@ -187,7 +177,20 @@ int dfs_file_read(struct FILE *file, const char *buf, size_t count){
 	if (file->position + count > inode->size) count = inode->size - file->position;
 
 	uint64_t bytes_read = dfs_read(file->fp, buf, file->position, count);
-	if (bytes_read == -1) return -1;
+	if (bytes_read == -1) return 0;
+
+	file->position += bytes_read;
+	
+	return bytes_read;
+}
+
+int dfs_file_write(struct FILE *file, const char *buf, size_t count){
+	inode_t *inode = (inode_t *)file->private_data;
+	if (file->position >= inode->size) return 0;
+	if (file->position + count > inode->size) count = inode->size - file->position;
+
+	uint64_t bytes_read = dfs_write(file->fp, buf, file->position, count);
+	if (bytes_read == -1) return 0;
 
 	file->position += bytes_read;
 	

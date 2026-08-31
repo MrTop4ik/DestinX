@@ -4,7 +4,7 @@
 
 vfs_ops_t dfs_ops = {
     .read = dfs_file_read,
-    .write = NULL,
+    .write = dfs_file_write,
     .close = dfs_file_close
 };
 

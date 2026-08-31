@@ -32,8 +32,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Graphics**: Linear Framebuffer (**LFB**) output.
 - [x] **I/O**: QEMU Serial logging interface.
 - [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
-- [x] **PCI**: Reading and writing dword, enabling MSI.
-- [x] **AHCI**: Reading and writing data to disk.
+- [x] **PCI**: **Reading** and **writting** dword, enabling **MSI**.
+- [x] **AHCI**: **Reading** and **writting** data to disk.
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
@@ -62,9 +62,12 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **DFS**:
   - **Mounting** root directory.
   - **Reading** files data.
+  - **Writting** to files.
 ---
 
 ## Roadmap & In Progress
+- [ ] **SYS LSEEK**: Move files position.
+- [ ] **Page Cache**: Create page cache array to optimize reading and writting to files.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
 
