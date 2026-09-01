@@ -45,8 +45,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **SYS OPEN**: Create `struct FILE` in `fd table` for file with path passed in rdi and return `fd`.
 - [x] **SYS CLOSE**: Remove `struct FILE` in `fd table` by fd passed in rdi and return `status` (0 for success).
 - [x] **SYS LSEEK**: Move files `position` by fd, offset and whence passed in rdi, rsi, and rdx, respectively.
-- [x] **SYS MMAP**: Allocate memory with certain flags.
-- [x] **SYS MUNMAP**: Free memory allocated with `SYS MMAP` by addr from rdi.
+- [x] **SYS MMAP**: Allocate `memory` with `certain` flags.
+- [x] **SYS MUNMAP**: Free `memory` allocated with `SYS MMAP` by addr from rdi.
 - [x] **SYS BRK**: Moves current user process's `heap end` to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current `thread`.
 - [x] **SYS EXIT GROUP**: Kills `every` process's thread.
@@ -68,6 +68,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 ## Roadmap & In Progress
 - [ ] **Page Cache**: Create page cache array to optimize reading and writting to files.
+- [ ] **Optimize LFB**: Optimize LFB with AVX instructions.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
 

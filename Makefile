@@ -18,6 +18,7 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c libc/string.c								-o string.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/video//serial.c			-o serial.o
 	x86_64-elf-gcc		$(CFLAGS)		-c drivers/video/lfb.c							-o lfb.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/video/font8x16.c						-o font8x16.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/pmm.c 									-o pmm.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/vmm.c										-o vmm.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/buddy.c									-o buddy.o
@@ -45,7 +46,7 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/mmap.c									-o mmap.o
 	x86_64-elf-gcc		$(CFLAGS)		-c drivers/console/console.c					-o console.o
 	x86_64-elf-gcc		$(CFLAGS)		-c fs/vfs.c										-o vfs.o
-	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o
+	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o font8x16.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o
 	grub-file --is-x86-multiboot2 kernel.bin
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir
