@@ -4,6 +4,7 @@
 #include <drivers/ahci.h>
 #include <mm/vmalloc.h>
 #include <fs/vfs.h>
+#include <mm/page_cache.h>
 
 #define DFS_MAGIC 0x00534644
 #define DFS_BLOCKSIZE 0x1000
