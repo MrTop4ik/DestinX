@@ -64,10 +64,11 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
   - **Mounting** root directory.
   - **Reading** files data.
   - **Writting** to files.
+  - **Page Cache** create page cache array to optimize reading and writting to files.
 ---
 
 ## Roadmap & In Progress
-- [ ] **Page Cache**: Create page cache array to optimize reading and writting to files.
+- [ ] **Page Cache**: add page cache to writing.
 - [ ] **Optimize LFB**: Optimize LFB with AVX instructions.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
