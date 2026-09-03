@@ -45,46 +45,45 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 
 	inode_t *cur_inode = dfs_get_inode(fp);
 
-	uint64_t page_count_to_read = ((offset + size - (offset & PAGE_MASK_4KB)) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB; 
+	uint64_t page_count = ((offset + size - (offset & PAGE_MASK_4KB)) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB; 
 	
-	uint64_t pages_paddrs[page_count_to_read];
+	uint64_t pages[page_count];
 	int miss = 0;
 
-	for (int i = 0; i < page_count_to_read; i++){
-		pages_paddrs[i] = get_page_addr(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
-		if (!pages_paddrs[i]) miss = 1;
+	for (int i = 0; i < page_count; i++){
+		pages[i] = get_page_addr(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
+		if (!pages[i]) miss = 1;
 	}
 
 	if (!miss){
-		if (page_count_to_read == 1){ 
-			memcpy(buffer, (void*)(pages_paddrs[0] + DIRECT_OFFSET), size);
+		if (page_count == 1){ 
+			memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), size);
 			serial_print("[DFS READ] Successfully read from file\n");
 			return size;
 		}
 
-		memcpy(buffer, (void*)(pages_paddrs[0] + DIRECT_OFFSET), PAGE_SIZE_4KB - offset);
+		memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), PAGE_SIZE_4KB - offset);
 
-		if (page_count_to_read == 2){
-			memcpy(buffer + PAGE_SIZE_4KB - offset, (void*)(pages_paddrs[1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
+		if (page_count == 2){
+			memcpy(buffer + PAGE_SIZE_4KB - offset, (void*)(pages[1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
 			serial_print("[DFS READ] Successfully read from file\n");
 			return size;
 		}
 
-		for (int i = 1; i < page_count_to_read - 1; i++) memcpy(buffer + i * PAGE_SIZE_4KB, (void*)(pages_paddrs[i] + DIRECT_OFFSET), PAGE_SIZE_4KB);
-		memcpy(buffer - offset + (page_count_to_read - 1) * PAGE_SIZE_4KB, (void*)(pages_paddrs[page_count_to_read - 1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
+		for (int i = 1; i < page_count - 1; i++) memcpy(buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, (void*)(pages[i] + DIRECT_OFFSET), PAGE_SIZE_4KB);
+		memcpy(buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (void*)(pages[page_count - 1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
 		serial_print("[DFS READ] Successfully read from file\n");
 		return size;
 	}
 
 	serial_print("[DFS READ] Cache Miss\n");
 
-
 	if (offset > cur_inode->size) return 0;
 
 	if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
 	
-	for (int i = 0; i < page_count_to_read; i++){
-		if (!pages_paddrs[i]){
+	for (int i = 0; i < page_count; i++){
+		if (!pages[i]){
 			uint64_t paddr = pmm_alloc_page();
 			int status = ahci_read(&ahci_regs->ports[0], ((offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i) * 8 + cur_inode->extent.start_block * 8, 8, &paddr, 1);
 			if (status != 0){
@@ -98,7 +97,7 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 	uint64_t bytes_read = dfs_read(fp, buffer, offset, size);
 	if (!bytes_read) return 0;
 
-	return size;
+	return bytes_read;
 }
 
 uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t size){
@@ -106,41 +105,59 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 
 	inode_t *cur_inode = dfs_get_inode(fp);
 
-	if (cur_inode->type == DFS_TYPE_FILE){
-		if (offset > cur_inode->size) return 0;
+	uint64_t page_count = ((offset + size - (offset & PAGE_MASK_4KB)) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB; 
+	
+	uint64_t pages[page_count];
+	int miss = 0;
 
-		if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
+	for (int i = 0; i < page_count; i++){
+		pages[i] = get_page_addr(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
+		if (!pages[i]) miss = 1;
+	}
 
-		uint64_t pages_needed = (size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
-		
-		uint64_t first_page = pmm_alloc_pages(pages_needed);
-		uint64_t virt_fisrt_page = first_page + DIRECT_OFFSET;
-		memset((void *)virt_fisrt_page, 0, PAGE_SIZE_4KB);
-		
-		uint64_t pages[pages_needed];
-
-		for (int i = 0; i < pages_needed; i++) pages[i] = first_page + i * PAGE_SIZE_4KB;
-		int status = ahci_read(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
-		if (status != 0){
-			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-			return 0;
+	if (!miss){
+		if (page_count == 1){ 
+			memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, size);
+			serial_print("[DFS READ] Successfully write from file\n");
+			return size;
 		}
 
-		memcpy((void*)(virt_fisrt_page + (offset % 512)), buffer, size);
+		memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, PAGE_SIZE_4KB - offset);
 
-		status = ahci_write(&ahci_regs->ports[0], (offset / 512) + (cur_inode->extent.start_block * 8), (size + 512 - 1) / 512, pages, pages_needed);
-		if (status != 0){
-			for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-			return 0;
+		if (page_count == 2){
+			memcpy((void*)(pages[1] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset, (size + offset) % PAGE_SIZE_4KB);
+			serial_print("[DFS READ] Successfully write from file\n");
+			return size;
 		}
 
-		for (int i = 0; i < pages_needed; i++) pmm_free_page(pages[i]);
-		
-		serial_print("[DFS READ] Successfully written to file\n");
+		for (int i = 1; i < page_count - 1; i++) memcpy((void*)(pages[i] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, PAGE_SIZE_4KB);
+		memcpy((void*)(pages[page_count - 1] + DIRECT_OFFSET), buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (size + offset) % PAGE_SIZE_4KB);
+		serial_print("[DFS READ] Successfully write from file\n");
 		return size;
 	}
 
-	return 0;
+	serial_print("[DFS READ] Write Miss\n");
+
+	if (offset > cur_inode->size) return 0;
+
+	if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
+	
+	for (int i = 0; i < page_count; i++){
+		if (!pages[i]){
+			uint64_t paddr = pmm_alloc_page();
+			int status = ahci_read(&ahci_regs->ports[0], ((offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i) * 8 + cur_inode->extent.start_block * 8, 8, &paddr, 1);
+			if (status != 0){
+				pmm_free_page(paddr);
+				return 0;
+			}
+			add_page_to_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i, paddr);
+		}
+	}
+
+	uint64_t bytes_written = dfs_write(fp, buffer, offset, size);
+	if (!bytes_written) return 0;
+
+	return bytes_written;
 }
 
 inode_t *dfs_get_inode(const char *path){

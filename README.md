@@ -68,7 +68,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **Page Cache**: add page cache to writing.
 - [ ] **Optimize LFB**: Optimize LFB with AVX instructions.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
