@@ -68,6 +68,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
+ -[ ] **fsync thread**: thread that writes dirty pages from cache to disk.
 - [ ] **Optimize LFB**: Optimize LFB with AVX instructions.
 - [ ] **Support more PROT and MAP**: Rewrite SYS MMAP with more prots and flags.
 - [ ] **LibC**: libc support for user programs.
