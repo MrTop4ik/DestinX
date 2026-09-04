@@ -136,7 +136,7 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 		return size;
 	}
 
-	serial_print("[DFS READ] Write Miss\n");
+	serial_print("[DFS WRITE] Cache Miss\n");
 
 	if (offset > cur_inode->size) return 0;
 

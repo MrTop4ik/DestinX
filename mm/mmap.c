@@ -3,7 +3,7 @@
 vm_area_t *mmap_list_head = NULL;
 
 uint64_t mmap(uint64_t addr, size_t size, uint32_t prot, uint32_t flags, uint64_t fd, uint64_t offset){
-    if (!(flags & MAP_ANONYMOUS) || !(flags & MAP_PRIVATE) || (flags & MAP_FIXED) || size == 0) return -EINVAL;
+    if ((flags & MAP_FIXED) || (flags & MAP_SHARED) || size == 0 || (offset & 0xFFF)) return -EINVAL;
 
     vm_area_t *i = (vm_area_t *)kmalloc(sizeof(vm_area_t));
     if (!i) return -ENOMEM;
@@ -11,6 +11,10 @@ uint64_t mmap(uint64_t addr, size_t size, uint32_t prot, uint32_t flags, uint64_
     i->size = (size + PAGE_SIZE_4KB - 1) & PAGE_MASK_4KB;
     i->prot = prot;
     i->flags = flags;
+    if (!(flags & MAP_ANONYMOUS) && current_thread->process->fd_table[fd]){
+        i->file = current_thread->process->fd_table[fd];
+        i->file_pgoff = offset;
+    }
 
     mmap_add_to_list(i);
 

@@ -9,6 +9,8 @@ typedef struct vm_area {
     size_t size;
     uint32_t prot;
     uint32_t flags;
+    struct FILE *file;
+    uint64_t file_pgoff;
     struct vm_area *next;
     struct vm_area *prev;
 } vm_area_t;

@@ -34,8 +34,13 @@ void page_fault_handler(struct InterruptRegisters *regs){
                 uint64_t flags = 0;
                 flags |= PTE_USER;
                 if (cur->flags & PROT_WRITE) flags |= PTE_WRITABLE;
-                vmm_map_page(read_cr3(), pmm_alloc_page(), fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
-                serial_print("[THREAD %d] MMAP Expand\n", current_thread->tid);
+                if (cur->flags & MAP_ANONYMOUS) vmm_map_page(read_cr3(), pmm_alloc_page(), fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
+                else if (cur->flags & MAP_PRIVATE){
+                    uint64_t paddr = pmm_alloc_page();
+                    uint64_t bytes_read = dfs_read(cur->file->fp, (uint8_t*)(paddr + DIRECT_OFFSET), cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size, PAGE_SIZE_4KB);
+                    vmm_map_page(read_cr3(), paddr, fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
+                }
+                serial_print("[THREAD %d] MMAP Area Expand\n", current_thread->tid);
                 return;
             }
             cur = cur->next;
