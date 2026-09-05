@@ -3,7 +3,7 @@
 vm_area_t *mmap_list_head = NULL;
 
 uint64_t mmap(uint64_t addr, size_t size, uint32_t prot, uint32_t flags, uint64_t fd, uint64_t offset){
-    if ((flags & MAP_FIXED) || (flags & MAP_SHARED) || size == 0 || (offset & 0xFFF)) return -EINVAL;
+    if ((flags & MAP_FIXED) || size == 0 || (offset & 0xFFF)) return -EINVAL;
 
     vm_area_t *i = (vm_area_t *)kmalloc(sizeof(vm_area_t));
     if (!i) return -ENOMEM;

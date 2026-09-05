@@ -39,6 +39,20 @@ void page_fault_handler(struct InterruptRegisters *regs){
                     uint64_t paddr = pmm_alloc_page();
                     uint64_t bytes_read = dfs_read(cur->file->fp, (uint8_t*)(paddr + DIRECT_OFFSET), cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size, PAGE_SIZE_4KB);
                     vmm_map_page(read_cr3(), paddr, fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
+                } else if (cur->flags & MAP_SHARED){
+                    inode_t *inode = (inode_t *)cur->file->private_data;
+                    uint64_t paddr = get_page_addr(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB);
+                    if (!paddr){
+                        paddr = pmm_alloc_page();
+                        int status = ahci_read(&ahci_regs->ports[0], (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / 512 + inode->extent.start_block * 8, 8, &paddr, 1);
+                        if (status != 0){
+                            pmm_free_page(paddr);
+                            serial_print("[THREAD %d] Couldn't Expand MMAP Area\n", current_thread->tid);
+                            return;
+                        }
+                        add_page_to_cache(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB, paddr);
+                    }
+                    vmm_map_page(read_cr3(), paddr, fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
                 }
                 serial_print("[THREAD %d] MMAP Area Expand\n", current_thread->tid);
                 return;
