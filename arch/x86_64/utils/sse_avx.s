@@ -85,7 +85,38 @@ avx_lfb_memcpy:
     vzeroupper
     ret
 
-
 global sse_lfb_memcpy
+align 16
 sse_lfb_memcpy:
+    shr rdx, 7
+    jz .exit
+
+.loop_avx:
+    movdqu xmm0, [rsi]
+    movdqu xmm1, [rsi + 16]
+    movdqu xmm2, [rsi + 32]
+    movdqu xmm3, [rsi + 48]
+    movdqu xmm4, [rsi + 64]
+    movdqu xmm5, [rsi + 80]
+    movdqu xmm6, [rsi + 96]
+    movdqu xmm7, [rsi + 112]
+
+    movntdq [rdi], xmm0
+    movntdq [rdi + 16], xmm1
+    movntdq [rdi + 32], xmm2
+    movntdq [rdi + 48], xmm3
+    movntdq [rdi + 64], xmm4
+    movntdq [rdi + 80], xmm5
+    movntdq [rdi + 96], xmm6
+    movntdq [rdi + 112], xmm7
+
+    add rdi, 128
+    add rsi, 128
+    
+    dec rdx
+    jnz .loop_avx
+
+    sfence
+
+.exit:
     ret
