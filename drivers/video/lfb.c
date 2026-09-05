@@ -1,5 +1,9 @@
 #include <drivers/lfb.h>
 
+extern uint64_t sse_avx_check();
+
+uint64_t instr_supported = 0;
+
 framebuffer_t lfb;
 
 void init_LFB(unsigned int physBootInfo){
@@ -32,6 +36,7 @@ void init_LFB(unsigned int physBootInfo){
 
     memset(lfb.buffer, 0, lfb.size);
 
+    instr_supported = sse_avx_check();
     init_kring();
 
     lfb_swap();
