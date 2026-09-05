@@ -125,6 +125,7 @@ void isr_handler(struct InterruptRegisters *regs){
         serial_print("[ISR] ");
         serial_print(exceptions[regs->int_no]);
         serial_print("\n");
+        for (;;);
     }
 }
 

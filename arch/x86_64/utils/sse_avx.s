@@ -27,3 +27,23 @@ sse_avx_check:
 .exit:
     pop rbx
     ret
+
+global init_sse_avx
+init_sse_avx:
+    mov rax, cr0
+    or rax, (1 << 1)
+    and rax, ~(1 << 2)
+    mov cr0, rax
+
+    mov rax, cr4
+    or rax, (1 << 9)
+    or rax, (1 << 10)
+    or rax, (1 << 18)
+    mov cr4, rax
+
+    mov ecx, 0    
+    xgetbv
+    or eax, 0x7
+    xsetbv
+
+    ret
