@@ -2,6 +2,7 @@
 
 extern uint64_t sse_avx_check();
 extern void init_sse_avx();
+extern void avx_lfb_memcpy(void *dest, void *src, uint64_t count);
 
 uint64_t instr_supported = 0;
 
@@ -48,7 +49,8 @@ void init_LFB(unsigned int physBootInfo){
 }
 
 void lfb_swap(void){
-    memcpy(lfb.vram, lfb.buffer, lfb.size);
+    if (instr_supported == 2) avx_lfb_memcpy(lfb.vram, lfb.buffer, lfb.size);
+    else memcpy(lfb.vram, lfb.buffer, lfb.size);
 }
 
 void lfb_scroll(void){
