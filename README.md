@@ -68,7 +68,8 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
- -[ ] **fsync thread**: thread that writes dirty pages from cache to disk.
+- [ ] **SYS FSYNC**: Flush buffered data from cache to storage device.
+- [ ] **Writeback THread**: thread that writebacks dirty pages from cache to disk.
 - [ ] **LibC**: libc support for user programs.
 
 ---
