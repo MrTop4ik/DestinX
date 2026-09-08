@@ -51,27 +51,29 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 	int miss = 0;
 
 	for (int i = 0; i < page_count; i++){
-		pages[i] = get_page_addr(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
-		if (!pages[i]) miss = 1;
+		page_cache_t *cache = get_page_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
+		if (cache) pages[i] = cache->addr;
+		else { pages[i] = 0; miss = 1; }
 	}
 
 	if (!miss){
-		if (page_count == 1){ 
-			memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), size);
-			serial_print("[DFS READ] Successfully read from file\n");
-			return size;
+		switch (page_count){
+			case 1:
+				memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), size);
+				break;
+			
+			case 2:
+				memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), PAGE_SIZE_4KB - offset);
+				memcpy(buffer + PAGE_SIZE_4KB - offset, (void*)(pages[1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
+				break;
+
+			default:
+				memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), PAGE_SIZE_4KB - offset);
+				for (int i = 1; i < page_count - 1; i++) memcpy(buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, (void*)(pages[i] + DIRECT_OFFSET), PAGE_SIZE_4KB);
+				memcpy(buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (void*)(pages[page_count - 1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
+				break;
 		}
 
-		memcpy(buffer, (void*)(pages[0] + DIRECT_OFFSET), PAGE_SIZE_4KB - offset);
-
-		if (page_count == 2){
-			memcpy(buffer + PAGE_SIZE_4KB - offset, (void*)(pages[1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
-			serial_print("[DFS READ] Successfully read from file\n");
-			return size;
-		}
-
-		for (int i = 1; i < page_count - 1; i++) memcpy(buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, (void*)(pages[i] + DIRECT_OFFSET), PAGE_SIZE_4KB);
-		memcpy(buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (void*)(pages[page_count - 1] + DIRECT_OFFSET), (size + offset) % PAGE_SIZE_4KB);
 		serial_print("[DFS READ] Successfully read from file\n");
 		return size;
 	}
@@ -111,27 +113,29 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 	int miss = 0;
 
 	for (int i = 0; i < page_count; i++){
-		pages[i] = get_page_addr(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
-		if (!pages[i]) miss = 1;
+		page_cache_t *cache = get_page_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
+		if (cache) pages[i] = cache->addr;
+		else { pages[i] = 0; miss = 1; }
 	}
 
 	if (!miss){
-		if (page_count == 1){ 
-			memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, size);
-			serial_print("[DFS READ] Successfully write from file\n");
-			return size;
+		switch (page_count){
+			case 1:
+				memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, size);
+				
+				break;
+			case 2:
+				memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, PAGE_SIZE_4KB - offset);
+				memcpy((void*)(pages[1] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset, (size + offset) % PAGE_SIZE_4KB);
+				break;
+
+			default:
+				memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, PAGE_SIZE_4KB - offset);
+				for (int i = 1; i < page_count - 1; i++) memcpy((void*)(pages[i] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, PAGE_SIZE_4KB);
+				memcpy((void*)(pages[page_count - 1] + DIRECT_OFFSET), buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (size + offset) % PAGE_SIZE_4KB);
+				break;
 		}
 
-		memcpy((void*)(pages[0] + DIRECT_OFFSET + offset), buffer, PAGE_SIZE_4KB - offset);
-
-		if (page_count == 2){
-			memcpy((void*)(pages[1] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset, (size + offset) % PAGE_SIZE_4KB);
-			serial_print("[DFS READ] Successfully write from file\n");
-			return size;
-		}
-
-		for (int i = 1; i < page_count - 1; i++) memcpy((void*)(pages[i] + DIRECT_OFFSET), buffer + PAGE_SIZE_4KB - offset + (i - 1) * PAGE_SIZE_4KB, PAGE_SIZE_4KB);
-		memcpy((void*)(pages[page_count - 1] + DIRECT_OFFSET), buffer - offset + (page_count - 1) * PAGE_SIZE_4KB, (size + offset) % PAGE_SIZE_4KB);
 		serial_print("[DFS READ] Successfully write from file\n");
 		return size;
 	}

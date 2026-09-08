@@ -31,16 +31,16 @@ void remove_page_from_cache(uint64_t id, uint64_t indx){
     }
 }
 
-uint64_t get_page_addr(uint64_t id, uint64_t indx){
+page_cache_t *get_page_cache(uint64_t id, uint64_t indx){
     page_cache_t *prev = NULL;
     page_cache_t *cur = cache_list;
 
     while (cur){
-        if (cur->id == id && cur->indx == indx) return cur->addr;
+        if (cur->id == id && cur->indx == indx) return cur;
 
         prev = cur;
         cur = cur->next;
     }
 
-    return 0;
+    return NULL;
 }

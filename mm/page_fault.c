@@ -41,7 +41,9 @@ void page_fault_handler(struct InterruptRegisters *regs){
                     vmm_map_page(read_cr3(), paddr, fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
                 } else if (cur->flags & MAP_SHARED){
                     inode_t *inode = (inode_t *)cur->file->private_data;
-                    uint64_t paddr = get_page_addr(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB);
+                    page_cache_t *cache = get_page_cache(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB);
+                    uint64_t paddr = 0;
+                    if (cache) cache->addr;
                     if (!paddr){
                         paddr = pmm_alloc_page();
                         int status = ahci_read(&ahci_regs->ports[0], (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / 512 + inode->extent.start_block * 8, 8, &paddr, 1);
