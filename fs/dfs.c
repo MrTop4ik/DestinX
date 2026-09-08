@@ -247,3 +247,23 @@ int dfs_file_close(struct FILE *file){
     kfree(file);
 	return 0;
 }
+
+int dfs_file_sync(struct FILE *file){
+	inode_t *inode = (inode_t *)file->private_data;
+	uint64_t page_count = (inode->size + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB;
+
+	int ret = 0;
+
+	for (int i = 0; i < page_count; i++){
+		page_cache_t *cache = get_page_cache(inode->inode_num, i);
+		if (cache && (cache->flags & DIRTY_FLAG)){
+			cache->flags |= WRITEBACK_FLAGS;
+			int status = ahci_write(&ahci_regs->ports[0], (inode->extent.start_block + i) * 8, 8, &cache->addr, 1);
+			cache->flags &= ~WRITEBACK_FLAGS;
+			if (status != 0) ret++;
+			else cache->flags &= ~DIRTY_FLAG;
+		}
+	}
+
+	return ret;
+}

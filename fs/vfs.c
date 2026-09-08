@@ -5,7 +5,8 @@
 vfs_ops_t dfs_ops = {
     .read = dfs_file_read,
     .write = dfs_file_write,
-    .close = dfs_file_close
+    .close = dfs_file_close,
+    .sync = dfs_file_sync
 };
 
 spinlock_t open_lock = {0};
@@ -73,4 +74,15 @@ int lseek(uint64_t fd, uint64_t offset, uint64_t whence){
     else return -1;
 
     return offset;
+}
+
+int fsync(uint64_t fd){
+    if (fd >= 0 && fd <= 2) return 0;
+    else if (fd < 0 || fd > MAX_FD) return -1;
+    
+    struct FILE *file = current_thread->process->fd_table[fd];
+    if (!file) return -1;
+
+    int ret = file->ops->sync(file);
+    return ret;
 }

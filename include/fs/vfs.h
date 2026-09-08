@@ -28,6 +28,7 @@ typedef struct {
     int (*read)(struct FILE *file, const char *buf, size_t count);
     int (*write)(struct FILE *file, const char *buf, size_t count);
     int (*close)(struct FILE *file);
+    int (*sync)(struct FILE *file);
 } vfs_ops_t;
 
 typedef struct FILE {
@@ -42,3 +43,4 @@ typedef struct FILE {
 uint64_t open(const char *fp, uint64_t flags);
 int close(uint64_t fd);
 int lseek(uint64_t fd, uint64_t offset, uint64_t whence);
+int fsync(uint64_t fd);

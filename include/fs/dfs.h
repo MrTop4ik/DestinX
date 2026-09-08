@@ -66,3 +66,4 @@ inode_t *dfs_get_inode(const char *path);
 int dfs_file_read(struct FILE *file, const char *buf, size_t count);
 int dfs_file_write(struct FILE *file, const char *buf, size_t count);
 int dfs_file_close(struct FILE *file);
+int dfs_file_sync(struct FILE *file);

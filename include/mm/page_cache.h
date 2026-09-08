@@ -3,7 +3,8 @@
 #include <stddef.h>
 #include <mm/vmalloc.h>
 
-#define DIRTY_FLAG 0x1
+#define DIRTY_FLAG          (1 << 0)
+#define WRITEBACK_FLAGS     (1 << 1)
 
 typedef struct page_cache {
     uint64_t id;

@@ -28,6 +28,8 @@
 #define SYS_MUNMAP      11
 #define SYS_BRK         12
 #define SYS_EXIT        60
+#define SYS_FSYNC       74
+#define SYS_SYNC        162
 #define SYS_EXIT_GROUP  231
 
 typedef struct {

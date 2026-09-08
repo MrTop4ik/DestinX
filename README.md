@@ -49,6 +49,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **SYS MUNMAP**: Free `memory` allocated with `SYS MMAP` by addr from rdi.
 - [x] **SYS BRK**: Moves current user process's `heap end` to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current `thread`.
+- [x] **SYS FSYNC**: Flush buffered data of certain file from cache to storage device by fd passed in rdi.
 - [x] **SYS EXIT GROUP**: Kills `every` process's thread.
 
 ### Usersapace
@@ -68,7 +69,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **SYS FSYNC**: Flush buffered data of certain file from cache to storage device by fd.
 - [ ] **SYS SYNC**: Flush all buffered data from cache to storage device.
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
 - [ ] **LibC**: libc support for user programs.

@@ -28,6 +28,7 @@ void init_kernel_gs_base(void){
 }
 
 void syscall_handler(struct SyscallRegisters *regs){
+    sti();
     switch (regs->rax){
         case SYS_READ:
             struct FILE *file = current_thread->process->fd_table[regs->rdi];
@@ -76,6 +77,11 @@ void syscall_handler(struct SyscallRegisters *regs){
             serial_print("[THREAD %d] SYS EXIT (Exit code: %d)\n", current_thread->tid, regs->rdi);
             thread_exit();
             break;
+        
+        case SYS_FSYNC:
+            status = fsync(regs->rdi);
+            regs->rax = status;
+            break;
 
         case SYS_EXIT_GROUP:
             serial_print("[THREAD %d] SYS EXIT GROUP\n", current_thread->tid);
@@ -97,4 +103,5 @@ void syscall_handler(struct SyscallRegisters *regs){
             regs->rax = (uint64_t)-38;
             break;
     }
+    cli();
 }
