@@ -1,4 +1,5 @@
 #include <arch/x86_64/syscalls.h>
+#include <fs/dfs.h>
 
 extern void syscall_entry(void);
 
@@ -81,6 +82,22 @@ void syscall_handler(struct SyscallRegisters *regs){
         case SYS_FSYNC:
             status = fsync(regs->rdi);
             regs->rax = status;
+            break;
+        
+        case SYS_SYNC:
+            int rax = 0;
+            page_cache_t *cache = cache_list;
+            while (cache){
+                if (cache && (cache->flags & DIRTY_FLAG) && !(cache->flags & WRITEBACK_FLAG)){
+                    cache->flags |= WRITEBACK_FLAG;
+                    status = ahci_write(&ahci_regs->ports[0], (dfs_ctx.inode_table[cache->id].extent.start_block + cache->indx) * 8, 8, &cache->addr, 1);
+                    cache->flags &= ~WRITEBACK_FLAG;
+                    if (status != 0) rax++;
+                    else cache->flags &= ~DIRTY_FLAG;
+                }
+                cache = cache->next;
+            }
+            regs->rax = rax;
             break;
 
         case SYS_EXIT_GROUP:

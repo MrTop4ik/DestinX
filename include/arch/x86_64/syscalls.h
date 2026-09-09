@@ -8,6 +8,7 @@
 #include <mm/brk.h>
 #include <mm/mmap.h>
 #include <drivers/console.h>
+#include <mm/page_cache.h>
 
 #define IA32_EFER   0xC0000080
 #define IA32_STAR   0xC0000081

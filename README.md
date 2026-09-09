@@ -50,6 +50,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **SYS BRK**: Moves current user process's `heap end` to addr passed in rdi.
 - [x] **SYS EXIT**: Kills current `thread`.
 - [x] **SYS FSYNC**: Flush buffered data of certain file from cache to storage device by fd passed in rdi.
+- [x] **SYS SYNC**: Flush all buffered data from cache to storage device.
 - [x] **SYS EXIT GROUP**: Kills `every` process's thread.
 
 ### Usersapace
@@ -69,11 +70,13 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **SYS SYNC**: Flush all buffered data from cache to storage device.
+- [ ] **Tracking Time**: Tracking global time with RTC.
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
+- [ ] **Vector Registers**: Implement switching vector regs context.
 - [ ] **LibC**: libc support for user programs.
 
 ---
+
 ## Getting Started
 
 | **Category** | **Tool** | **Notes** |

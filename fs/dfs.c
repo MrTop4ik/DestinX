@@ -256,10 +256,10 @@ int dfs_file_sync(struct FILE *file){
 
 	for (int i = 0; i < page_count; i++){
 		page_cache_t *cache = get_page_cache(inode->inode_num, i);
-		if (cache && (cache->flags & DIRTY_FLAG)){
-			cache->flags |= WRITEBACK_FLAGS;
+		if (cache && (cache->flags & DIRTY_FLAG) && !(cache->flags & WRITEBACK_FLAG)){
+			cache->flags |= WRITEBACK_FLAG;
 			int status = ahci_write(&ahci_regs->ports[0], (inode->extent.start_block + i) * 8, 8, &cache->addr, 1);
-			cache->flags &= ~WRITEBACK_FLAGS;
+			cache->flags &= ~WRITEBACK_FLAG;
 			if (status != 0) ret++;
 			else cache->flags &= ~DIRTY_FLAG;
 		}
