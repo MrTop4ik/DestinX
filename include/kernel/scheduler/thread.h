@@ -23,10 +23,12 @@ typedef struct thread {
     stack_t user_stack;
     uint64_t page_guard_min;
     uint64_t page_guard_max;
+    uint64_t sleep_time;
     struct process *process;
     struct thread *prev;
     struct thread *next;
     struct thread *next_blocked;
+    struct thread *next_sleeping;
     struct thread *next_pthread;
     struct thread *prev_pthread;
 } thread_t;

@@ -2,6 +2,7 @@ bits 64
 section .text
 
 extern scheduler_handler
+extern lapic_timer_centry
 extern lapic_eoi
 global lapic_timer_handler
 lapic_timer_handler:
@@ -23,6 +24,7 @@ lapic_timer_handler:
 
     mov rdi, rsp
     
+    call lapic_timer_centry
     call scheduler_handler
 
     mov rsp, rax

@@ -1,8 +1,10 @@
 #include <kernel/scheduler/scheduler.h>
 
+extern uint64_t lapic_timer_ticks;
 extern vm_area_t *mmap_list_head;
 
 volatile int scheduler = 0;
+thread_t *sleeping_list_head = NULL;
 
 void init_scheduler(void){
     process_t *kp = (process_t *)kmalloc(sizeof(process_t));
@@ -92,4 +94,11 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
     
     return next_thread->rsp;
+}
+
+void sleep(uint64_t ms){
+    current_thread->state = BLOCKED;
+    current_thread->sleep_time = lapic_timer_ticks + ms;
+    current_thread->next_sleeping = sleeping_list_head;
+    sleeping_list_head = current_thread;
 }
