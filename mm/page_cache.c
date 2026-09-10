@@ -2,12 +2,13 @@
 
 page_cache_t *cache_list = NULL;
 
-void add_page_to_cache(uint64_t id, uint64_t indx, uint64_t addr){
+void add_page_to_cache(uint64_t id, uint64_t indx, uint64_t addr, uint64_t flags){
     page_cache_t *cp = (page_cache_t *)kmalloc(sizeof(page_cache_t));
 
     cp->id = id;
     cp->indx = indx;
     cp->addr = addr;
+    cp->flags = flags;
 
     cp->next = cache_list;
     cache_list = cp;

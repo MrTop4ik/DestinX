@@ -44,6 +44,7 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 	if (!buffer || !size || (offset < 0)) return 0;
 
 	inode_t *cur_inode = dfs_get_inode(fp);
+	if (offset > cur_inode->size) return 0;
 
 	uint64_t page_count = ((offset + size - (offset & PAGE_MASK_4KB)) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB; 
 	
@@ -80,8 +81,6 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 
 	serial_print("[DFS READ] Cache Miss\n");
 
-	if (offset > cur_inode->size) return 0;
-
 	if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
 	
 	for (int i = 0; i < page_count; i++){
@@ -92,7 +91,7 @@ uint64_t dfs_read(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t siz
 				pmm_free_page(paddr);
 				return 0;
 			}
-			add_page_to_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i, paddr);
+			add_page_to_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i, paddr, 0);
 		}
 	}
 
@@ -106,6 +105,7 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 	if (!buffer || !size || (offset < 0)) return 0;
 
 	inode_t *cur_inode = dfs_get_inode(fp);
+	if (offset > cur_inode->size) return 0;
 
 	uint64_t page_count = ((offset + size - (offset & PAGE_MASK_4KB)) + PAGE_SIZE_4KB - 1) / PAGE_SIZE_4KB; 
 	
@@ -114,7 +114,7 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 
 	for (int i = 0; i < page_count; i++){
 		page_cache_t *cache = get_page_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i);
-		if (cache) pages[i] = cache->addr;
+		if (cache) { pages[i] = cache->addr; cache->flags |= DIRTY_FLAG; }
 		else { pages[i] = 0; miss = 1; }
 	}
 
@@ -142,8 +142,6 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 
 	serial_print("[DFS WRITE] Cache Miss\n");
 
-	if (offset > cur_inode->size) return 0;
-
 	if (cur_inode->size < (offset + size)) size = cur_inode->size - offset;
 	
 	for (int i = 0; i < page_count; i++){
@@ -154,7 +152,7 @@ uint64_t dfs_write(const char *fp, uint8_t *buffer, uint64_t offset, uint64_t si
 				pmm_free_page(paddr);
 				return 0;
 			}
-			add_page_to_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i, paddr);
+			add_page_to_cache(cur_inode->inode_num, (offset & PAGE_MASK_4KB) / PAGE_SIZE_4KB + i, paddr, DIRTY_FLAG);
 		}
 	}
 

@@ -52,7 +52,7 @@ void page_fault_handler(struct InterruptRegisters *regs){
                             serial_print("[THREAD %d] Couldn't Expand MMAP Area\n", current_thread->tid);
                             return;
                         }
-                        add_page_to_cache(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB, paddr);
+                        add_page_to_cache(inode->inode_num, (cur->file_pgoff + (fault_address & PAGE_MASK_4KB) - (uint64_t)cur->base + cur->size) / PAGE_SIZE_4KB, paddr, 0);
                     }
                     vmm_map_page(read_cr3(), paddr, fault_address & PAGE_MASK_4KB, PAGE_SIZE_4KB, flags);
                 }
