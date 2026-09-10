@@ -5,7 +5,7 @@
 #include <mm/vmm.h>
 #include <mm/buddy.h>
 #include <mm/slab.h>
-#include <kernel/spinlock.h>
+#include <kernel/sync/spinlock.h>
 
 #define HEAP_START 0xFFFFE00000000000
 #define HEAP_SIZE  0x1000000

@@ -34,6 +34,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Timers**: Programmable Interval Timer (**PIT**) & **LAPIC Timer**.
 - [x] **PCI**: **Reading** and **writting** dword, enabling **MSI**.
 - [x] **AHCI**: **Reading** and **writting** data to disk.
+- [x] **RTC**: Reading global time with **RTC**.
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
@@ -70,7 +71,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
-- [ ] **Tracking Time**: Tracking global time with RTC.
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
 - [ ] **Vector Registers**: Implement switching vector regs context.
 - [ ] **LibC**: libc support for user programs.

@@ -3,7 +3,7 @@
 #include <multiboot2.h>
 #include <libc/string.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <kernel/spinlock.h>
+#include <kernel/sync/spinlock.h>
 
 #define KERNEL_OFFSET 0xFFFFFFFF80000000
 #define PAGE_SIZE_4KB 0x1000

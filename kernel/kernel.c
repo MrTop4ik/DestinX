@@ -11,12 +11,13 @@
 #include <drivers/ahci.h>
 #include <drivers/lfb.h>
 #include <fs/dfs.h>
-#include <kernel/mutex.h>
+#include <kernel/sync/mutex.h>
 #include <kernel/scheduler/scheduler.h>
 #include <mm/kmalloc.h>
 #include <mm/vmalloc.h>
 #include <multiboot2.h>
 #include <stdint.h>
+#include <arch/x86_64/drivers/rtc.h>
 
 void kernel_main(uint64_t magic, unsigned int physBootInfo){
     serial_init();
@@ -48,6 +49,17 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     sti();
 
     create_user_process("/usr/bin/test.elf");
+
+    rtc_time_t rtc_time = read_rtc();
+
+    kprintf(
+        "year: %d\nmonth: %d\nday: %d\nhour: %d\nminute: %d\n",
+        rtc_time.year,
+        rtc_time.month,
+        rtc_time.day,
+        rtc_time.hour,
+        rtc_time.minute
+    );
 
     for (;;);
 }

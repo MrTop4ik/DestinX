@@ -5,7 +5,7 @@
 #include <arch/x86_64/inlineasm.h>
 #include <mm/kmalloc.h>
 #include <kernel/scheduler/scheduler.h>
-#include <kernel/spinlock.h>
+#include <kernel/sync/spinlock.h>
 
 typedef struct {
     spinlock_t lock;

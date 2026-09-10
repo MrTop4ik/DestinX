@@ -1,4 +1,4 @@
-#include <kernel/mutex.h>
+#include <kernel/sync/mutex.h>
 
 void mutex_init(mutex_t *mutex){
     mutex->lock.lock = 0;

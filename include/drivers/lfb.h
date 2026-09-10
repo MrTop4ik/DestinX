@@ -6,7 +6,7 @@
 #include <arch/x86_64/drivers/serial.h>
 #include <mm/kmalloc.h>
 #include <drivers/font8x16.h>
-#include <kernel/spinlock.h>
+#include <kernel/sync/spinlock.h>
 #include <drivers/kring.h>
 #include <mm/vmalloc.h>
 
