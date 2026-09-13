@@ -160,6 +160,11 @@ void destroy_thread(thread_t *t){
                     uint64_t paddr = vmm_unmap_page(t->process->pml4, t->process->heap_start + (i * PAGE_SIZE_4KB));
                     pmm_free_page(paddr);
                 }
+
+                for (int i = 3; i < MAX_FD; i++){
+                    if (current_thread->process->fd_table[i]) kfree(current_thread->process->fd_table[i]);
+                }
+
                 kfree(t->process);
                 pmm_free_page(t->process->pml4);
             }
