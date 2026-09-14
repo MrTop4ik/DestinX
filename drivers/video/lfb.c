@@ -40,7 +40,7 @@ void init_LFB(unsigned int physBootInfo){
     memset(lfb.buffer, 0, lfb.size);
 
     instr_supported = sse_avx_check();
-    if (instr_supported == 1 || instr_supported == 2) init_sse_avx();
+    init_sse_avx();
 
     init_kring();
 

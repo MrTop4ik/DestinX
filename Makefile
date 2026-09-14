@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel tcg -cpu max -machine q35,acpi=on,smm=off -serial stdio -display gtk -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu max -machine q35,acpi=on -serial stdio -display gtk -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o
