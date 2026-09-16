@@ -42,6 +42,7 @@ global stack_top
 section .boot_rodata
 msg_no_cpuid: db "ERROR: CPUID NOT SUPPORTED", 0
 msg_no_long_mode: db "ERROR: LONG MODE (X64) NOT SUPPORTED", 0
+msg_no_invariant_tsc: db "ERROR: INVARIANT TSC NOT SUPPORTED", 0
 
 gdt64:
     dq 0
@@ -113,6 +114,21 @@ check_long_mode:
     pop esi
     hlt
 
+check_invariant_tsc:
+    mov eax, 0x80000007
+    cpuid
+    test edx, 1 << 8
+    jz .no_invariant_tsc
+    ret
+.no_invariant_tsc:
+    push esi
+
+    mov esi, msg_no_invariant_tsc
+    call print_string_32
+
+    pop esi
+    hlt
+
 global _start
 _start:
     mov esp, stack_top
@@ -122,6 +138,7 @@ _start:
 
     call check_cpuid
     call check_long_mode
+    call check_invariant_tsc
 
     mov edi, pml4
     xor eax, eax
