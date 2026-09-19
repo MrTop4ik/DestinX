@@ -61,6 +61,12 @@ void write_rflags(uint64_t rflags){
     __asm__ volatile ("push %0\n\tpopf" : : "rm"(rflags) : "memory", "cc");
 }
 
+uint64_t rdtsc(void){
+    uint32_t low, high;
+    __asm__ volatile ("rdtsc" : "=a"(low), "=d"(high) : : "memory");
+    return ((uint64_t)high >> 32) | low;
+}
+
 void yield(void){
     __asm__ volatile ("int $0x81" : : : "memory");
 }

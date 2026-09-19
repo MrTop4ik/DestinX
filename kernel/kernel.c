@@ -18,6 +18,7 @@
 #include <multiboot2.h>
 #include <stdint.h>
 #include <arch/x86_64/drivers/rtc.h>
+#include <arch/x86_64/drivers/tsc.h>
 
 void kernel_main(uint64_t magic, unsigned int physBootInfo){
     serial_init();
@@ -44,22 +45,14 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_syscalls();
 
+    rtc_time_t boot_rts = read_rtc();
+    init_tsc();
+
     inode_t *root_inode = dfs_mount_root();
 
     sti();
 
     create_user_process("/usr/bin/test.elf");
-
-    rtc_time_t rtc_time = read_rtc();
-
-    kprintf(
-        "year: %d\nmonth: %d\nday: %d\nhour: %d\nminute: %d\n",
-        rtc_time.year,
-        rtc_time.month,
-        rtc_time.day,
-        rtc_time.hour,
-        rtc_time.minute
-    );
 
     for (;;);
 }

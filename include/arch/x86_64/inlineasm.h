@@ -13,6 +13,7 @@ void write_msr(uint32_t index, uint32_t low, uint32_t high);
 uint64_t read_rsp(void);
 uint64_t read_rflags(void);
 void write_rflags(uint64_t rflags);
+uint64_t rdtsc(void);
 void yield(void);
 void sti(void);
 void cli(void);
