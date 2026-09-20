@@ -52,6 +52,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **SYS EXIT**: Kills current `thread`.
 - [x] **SYS FSYNC**: Flush buffered data of certain file from cache to storage device by fd passed in rdi.
 - [x] **SYS SYNC**: Flush all buffered data from cache to storage device.
+- [x] **SYS TIME**: Returns how many `seconds passed` since `UNIX` epoch.
 - [x] **SYS EXIT GROUP**: Kills `every` process's thread.
 
 ### Usersapace

@@ -9,6 +9,7 @@
 #include <mm/mmap.h>
 #include <drivers/console.h>
 #include <mm/page_cache.h>
+#include <kernel/time/time.h>
 
 #define IA32_EFER   0xC0000080
 #define IA32_STAR   0xC0000081
@@ -31,6 +32,7 @@
 #define SYS_EXIT        60
 #define SYS_FSYNC       74
 #define SYS_SYNC        162
+#define SYS_TIME        201
 #define SYS_EXIT_GROUP  231
 
 typedef struct {

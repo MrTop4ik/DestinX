@@ -18,3 +18,9 @@ void init_time(void){
 
     unix_boot_timestamp = (days_since_unix * 86400) + (boot_rtc.hour * 3600) + (boot_rtc.minute * 60) + boot_rtc.second;
 }
+
+uint64_t time(void){
+    uint64_t cur_rdtsc = rdtsc();
+    uint64_t seconds_passed = (cur_rdtsc - boot_tsc) / tsc_ticks_per_ms / 1000;
+    return seconds_passed + unix_boot_timestamp;
+}

@@ -10,3 +10,4 @@ extern uint64_t tsc_ticks_per_ms;
 extern uint64_t unix_boot_timestamp;
 
 void init_time(void);
+uint64_t time(void);

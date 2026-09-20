@@ -73,6 +73,9 @@ _start:
     mov rdi, rbx
     syscall
 
+    mov rax, 201
+    syscall
+
     jmp $
 
 section .rodata

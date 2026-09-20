@@ -85,7 +85,7 @@ void syscall_handler(struct SyscallRegisters *regs){
             break;
         
         case SYS_SYNC:
-            int rax = 0;
+            uint64_t rax = 0;
             page_cache_t *cache = cache_list;
             while (cache){
                 if (cache && (cache->flags & DIRTY_FLAG) && !(cache->flags & WRITEBACK_FLAG)){
@@ -97,6 +97,11 @@ void syscall_handler(struct SyscallRegisters *regs){
                 }
                 cache = cache->next;
             }
+            regs->rax = rax;
+            break;
+        
+        case SYS_TIME:
+            rax = time();
             regs->rax = rax;
             break;
 

@@ -50,17 +50,6 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     sti();
 
-    kprintf(
-        "year: %d\nmonth: %d\nday: %d\nhour: %d\nminute: %d\n",
-        boot_rtc.year,
-        boot_rtc.month,
-        boot_rtc.day,
-        boot_rtc.hour,
-        boot_rtc.minute
-    );
-
-    kprintf("%d\n", unix_boot_timestamp);
-
     create_user_process("/usr/bin/test.elf");
 
     for (;;);
