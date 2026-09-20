@@ -13,12 +13,11 @@
 #include <fs/dfs.h>
 #include <kernel/sync/mutex.h>
 #include <kernel/scheduler/scheduler.h>
+#include <kernel/time/time.h>
 #include <mm/kmalloc.h>
 #include <mm/vmalloc.h>
 #include <multiboot2.h>
 #include <stdint.h>
-#include <arch/x86_64/drivers/rtc.h>
-#include <arch/x86_64/drivers/tsc.h>
 
 void kernel_main(uint64_t magic, unsigned int physBootInfo){
     serial_init();
@@ -45,12 +44,22 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_syscalls();
 
-    rtc_time_t boot_rts = read_rtc();
-    init_tsc();
+    init_time();
 
     inode_t *root_inode = dfs_mount_root();
 
     sti();
+
+    kprintf(
+        "year: %d\nmonth: %d\nday: %d\nhour: %d\nminute: %d\n",
+        boot_rtc.year,
+        boot_rtc.month,
+        boot_rtc.day,
+        boot_rtc.hour,
+        boot_rtc.minute
+    );
+
+    kprintf("%d\n", unix_boot_timestamp);
 
     create_user_process("/usr/bin/test.elf");
 
