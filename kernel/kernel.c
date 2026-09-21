@@ -14,6 +14,7 @@
 #include <kernel/sync/mutex.h>
 #include <kernel/scheduler/scheduler.h>
 #include <kernel/time/time.h>
+#include <arch/x86_64/drivers/keyboard.h>
 #include <mm/kmalloc.h>
 #include <mm/vmalloc.h>
 #include <multiboot2.h>
@@ -44,6 +45,7 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_syscalls();
 
+    init_keyboard();
     init_time();
 
     inode_t *root_inode = dfs_mount_root();

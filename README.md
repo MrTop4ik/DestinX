@@ -35,6 +35,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **PCI**: **Reading** and **writting** dword, enabling **MSI**.
 - [x] **AHCI**: **Reading** and **writting** data to disk.
 - [x] **RTC**: Reading global time with **RTC**.
+- [X] **Keyboard**: Output the pressed **key** to qemu serial. 
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
