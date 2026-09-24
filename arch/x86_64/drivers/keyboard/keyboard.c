@@ -1,4 +1,7 @@
 #include <arch/x86_64/drivers/keyboard.h>
+#include <kernel/scheduler/scheduler.h>
+
+extern thread_t *read_blocked_thread;
 
 int shift;
 int capslock;
@@ -71,6 +74,18 @@ void keyboard_handler(struct InterruptRegisters *regs){
         case 88:
             break;
         
+        case 28:
+            if (!press){
+                kring_write("\n", 1, 0);
+                kring_write("\n", 1, 1);
+                if (read_blocked_thread){
+                    read_blocked_thread->state = READY;
+                    enqueue_thread(read_blocked_thread);
+                    read_blocked_thread = NULL;
+                }
+            }
+            break;
+        
         case 42:
             if (press) shift = 0;
             else shift = 1;
@@ -83,8 +98,19 @@ void keyboard_handler(struct InterruptRegisters *regs){
         
         default:
             if (!press){
-                if (ext) { ext = 0; serial_print("%s\n", extended[scanCode]); }
-                else serial_print("%s\n", ((!shift && !capslock) || (shift && capslock)) ? lowercase[scanCode] : uppercase[scanCode]);
+                if (ext){
+                    ext = 0;
+                    char *key = extended[scanCode];
+                    int len = strlen(key);
+                    kring_write(key, len, 0);
+                    kring_write(key, len, 1);
+                }
+                else {
+                    char *key = ((!shift && !capslock) || (shift && capslock)) ? lowercase[scanCode] : uppercase[scanCode];
+                    int len = strlen(key);
+                    kring_write(key, len, 0);
+                    kring_write(key, len, 1);
+                }
             }
             break;
     }

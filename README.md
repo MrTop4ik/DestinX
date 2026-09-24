@@ -35,7 +35,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **PCI**: **Reading** and **writting** dword, enabling **MSI**.
 - [x] **AHCI**: **Reading** and **writting** data to disk.
 - [x] **RTC**: Reading global time with **RTC**.
-- [X] **Keyboard**: Output the pressed **key** to qemu serial. 
+- [X] **PS/2 Keyboard**: Output the pressed **key** to qemu serial. 
 
 ### Scheduling & Sync
 - [x] **Multithreading**: Round Robin scheduler implemented.
@@ -64,12 +64,12 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 - [x] **Heap**: Allocate memory with `SYS BRK`.
 
 ### File System
-- [x] **VFS**: Provide single, uniform interface for programs to use files.
+- [x] **VFS**: Provide single, `uniform` interface for programs to use files.
 - [x] **DFS**:
   - **Mounting** root directory.
   - **Reading** files data.
   - **Writting** to files.
-  - **Page Cache** create page cache array to optimize reading and writting to files.
+  - **Page Cache** create page cache array to **optimize** `reading` and `writting` to files.
 ---
 
 ## Roadmap & In Progress

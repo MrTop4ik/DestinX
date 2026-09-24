@@ -37,6 +37,8 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_ioapic();
 
     init_ahci();
+    init_keyboard();
+    init_time();
 
     init_scheduler();
 
@@ -44,9 +46,6 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_lapic_timer(0x30, 1);
 
     init_syscalls();
-
-    init_keyboard();
-    init_time();
 
     inode_t *root_inode = dfs_mount_root();
 

@@ -16,7 +16,7 @@
 
 #define CHECK_AND_FLUSH() do { \
     if (idx >= KPRINTF_BUF_MAX - 1){ \
-        kring_write(local_buf, idx); \
+        kring_write(local_buf, idx, 1); \
         idx = 0; \
     } \
 } while (0)

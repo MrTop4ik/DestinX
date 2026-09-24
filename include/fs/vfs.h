@@ -8,9 +8,9 @@
 #define SEEK_CUR 1
 #define SEEK_END 2
 
-#define O_RDONLY 0x0000
-#define O_WRONLY 0x0001
-#define O_RDWR   0x0002
+#define O_RDONLY 0x0001
+#define O_WRONLY 0x0002
+#define O_RDWR   0x0003
 
 typedef enum {
     FILE_TYPE_FREE = 0,

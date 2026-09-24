@@ -86,12 +86,14 @@ void serial_print(const char* format, ...){
                 break;
             }
             case 'x': {
+                serial_print("0x");
                 uint32_t x = va_arg(args, uint32_t);
                 serial_put_number(x, 16);
                 break;
             }
             case 'l':
                 if (*(p+1) == 'l' && *(p+2) == 'x') {
+                    serial_print("0x");
                     p += 2;
                     uint64_t val = va_arg(args, uint64_t);
                     

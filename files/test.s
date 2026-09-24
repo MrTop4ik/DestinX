@@ -22,7 +22,7 @@ _start:
     mov rax, 1
     mov rdi, rbx
     mov rsi, reversed_hw
-    mov rdx, 13
+    mov rdx, 14
     push rbx
     syscall
 
@@ -40,14 +40,14 @@ _start:
     mov rax, 0
     mov rdi, rbx
     mov rsi, 0x401000
-    mov rdx, 13
+    mov rdx, 14
     push rbx
     syscall
 
     mov rax, 1
     mov rdi, 2
     mov rsi, 0x401000
-    mov rdx, 13
+    mov rdx, 14
     syscall
 
     pop rbx
@@ -76,8 +76,20 @@ _start:
     mov rax, 201
     syscall
 
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, 0x401000
+    mov rdx, 10
+    syscall
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, 0x401000
+    mov rdx, 3
+    syscall
+
     jmp $
 
 section .rodata
 fp: db "/usr/txt/test.txt", 0
-reversed_hw: db "!dlroW ,olleH", 0
+reversed_hw: db "!dlroW ,olleH", 10, 0

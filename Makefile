@@ -45,7 +45,7 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/elf/elf.c						-o elf.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/brk.c										-o brk.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/mmap.c									-o mmap.o
-	x86_64-elf-gcc		$(CFLAGS)		-c drivers/console/console.c					-o console.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/video/console.c						-o console.o
 	x86_64-elf-gcc		$(CFLAGS)		-c fs/vfs.c										-o vfs.o
 	x86_64-elf-gcc		$(CFLAGS)		-c mm/page_cache.c								-o page_cache.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/rtc/rtc.c				-o rtc.o

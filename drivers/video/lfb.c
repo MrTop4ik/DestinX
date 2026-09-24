@@ -178,7 +178,7 @@ void kprintf(const char* format, ...){
                 }
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    kring_write(local_buf, idx);
+                    kring_write(local_buf, idx, 1);
                     idx = 0;
                 }
 
@@ -192,7 +192,7 @@ void kprintf(const char* format, ...){
                 CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    kring_write(local_buf, idx);
+                    kring_write(local_buf, idx, 1);
                     idx = 0;
                 }
 
@@ -208,7 +208,7 @@ void kprintf(const char* format, ...){
                     CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
                     
                     if (idx > KPRINTF_BUF_MAX - 35){
-                        kring_write(local_buf, idx);
+                        kring_write(local_buf, idx, 1);
                         idx = 0;
                     }
 
@@ -222,7 +222,7 @@ void kprintf(const char* format, ...){
                 CHECK_AND_FLUSH(); local_buf[idx++] = 'x';
 
                 if (idx > KPRINTF_BUF_MAX - 35){
-                    kring_write(local_buf, idx);
+                    kring_write(local_buf, idx, 1);
                     idx = 0;
                 }
 
@@ -235,5 +235,5 @@ void kprintf(const char* format, ...){
     }
     va_end(args);
 
-    if (idx > 0) kring_write(local_buf, idx);
+    if (idx > 0) kring_write(local_buf, idx, 1);
 }

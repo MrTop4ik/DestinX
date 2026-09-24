@@ -122,9 +122,8 @@ void isr_handler(struct InterruptRegisters *regs){
     if (regs->int_no == 0x0e){
         page_fault_handler(regs);
     } else {
-        serial_print("[ISR] ");
-        serial_print(exceptions[regs->int_no]);
-        serial_print("\n");
+        serial_print("[ISR %x] %s | ERR CODE: %x\n", regs->int_no, exceptions[regs->int_no], regs->err_code);
+        serial_print("REGISTERS:\n      RAX: %llx | RBX: %llx | RCX: %llx | RDX: %llx | RDI: %llx | RSI: %llx | RBP: %llx\n      R8: %llx | R9: %llx | R10: %llx | R11: %llx | R12: %llx | R13: %llx | R14: %llx | R15: %llx\n      RIP: %llx | RFLAGS: %llx | CS: %llx | SS: %llx | RSP: %llx\n", regs->rax, regs->rbx, regs->rcx, regs->rdx, regs->rdi, regs->rsi, regs->rbp, regs->r8, regs->r9, regs->r10, regs->r11, regs->r12, regs->r13, regs->r14, regs->r15, regs->rip, regs->rflags, regs->cs, regs->ss, regs->rsp);
         for (;;);
     }
 }
