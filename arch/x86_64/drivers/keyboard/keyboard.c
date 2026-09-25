@@ -137,4 +137,5 @@ void init_keyboard(void){
     backspace = 0;
     setIRQHandler(1, &keyboard_handler);
     ioapic_set_irq(1, 0x21, 0);
+    serial_print("[KEYBOARD] Keyboard was initilized\n");
 }

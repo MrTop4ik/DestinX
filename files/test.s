@@ -23,25 +23,18 @@ _start:
     mov rdi, rbx
     mov rsi, reversed_hw
     mov rdx, 14
-    push rbx
     syscall
-
-    pop rbx
 
     mov rax, 8
     mov rdi, rbx
     mov rsi, 0
     mov rdx, 0
-    push rbx
     syscall
-
-    pop rbx
 
     mov rax, 0
     mov rdi, rbx
     mov rsi, 0x401000
     mov rdx, 14
-    push rbx
     syscall
 
     mov rax, 1
@@ -49,8 +42,6 @@ _start:
     mov rsi, 0x401000
     mov rdx, 14
     syscall
-
-    pop rbx
 
     mov rax, 3
     mov rdi, rbx
