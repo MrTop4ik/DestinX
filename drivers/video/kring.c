@@ -1,5 +1,7 @@
 #include <drivers/kring.h>
 
+extern int backspace;
+
 log_entry_t *write_kring = NULL;
 log_entry_t *read_kring = NULL;
 uint64_t write_kring_head = 0;
@@ -93,7 +95,7 @@ void kring_flush_to_screen(void){
         printed = 1;
     }
 
-    if (printed) lfb_swap();
+    if (printed || backspace) { backspace = 0; lfb_swap(); }
 
     spin_lock_irqrestore(&kring_read_lock, rflags);
 }

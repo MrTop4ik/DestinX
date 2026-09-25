@@ -83,6 +83,15 @@ void kputchar_direct(char c){
     if (c == '\n'){
         lfb.cursor_x = 0;
         lfb.cursor_y += lfb.char_height;
+    } else if (c == '\b'){
+        if (lfb.cursor_x == 0 && lfb.cursor_y == 0) return;
+        
+        if (lfb.cursor_x == 0){
+            lfb.cursor_x = lfb.width - lfb.char_width;
+            lfb.cursor_y -= lfb.char_height;
+        } else lfb.cursor_x -= lfb.char_width;
+
+        draw_char_at(lfb.cursor_x, lfb.cursor_y, ' ', 0xFFFFFFFF, 0x0);
     } else {
         draw_char_at(lfb.cursor_x, lfb.cursor_y, c, 0xFFFFFFFF, 0x0);
         lfb.cursor_x += lfb.char_width;
@@ -101,7 +110,6 @@ void kputchar_direct(char c){
 
 void kputchar(char c){
     kputchar_direct(c);
-    lfb_swap();
 }
 
 void kputnum_direct(uint32_t num, uint32_t base){

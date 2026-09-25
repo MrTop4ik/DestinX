@@ -37,14 +37,14 @@ int terminal_write(struct FILE *file, const char *buf, size_t count){
 int terminal_read(struct FILE *file, const char *buf, size_t count){
     if (!count) return 0;
     mutex_lock(&term_read_mutex);
-    serial_print("[TERMINAL] Reading Started for Thread %d\n", current_thread->tid);
+    serial_print("[STDIN] Reading Started for Thread %d\n", current_thread->tid);
     if (!check_for_n()){
         read_blocked_thread = current_thread;
         current_thread->state = BLOCKED;
         yield();
     }
     int read = kring_flush_to_rbuf(buf, count);
-    serial_print("[TERMINAL] Reading Ended for Thread %d\n", current_thread->tid);
+    serial_print("[STDIN] Reading Ended for Thread %d\n", current_thread->tid);
     mutex_unlock(&term_read_mutex);
     return 0;
 }

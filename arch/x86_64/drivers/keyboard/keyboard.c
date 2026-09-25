@@ -6,6 +6,7 @@ extern thread_t *read_blocked_thread;
 int shift;
 int capslock;
 int ext;
+int backspace;
 
 const char *lowercase[] = {
     "UNKNOWN","ESC","1","2","3","4","5","6","7","8",
@@ -74,6 +75,17 @@ void keyboard_handler(struct InterruptRegisters *regs){
         case 88:
             break;
         
+        case 14:
+            if (!press){
+                backspace = 1;
+                write_kring[write_kring_head & KRING_BUF_MASK].ready = 1;
+                if (read_kring_tail == read_kring_head--) read_kring_tail--;
+                if (write_kring_tail == write_kring_head--) write_kring_tail--;
+
+                kputchar_direct('\b');
+            }
+            break;
+        
         case 28:
             if (!press){
                 kring_write("\n", 1, 0);
@@ -122,6 +134,7 @@ void init_keyboard(void){
     shift = 0;
     capslock = 0;
     ext = 0;
+    backspace = 0;
     setIRQHandler(1, &keyboard_handler);
     ioapic_set_irq(1, 0x21, 0);
 }
