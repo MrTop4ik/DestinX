@@ -1,7 +1,7 @@
 bits 64
 section .text
 
-extern instr_supported
+extern sse_avx
 
 global sse_avx_check
 sse_avx_check:
@@ -32,7 +32,7 @@ sse_avx_check:
 
 global init_sse_avx
 init_sse_avx:
-    mov r8b, [rel instr_supported]
+    mov r8b, [rel sse_avx]
     cmp r8b, 0
     je .exit
 

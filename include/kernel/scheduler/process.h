@@ -8,13 +8,14 @@
 #include <mm/vmalloc.h>
 #include <fs/vfs.h>
 #include <drivers/console.h>
+#include <arch/x86_64/utils.h>
 
 #define MAX_FD 128
 
 struct thread;
 
 typedef struct process {
-    uint64_t pml4;
+    uint64_t cr3;
     uint64_t pid;
     struct thread *threads;
     struct vm_area *ustacks_infos;

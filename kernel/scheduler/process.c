@@ -27,7 +27,8 @@ process_t *create_user_process(const char *fp){
     for (int i = 0; i < 256; i++) pml4[i] = 0;
     for (int i = 256; i < 512; i++) pml4[i] = old_pml4[i];
 
-    p->pml4 = pml4_phys;
+    p->cr3 = pml4_phys;
+    if (pcid) p->cr3 = p->cr3 | CR3_NOFLUSH | p->pid;
     p->pid = next_process_id++;
 
     uint64_t old_pml4_phys = read_cr3();
@@ -42,7 +43,7 @@ process_t *create_user_process(const char *fp){
 
     uint64_t rflags = spin_lock_irqsave(&create_proc_lock);
     
-    write_cr3(p->pml4);
+    write_cr3(p->cr3);
 
     vmm_map_page(read_cr3(), pmm_alloc_page(), 0xffffffffffff0000, PAGE_SIZE_4KB, (PTE_WRITABLE | PTE_USER));
     memcpy((void*)0xffffffffffff0000, user_exit_trampoline, sizeof(user_exit_trampoline));

@@ -76,7 +76,7 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     uint64_t rflags = spin_lock_irqsave(&create_thread_lock);
 
     us_list_head = proc->ustacks_infos;
-    write_cr3(proc->pml4);
+    write_cr3(proc->cr3);
 
     void *user_stack_mem = user_alloc_stack(ustack_size);
 
@@ -136,7 +136,7 @@ void destroy_thread(thread_t *t){
             uint64_t rflagas = spin_lock_irqsave(&destroy_thread_lock);
 
             us_list_head = t->process->ustacks_infos;
-            write_cr3(t->process->pml4);
+            write_cr3(t->process->cr3);
 
             user_free_stack(t->user_stack.bottom);
 
@@ -153,11 +153,11 @@ void destroy_thread(thread_t *t){
             if (!t->process->threads){
                 vm_area_t *cur = t->process->mmap_infos;
                 while (cur){
-                    munmap_by_info(cur, t->process->pml4);
+                    munmap_by_info(cur, t->process->cr3);
                     cur = cur->next;
                 }
                 for (int i = 0; i < t->process->pages_alloced; i++){
-                    uint64_t paddr = vmm_unmap_page(t->process->pml4, t->process->heap_start + (i * PAGE_SIZE_4KB));
+                    uint64_t paddr = vmm_unmap_page(t->process->cr3, t->process->heap_start + (i * PAGE_SIZE_4KB));
                     pmm_free_page(paddr);
                 }
 
@@ -166,7 +166,7 @@ void destroy_thread(thread_t *t){
                 }
 
                 kfree(t->process);
-                pmm_free_page(t->process->pml4);
+                pmm_free_page(t->process->cr3);
             }
         }
         kfree(t);

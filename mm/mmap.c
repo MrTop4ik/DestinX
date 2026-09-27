@@ -29,7 +29,7 @@ void munmap(void *ptr){
     vm_area_t *current = mmap_list_head;
     while (current){
         if (((uint64_t)current->base - current->size) == (uint64_t)ptr){
-            munmap_by_info(current, current_thread->process->pml4);
+            munmap_by_info(current, current_thread->process->cr3);
             current_thread->process->mmap_infos = mmap_list_head;
             return;
         }

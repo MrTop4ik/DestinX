@@ -10,7 +10,7 @@ void init_scheduler(void){
     process_t *kp = (process_t *)kmalloc(sizeof(process_t));
     memset(kp, 0, sizeof(process_t));
 
-    kp->pml4 = read_cr3();
+    kp->cr3 = read_cr3() | CR3_NOFLUSH;
 
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
     main_thread->tid = next_thread_id++;
@@ -79,8 +79,8 @@ uint64_t scheduler_handler(uint64_t old_rsp){
         if (next_thread->process){
             us_list_head = next_thread->process->ustacks_infos;
             mmap_list_head = next_thread->process->mmap_infos;
-            if (read_cr3() != next_thread->process->pml4) {
-                write_cr3(next_thread->process->pml4);
+            if (read_cr3() != next_thread->process->cr3) {
+                write_cr3(next_thread->process->cr3);
             }
         } else {
             us_list_head = NULL;

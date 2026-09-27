@@ -11,6 +11,7 @@ iso:
 	nasm				$(AFLAGS)		   arch/x86_64/syscalls/syscalls.s				-o syscall.o
 	nasm				$(AFLAGS)		   drivers/storage/ahci.s						-o ahcis.o
 	nasm 				$(AFLAGS) 		   arch/x86_64/utils/sse_avx.s					-o sse_avx.o
+	nasm 				$(AFLAGS) 		   arch/x86_64/utils/pcid.s						-o pcid.o
 	x86_64-elf-gcc 		$(CFLAGS)		-c kernel/kernel.c								-o kernel.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/gdt/gdt.c						-o gdts.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/idt/idt.c						-o idts.o
@@ -52,7 +53,8 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/tsc/tsc.c				-o tsc.o
 	x86_64-elf-gcc		$(CFLAGS)		-c kernel/time/time.c							-o time.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/keyboard/keyboard.c		-o keyboard.o
-	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o font8x16.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o page_cache.o sse_avx.o rtc.o tsc.o time.o keyboard.o
+	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/utils/utils.c					-o utils.o
+	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o font8x16.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o page_cache.o sse_avx.o rtc.o tsc.o time.o keyboard.o pcid.o utils.o
 	grub-file --is-x86-multiboot2 kernel.bin
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir

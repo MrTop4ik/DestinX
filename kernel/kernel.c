@@ -8,6 +8,7 @@
 #include <arch/x86_64/idt.h>
 #include <arch/x86_64/inlineasm.h>
 #include <arch/x86_64/syscalls.h>
+#include <arch/x86_64/utils.h>
 #include <drivers/ahci.h>
 #include <drivers/lfb.h>
 #include <fs/dfs.h>
@@ -30,6 +31,7 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_kheap();
 
+    init_utils();
     init_LFB(physBootInfo);
 
     parse_acpi(physBootInfo);

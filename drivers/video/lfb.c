@@ -1,7 +1,5 @@
 #include <drivers/lfb.h>
 
-extern uint64_t sse_avx_check();
-extern void init_sse_avx();
 extern void avx_lfb_memcpy(void *dest, void *src, uint64_t count);
 extern void sse_lfb_memcpy(void *dest, void *src, uint64_t count);
 
@@ -39,9 +37,6 @@ void init_LFB(unsigned int physBootInfo){
 
     memset(lfb.buffer, 0, lfb.size);
 
-    instr_supported = sse_avx_check();
-    init_sse_avx();
-
     init_kring();
 
     lfb_swap();
@@ -50,9 +45,9 @@ void init_LFB(unsigned int physBootInfo){
 }
 
 void lfb_swap(void){
-    if (instr_supported == 0) memcpy(lfb.vram, lfb.buffer, lfb.size);
-    else if (instr_supported == 1) sse_lfb_memcpy(lfb.vram, lfb.buffer, lfb.size);
-    else if (instr_supported == 2) avx_lfb_memcpy(lfb.vram, lfb.buffer, lfb.size);
+    if (sse_avx == 0) memcpy(lfb.vram, lfb.buffer, lfb.size);
+    else if (sse_avx == 1) sse_lfb_memcpy(lfb.vram, lfb.buffer, lfb.size);
+    else if (sse_avx == 2) avx_lfb_memcpy(lfb.vram, lfb.buffer, lfb.size);
 }
 
 void lfb_scroll(void){

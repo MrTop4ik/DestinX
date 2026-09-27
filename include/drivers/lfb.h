@@ -9,6 +9,7 @@
 #include <kernel/sync/spinlock.h>
 #include <drivers/kring.h>
 #include <mm/vmalloc.h>
+#include <arch/x86_64/utils.h>
 
 #define LFB_ADDR 0xFFFFFFFFC0000000
 
