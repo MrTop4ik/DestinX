@@ -2,6 +2,7 @@ bits 64
 section .text
 
 extern scheduler_handler
+extern lapic_timer_reload_oneshot
 global yield_handler
 yield_handler:
     push r15
@@ -41,5 +42,7 @@ yield_handler:
     pop r13
     pop r14
     pop r15
+
+    call lapic_timer_reload_oneshot
 
     iretq

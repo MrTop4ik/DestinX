@@ -14,9 +14,10 @@
 #define LAPIC_TIMER_CURRCNT 0x390
 #define LAPIC_TIMER_DIV 0x3E0
 
-#define LAPIC_TIMER_MASK (1 << 16)
-#define LAPIC_TIMER_PERIODIC (1 << 17)
+#define LAPIC_TIMER_MASK            (1 << 16)
+#define LAPIC_TIMER_PERIODIC        (1 << 17)
+#define LAPIC_TIMER_TSC_DEADLINE    (1 << 18)
+#define LAPIC_TIMER_ONESHOT         0x0
 
-extern uint64_t lapic_timer_ticks;
-
-void init_lapic_timer(uint8_t vector, uint32_t ms);
+void init_lapic_timer(uint8_t vector);
+void lapic_timer_reload_oneshot(void);

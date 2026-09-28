@@ -12,4 +12,3 @@
 
 void init_scheduler(void);
 uint64_t scheduler_handler(uint64_t old_rsp);
-void sleep(uint64_t ms);
