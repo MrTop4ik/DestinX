@@ -20,4 +20,4 @@
 #define LAPIC_TIMER_ONESHOT         0x0
 
 void init_lapic_timer(uint8_t vector);
-void lapic_timer_reload_oneshot(void);
+void lapic_timer_reload_oneshot(uint64_t ms);

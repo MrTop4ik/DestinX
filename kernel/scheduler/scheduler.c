@@ -9,7 +9,8 @@ void init_scheduler(void){
     process_t *kp = (process_t *)kmalloc(sizeof(process_t));
     memset(kp, 0, sizeof(process_t));
 
-    kp->cr3 = read_cr3() | CR3_NOFLUSH;
+    kp->cr3 = read_cr3();
+    if (pcid) kp->cr3 = kp->cr3 | CR3_NOFLUSH;
 
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
     main_thread->tid = next_thread_id++;

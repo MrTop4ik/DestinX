@@ -43,6 +43,11 @@ yield_handler:
     pop r14
     pop r15
 
+    push rdi
+
+    mov rdi, 1
     call lapic_timer_reload_oneshot
+
+    pop rdi
 
     iretq

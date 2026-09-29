@@ -45,6 +45,13 @@ lapic_timer_handler:
     pop r15
 
     call lapic_eoi
+    
+    push rdi
+
+    mov rdi, 1
     call lapic_timer_reload_oneshot
+
+    pop rdi
+
 
     iretq
