@@ -27,7 +27,7 @@ char *exceptions[] = {
     "Coprocessor Fault.",
     "Aligment Fault.",
     "Machine Check.",
-    "Reserved.",
+    "SIMD Floating-Point.",
     "Reserved.",
     "Reserved.",
     "Reserved.",

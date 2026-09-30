@@ -17,8 +17,19 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
 
     memset(t, 0, sizeof(thread_t));
 
+    if (sse_avx_buf_size){
+        t->sse_avx_buffer = vmalloc(sse_avx_buf_size);
+        serial_print("ADDR: %llx SIZE: %llx\n", (uint64_t)t->sse_avx_buffer, sse_avx_buf_size);
+        if (!t->sse_avx_buffer){
+            kfree(t);
+            return NULL;
+        }
+        memset(t->sse_avx_buffer, 0, sse_avx_buf_size);
+    }
+
     void *stack_mem = kernel_alloc_stack(stack_size);
     if (!stack_mem){
+        kfree(t->sse_avx_buffer);
         kfree(t);
         return NULL;
     }
@@ -62,8 +73,21 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
 
     memset(t, 0, sizeof(thread_t));
 
+    if (sse_avx_buf_size){
+        t->sse_avx_buffer = vmalloc(sse_avx_buf_size);
+        if (!t->sse_avx_buffer){
+            kfree(t);
+            return NULL;
+        }
+        memset(t->sse_avx_buffer, 0, sse_avx_buf_size);
+    }
+
     void *kernel_stack_mem = kernel_alloc_stack(kstack_size);
-    if (!kernel_stack_mem){ kfree(t); return NULL; }
+    if (!kernel_stack_mem){ 
+        kfree(t->sse_avx_buffer);
+        kfree(t); 
+        return NULL; 
+    }
 
     t->process = proc;
     t->next_pthread = t->process->threads;
@@ -79,6 +103,14 @@ thread_t *create_user_thread(struct process *proc, void (*entry_point)(void), si
     write_cr3(proc->cr3);
 
     void *user_stack_mem = user_alloc_stack(ustack_size);
+    if (!user_stack_mem){
+        us_list_head = old_list;
+        write_cr3(old_cr3);
+
+        kfree(t->sse_avx_buffer);
+        kfree(t);
+        return NULL; 
+    }
 
     uint64_t *stack_top = (uint64_t*)((uint64_t)user_stack_mem);
     stack_top = (uint64_t*)((uint64_t)stack_top & ~15UL);

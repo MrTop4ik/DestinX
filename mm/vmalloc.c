@@ -8,7 +8,7 @@ void *vmalloc(size_t size){
     vm_area_t *i = kmalloc(sizeof(vm_area_t));
     if (!i) return NULL;
 
-    i->size = size;
+    i->size = (size + PAGE_SIZE_4KB - 1) & PAGE_MASK_4KB;
 
     vm_add_to_list(i);
 

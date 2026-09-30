@@ -23,7 +23,7 @@ typedef struct thread {
     stack_t user_stack;
     uint64_t page_guard_min;
     uint64_t page_guard_max;
-    uint64_t sleep_time;
+    void *sse_avx_buffer;
     struct process *process;
     struct thread *prev;
     struct thread *next;

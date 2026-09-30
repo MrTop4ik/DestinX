@@ -13,6 +13,7 @@ void init_scheduler(void){
     if (pcid) kp->cr3 = kp->cr3 | CR3_NOFLUSH;
 
     thread_t *main_thread = (thread_t *)kmalloc(sizeof(thread_t));
+    main_thread->sse_avx_buffer = vmalloc(sse_avx_buf_size);
     main_thread->tid = next_thread_id++;
     main_thread->state = RUNNING;
     main_thread->rsp = 0;
@@ -92,6 +93,14 @@ uint64_t scheduler_handler(uint64_t old_rsp){
 
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
+
+    if (sse_avx == 1){
+        save_sse_ctx(old_thread->sse_avx_buffer);
+        restore_sse_ctx(next_thread->sse_avx_buffer);
+    } else if (sse_avx == 2){
+        save_avx_ctx(old_thread->sse_avx_buffer);
+        restore_avx_ctx(next_thread->sse_avx_buffer);
+    }
     
     return next_thread->rsp;
 }

@@ -25,7 +25,7 @@ sse_avx_check:
     mov rax, 1
     jmp .exit
 .no_support:
-    mov rax, 0
+    xor rax, rax
 .exit:
     pop rbx
     ret
@@ -61,21 +61,74 @@ init_sse_avx:
 .exit:
     ret
 
+global get_sse_avx_buf_size
+get_sse_avx_buf_size:
+    push rbx
+
+    mov r8b, [rel sse_avx]
+    cmp r8b, 0
+    je .no_support
+
+    cmp r8b, 2
+    je .avx_size
+
+    mov rax, 512
+    jmp .exit
+
+.avx_size:
+    mov eax, 0xD
+    mov ecx, 0
+    cpuid
+
+    mov ebx, ebx
+    jmp .exit
+
+.no_support:
+    xor rax, rax
+
+.exit:
+    pop rbx
+    ret
+
+global save_avx_ctx
+save_avx_ctx:
+    mov eax, 0x7
+    xor edx, edx
+    xsave [rdi]
+    ret
+
+global restore_avx_ctx
+restore_avx_ctx:
+    mov eax, 0x7
+    xor edx, edx
+    xrstor [rdi]
+    ret
+
+global save_sse_ctx
+save_sse_ctx:
+    fxsave [rdi]
+    ret
+
+global restore_sse_ctx
+restore_sse_ctx:
+    fxrstor [rdi]
+    ret
+
 global avx_lfb_memcpy
-align 32
 avx_lfb_memcpy:
     shr rdx, 8
     jz .exit
 
+align 32
 .loop_avx:
-    vmovdqu ymm0, [rsi]
-    vmovdqu ymm1, [rsi + 32]
-    vmovdqu ymm2, [rsi + 64]
-    vmovdqu ymm3, [rsi + 96]
-    vmovdqu ymm4, [rsi + 128]
-    vmovdqu ymm5, [rsi + 160]
-    vmovdqu ymm6, [rsi + 192]
-    vmovdqu ymm7, [rsi + 224]
+    vmovdqa ymm0, [rsi]
+    vmovdqa ymm1, [rsi + 32]
+    vmovdqa ymm2, [rsi + 64]
+    vmovdqa ymm3, [rsi + 96]
+    vmovdqa ymm4, [rsi + 128]
+    vmovdqa ymm5, [rsi + 160]
+    vmovdqa ymm6, [rsi + 192]
+    vmovdqa ymm7, [rsi + 224]
 
     vmovntdq [rdi], ymm0
     vmovntdq [rdi + 32], ymm1
@@ -99,20 +152,20 @@ avx_lfb_memcpy:
     ret
 
 global sse_lfb_memcpy
-align 16
 sse_lfb_memcpy:
     shr rdx, 7
     jz .exit
 
+align 16
 .loop_avx:
-    movdqu xmm0, [rsi]
-    movdqu xmm1, [rsi + 16]
-    movdqu xmm2, [rsi + 32]
-    movdqu xmm3, [rsi + 48]
-    movdqu xmm4, [rsi + 64]
-    movdqu xmm5, [rsi + 80]
-    movdqu xmm6, [rsi + 96]
-    movdqu xmm7, [rsi + 112]
+    movdqa xmm0, [rsi]
+    movdqa xmm1, [rsi + 16]
+    movdqa xmm2, [rsi + 32]
+    movdqa xmm3, [rsi + 48]
+    movdqa xmm4, [rsi + 64]
+    movdqa xmm5, [rsi + 80]
+    movdqa xmm6, [rsi + 96]
+    movdqa xmm7, [rsi + 112]
 
     movntdq [rdi], xmm0
     movntdq [rdi + 16], xmm1
