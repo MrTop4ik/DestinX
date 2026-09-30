@@ -41,7 +41,7 @@ void init_LFB(unsigned int physBootInfo){
 
     lfb_swap();
 
-    serial_print("[LFB] LFB was initialized\n");
+    serial_print("[LFB] LFB Was Initialized\n");
 }
 
 void lfb_swap(void){

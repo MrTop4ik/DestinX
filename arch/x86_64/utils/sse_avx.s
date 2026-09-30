@@ -10,7 +10,7 @@ sse_avx_check:
     mov eax, 1
     cpuid
 
-    bt ecx, 27
+    bt ecx, 26
     jnc .sse_check
 
     bt ecx, 28

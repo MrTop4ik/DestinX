@@ -25,7 +25,7 @@ void init_kring(void){
         read_kring[i].ready = 0;
     }
 
-    serial_print("[KRING] KRING buffer was initialized\n");
+    serial_print("[KRING] KRING buffer Was Initialized\n");
 }
 
 void kring_write(const char *s, size_t len, uint8_t mode){
