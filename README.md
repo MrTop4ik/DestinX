@@ -73,8 +73,9 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
+- [ ] **Sleep**: blocking thread for 
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
-- [ ] **Vector Registers**: Implement switching vector regs context.
+- [ ] **Vector Registers**: switching vector regs context.
 - [ ] **LibC**: libc support for user programs.
 
 ---

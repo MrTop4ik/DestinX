@@ -25,5 +25,5 @@ void init_lapic_timer(uint8_t vector){
 }
 
 void lapic_timer_reload_oneshot(uint64_t ms){
-    write_lapic(LAPIC_TIMER_INITCNT, lapic_timer_ticks_per_ms);
+    write_lapic(LAPIC_TIMER_INITCNT, lapic_timer_ticks_per_ms * ms);
 }
