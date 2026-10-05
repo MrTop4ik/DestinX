@@ -18,3 +18,4 @@ void yield(void);
 void sti(void);
 void cli(void);
 void hlt(void);
+void clts(void);

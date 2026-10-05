@@ -37,6 +37,15 @@ void init_scheduler(void){
 uint64_t scheduler_handler(uint64_t old_rsp){
     if (!ready_list_head || ready_list_head->next == ready_list_head) return old_rsp;
 
+    __asm__ volatile(
+        "mov %%cr0, %%rax\n\t"
+        "or $0x8, %%rax\n\t"
+        "mov %%rax, %%cr0"
+        :
+        :
+        : "rax", "cc", "memory"
+    );
+
     thread_t *old_thread = current_thread;
 
     thread_t *starting_point = old_thread->next;
@@ -93,14 +102,6 @@ uint64_t scheduler_handler(uint64_t old_rsp){
 
     tss.rsp0 = (uint64_t)current_thread->kernel_stack.top;
     sstacks.kernel_rsp = (uint64_t)current_thread->kernel_stack.top;
-
-    if (sse_avx == 1){
-        save_sse_ctx(old_thread->sse_avx_buffer);
-        restore_sse_ctx(next_thread->sse_avx_buffer);
-    } else if (sse_avx == 2){
-        save_avx_ctx(old_thread->sse_avx_buffer);
-        restore_avx_ctx(next_thread->sse_avx_buffer);
-    }
     
     return next_thread->rsp;
 }

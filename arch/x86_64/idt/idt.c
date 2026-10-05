@@ -4,7 +4,8 @@ extern void* isr_stub_table[];
 extern void* irq_stub_table[];
 extern void* isr255();
 
-void page_fault_handler(struct InterruptRegisters *regs);
+extern void page_fault_handler(struct InterruptRegisters *regs);
+extern void vector_ctx_switch(struct InterruptRegisters *regs);
 extern void* yield_handler();
 
 char *exceptions[] = {
@@ -119,7 +120,9 @@ void exception_handler(struct InterruptRegisters *regs){
 }
 
 void isr_handler(struct InterruptRegisters *regs){
-    if (regs->int_no == 0x0e){
+    if (regs->int_no == 0x07){
+        vector_ctx_switch(regs);
+    } else if (regs->int_no == 0x0e){
         page_fault_handler(regs);
     } else {
         serial_print("[ISR %x] %s | ERR CODE: %x\n", regs->int_no, exceptions[regs->int_no], regs->err_code);

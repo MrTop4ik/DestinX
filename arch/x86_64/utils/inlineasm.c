@@ -72,13 +72,17 @@ void yield(void){
 }
 
 void sti(void){
-    __asm__ volatile ("sti" : : : "memory");
+    __asm__ volatile ("sti" : : : "cc");
 }
 
 void cli(void){
-    __asm__ volatile ("cli" : : : "memory");
+    __asm__ volatile ("cli" : : : "cc");
 }
 
 void hlt(void){
     __asm__ volatile ("hlt" : : : "memory");
+}
+
+void clts(void){
+    __asm__ volatile ("clts" : : : "cc");
 }
