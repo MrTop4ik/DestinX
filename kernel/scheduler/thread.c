@@ -19,7 +19,6 @@ thread_t *create_thread(void (*entry_point)(void), size_t stack_size){
 
     if (sse_avx_buf_size){
         t->sse_avx_buffer = vmalloc(sse_avx_buf_size);
-        serial_print("ADDR: %llx SIZE: %llx\n", (uint64_t)t->sse_avx_buffer, sse_avx_buf_size);
         if (!t->sse_avx_buffer){
             kfree(t);
             return NULL;

@@ -40,9 +40,11 @@ stack_top:
 global stack_top
 
 section .boot_rodata
+msg_invalid_magic: db "ERROR: INVALID MAGIC", 0
 msg_no_cpuid: db "ERROR: CPUID NOT SUPPORTED", 0
 msg_no_long_mode: db "ERROR: LONG MODE (X64) NOT SUPPORTED", 0
 msg_no_invariant_tsc: db "ERROR: INVARIANT TSC NOT SUPPORTED", 0
+msg_no_lfb: db "ERROR: LFB NOT SUPPORTED", 0
 
 gdt64:
     dq 0
@@ -59,15 +61,21 @@ gdt64:
 
 section .boot_text
 bits 32
-print_string_32:
+print_string_32_vga:
     mov edi, 0xB8000
     mov ah, 0x0F
-.loop:
-    lodsb
-    test al, al
-    jz .done
-    stosw
-    jmp .loop
+.loop_print:
+    cmp byte [esi], 0
+    je .done
+
+    mov al, [esi]
+    mov [edi], ax
+
+    inc esi
+    add edi, 2
+    
+    jmp .loop_print
+
 .done:
     ret
 
@@ -86,12 +94,8 @@ check_cpuid:
     jz .no_cpuid
     ret
 .no_cpuid:
-    push esi
-
     mov esi, msg_no_cpuid
-    call print_string_32
-
-    pop esi
+    call print_string_32_vga
     hlt
 
 check_long_mode:
@@ -106,12 +110,8 @@ check_long_mode:
     jz .no_long_mode
     ret
 .no_long_mode:
-    push esi
-    
     mov esi, msg_no_long_mode
-    call print_string_32
-
-    pop esi
+    call print_string_32_vga
     hlt
 
 check_invariant_tsc:
@@ -121,13 +121,42 @@ check_invariant_tsc:
     jz .no_invariant_tsc
     ret
 .no_invariant_tsc:
+    mov esi, msg_no_invariant_tsc
+    call print_string_32_vga
+    hlt
+
+check_lfb:
     push esi
 
-    mov esi, msg_no_invariant_tsc
-    call print_string_32
+    mov ecx, [edi]
+    lea edx, [edi + 8]
+    add ecx, edi
 
-    pop esi
+.loop_tags:
+    mov eax, [edx]
+    mov esi, [edx + 4]
+
+    cmp eax, 8
+    je .done
+
+    cmp eax, 0
+    je .no_lfb
+
+.next_tag:
+    add esi, 7
+    and esi, 0xFFFFFFF8
+
+    add edx, esi
+    jmp .loop_tags
+
+.no_lfb:
+    mov esi, msg_no_lfb
+    call print_string_32_vga
     hlt
+
+.done:
+    pop esi
+    ret
 
 global _start
 _start:
@@ -135,6 +164,17 @@ _start:
 
     mov ebp, eax
     mov esi, ebx
+
+    cmp eax, 0x36d76289
+    je .valid_magic
+
+    mov esi, msg_invalid_magic
+    call print_string_32_vga
+    hlt
+
+.valid_magic:
+    mov edi, esi
+    call check_lfb
 
     call check_cpuid
     call check_long_mode
