@@ -1,5 +1,5 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
-AFLAGS = -f elf64
+AFLAGS = -f elf64 -i /home/mrtop4ik/DestinX/arch/x86_64/boot/
 QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu host,migratable=no,+invtsc -machine q35,acpi=on -serial stdio -display gtk -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0
 
 iso:

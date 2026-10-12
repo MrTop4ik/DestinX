@@ -1,4 +1,4 @@
-%include "/home/mrtop4ik/DestinX/arch/x86_64/boot/video.s"
+%include "video.s"
 
 section .boot_text
 bits 32

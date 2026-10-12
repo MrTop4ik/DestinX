@@ -59,7 +59,7 @@ gdt64:
     dw $ - gdt64 - 1
     dq gdt64 + 0xFFFFFFFF80000000
 
-%include "/home/mrtop4ik/DestinX/arch/x86_64/boot/cpucheck.s"
+%include "cpucheck.s"
 
 section .boot_text
 bits 32
