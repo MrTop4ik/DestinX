@@ -53,10 +53,10 @@ check_invariant_tsc:
     hlt
 
 check_lfb:
-    push eax
-    push ecx
-    push edx
     push esi
+    push edx
+    push ecx
+    push eax
     mov ecx, [edi]
     lea edx, [edi + 8]
     add ecx, edi
@@ -84,8 +84,16 @@ check_lfb:
     hlt
 
 .done:
+    pop eax
+    pop ecx
+
+    mov esi, [edx + 8]
+    mov [eax], esi
+
+    mov esi, [edx + 16]
+    mov [ecx], esi
+
+    pop edx
     pop esi
-    push edx
-    push ecx
-    push eax
+
     ret

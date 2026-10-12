@@ -32,10 +32,15 @@ pdpt_ident: resb 4096
 pd_indent: resb 4096
 pdpt_kernel: resb 4096
 pd_kernel: resb 4096
+
 align 16
 stack_bottom:
     resb 32768
 stack_top:
+
+align 8
+lfb_address: resb 64
+lfb_pitch: resb 32
 
 global stack_top
 
@@ -79,6 +84,8 @@ _start:
 
 .valid_magic:
     mov edi, esi
+    mov eax, lfb_address
+    mov ecx, lfb_pitch
     call check_lfb
 
     call check_cpuid
