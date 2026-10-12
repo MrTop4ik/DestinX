@@ -73,7 +73,7 @@ _start:
     cmp eax, 0x36d76289
     je .valid_magic
 
-    mov esi, msg_invalid_magic
+    mov edi, msg_invalid_magic
     call print_string_32_vga
     hlt
 

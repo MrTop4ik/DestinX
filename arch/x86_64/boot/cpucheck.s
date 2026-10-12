@@ -17,11 +17,12 @@ check_cpuid:
     jz .no_cpuid
     ret
 .no_cpuid:
-    mov esi, msg_no_cpuid
+    mov edi, msg_no_cpuid
     call print_string_32_vga
     hlt
 
 check_long_mode:
+    push ebx
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
@@ -31,26 +32,31 @@ check_long_mode:
     cpuid
     test edx, 1 << 29
     jz .no_long_mode
+    pop ebx
     ret
 .no_long_mode:
-    mov esi, msg_no_long_mode
+    mov edi, msg_no_long_mode
     call print_string_32_vga
     hlt
 
 check_invariant_tsc:
+    push ebx
     mov eax, 0x80000007
     cpuid
     test edx, 1 << 8
     jz .no_invariant_tsc
+    pop ebx
     ret
 .no_invariant_tsc:
-    mov esi, msg_no_invariant_tsc
+    mov edi, msg_no_invariant_tsc
     call print_string_32_vga
     hlt
 
 check_lfb:
+    push eax
+    push ecx
+    push edx
     push esi
-
     mov ecx, [edi]
     lea edx, [edi + 8]
     add ecx, edi
@@ -73,10 +79,13 @@ check_lfb:
     jmp .loop_tags
 
 .no_lfb:
-    mov esi, msg_no_lfb
+    mov edi, msg_no_lfb
     call print_string_32_vga
     hlt
 
 .done:
     pop esi
+    push edx
+    push ecx
+    push eax
     ret
