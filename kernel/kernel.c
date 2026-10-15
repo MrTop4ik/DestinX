@@ -11,6 +11,7 @@
 #include <arch/x86_64/utils.h>
 #include <drivers/ahci.h>
 #include <drivers/lfb.h>
+#include <drivers/virtio.h>
 #include <fs/dfs.h>
 #include <kernel/sync/mutex.h>
 #include <kernel/scheduler/scheduler.h>
@@ -39,6 +40,8 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
     init_ioapic();
 
     init_ahci();
+    find_virtio_gpu();
+
     init_keyboard();
     init_time();
 

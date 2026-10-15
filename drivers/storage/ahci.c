@@ -8,13 +8,13 @@ int ahci_found = 0;
 volatile hba_mem_t *ahci_regs = (hba_mem_t *)VIRT_ABAR;
 
 void init_ahci(void){
-    for (uint16_t bus = 0; bus < 256; bus++) {
-        for (uint8_t dev = 0; dev < 32; dev++) {
-            for (uint8_t func = 0; func < 8; func++) {
+    for (uint16_t bus = 0; bus < 256; bus++){
+        for (uint8_t dev = 0; dev < 32; dev++){
+            for (uint8_t func = 0; func < 8; func++){
                 uint32_t reg_id = pci_read_dword((uint8_t)bus, dev, func, 0x00);
                 uint16_t vendor_id = reg_id & 0xFFFF;
 
-                if (vendor_id == 0xFFFF) {
+                if (vendor_id == 0xFFFF){
                     if (func == 0) break;
                     continue;
                 }

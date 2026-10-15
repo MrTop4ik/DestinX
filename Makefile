@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64 -i /home/mrtop4ik/DestinX/arch/x86_64/boot/
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu host,migratable=no,+invtsc -machine q35,acpi=on -serial stdio -display gtk -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu host,migratable=no,+invtsc -machine q35,acpi=on -serial stdio -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0 -device virtio-gpu-pci,disable-legacy=on,xres=1024,yres=768
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o
@@ -55,7 +55,8 @@ iso:
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/drivers/keyboard/keyboard.c		-o keyboard.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/utils/utils.c					-o utils.o
 	x86_64-elf-gcc		$(CFLAGS)		-c arch/x86_64/context/vector.c					-o vector.o
-	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o font8x16.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o page_cache.o sse_avx.o rtc.o tsc.o time.o keyboard.o pcid.o utils.o vector.o
+	x86_64-elf-gcc		$(CFLAGS)		-c drivers/virtio/virtio.c						-o virtio.o
+	x86_64-elf-gcc -T arch/x86_64/boot/linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib -lgcc boot.o kernel.o inlineasm.o serial.o gdt.o gdts.o idt.o idts.o pit.o string.o pmm.o vmm.o lfb.o font8x16.o kmalloc.o buddy.o slab.o acpi.o lapic.o ioapic.o lapic_timer.o lapic_timers.o thread.o yield.o scheduler.o stack.o spinlock.o kring.o mutex.o vmalloc.o syscalls.o syscall.o page_fault.o process.o pci.o ahci.o ahcis.o dfs.o elf.o brk.o mmap.o console.o vfs.o page_cache.o sse_avx.o rtc.o tsc.o time.o keyboard.o pcid.o utils.o vector.o virtio.o
 	grub-file --is-x86-multiboot2 kernel.bin
 	mv kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o kernel.iso isodir
