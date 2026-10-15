@@ -4,11 +4,6 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 
 ---
 
-> [!NOTE]
-> Due to frequent power outages in my city, 
-> I currently have limited opportunities to commit regularly.
-> Development of the OS is ongoing, but updates may appear less frequently than usual.
-
 ## Tech Stack
 * **Language:** C (Freestanding, no standard library), x86 Assembly (NASM)
 * **Architecture:** x86_64 (x86 64-bit)
@@ -73,6 +68,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
+- [ ] **VirtIO-GPU Driver**: driver for virtio gpu to use gpu render.
 - [ ] **Sleep**: blocking thread for certain time.
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
 - [ ] **LibC**: libc support for user programs.
