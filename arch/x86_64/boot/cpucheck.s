@@ -1,5 +1,11 @@
 %include "video.s"
 
+section .boot_rodata
+msg_no_cpuid: db "ERROR: CPUID NOT SUPPORTED", 0
+msg_no_long_mode: db "ERROR: LONG MODE (X64) NOT SUPPORTED", 0
+msg_no_invariant_tsc: db "ERROR: INVARIANT TSC NOT SUPPORTED", 0
+msg_no_lfb: db "ERROR: LFB NOT SUPPORTED", 0
+
 section .boot_text
 bits 32
 check_cpuid:
@@ -66,7 +72,7 @@ check_lfb:
     mov esi, [edx + 4]
 
     cmp eax, 8
-    je .done
+    je .type_check
 
     cmp eax, 0
     je .no_lfb
@@ -78,6 +84,10 @@ check_lfb:
     add edx, esi
     jmp .loop_tags
 
+.type_check:
+    cmp [edx + 29], 1
+    je .done
+
 .no_lfb:
     mov edi, msg_no_lfb
     call print_string_32_vga
@@ -86,13 +96,6 @@ check_lfb:
 .done:
     pop eax
     pop ecx
-
-    mov esi, [edx + 8]
-    mov [eax], esi
-
-    mov esi, [edx + 16]
-    mov [ecx], esi
-
     pop edx
     pop esi
 

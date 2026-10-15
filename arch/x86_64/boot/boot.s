@@ -38,18 +38,10 @@ stack_bottom:
     resb 32768
 stack_top:
 
-align 8
-lfb_address: resb 64
-lfb_pitch: resb 32
-
 global stack_top
 
 section .boot_rodata
 msg_invalid_magic: db "ERROR: INVALID MAGIC", 0
-msg_no_cpuid: db "ERROR: CPUID NOT SUPPORTED", 0
-msg_no_long_mode: db "ERROR: LONG MODE (X64) NOT SUPPORTED", 0
-msg_no_invariant_tsc: db "ERROR: INVARIANT TSC NOT SUPPORTED", 0
-msg_no_lfb: db "ERROR: LFB NOT SUPPORTED", 0
 
 gdt64:
     dq 0
@@ -84,8 +76,6 @@ _start:
 
 .valid_magic:
     mov edi, esi
-    mov eax, lfb_address
-    mov ecx, lfb_pitch
     call check_lfb
 
     call check_cpuid
