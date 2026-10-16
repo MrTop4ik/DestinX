@@ -41,6 +41,7 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     init_ahci();
     find_virtio_gpu();
+    parse_virtio_gpu_capabilities();
 
     init_keyboard();
     init_time();
