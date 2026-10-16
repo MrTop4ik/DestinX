@@ -1,6 +1,6 @@
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel -Iinclude
 AFLAGS = -f elf64 -i /home/mrtop4ik/DestinX/arch/x86_64/boot/
-QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu host,migratable=no,+invtsc -machine q35,acpi=on -serial stdio -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0 -device virtio-gpu-pci,disable-legacy=on,xres=1024,yres=768
+QEMUFLAGS = -d int -D logs/qemu.log -m 4096 -accel kvm -cpu host,migratable=no,+invtsc -machine q35,acpi=on -serial stdio -drive id=disk,file=disk.img,format=raw,if=none -device ide-hd,drive=disk,bus=ide.0 -device virtio-gpu-pci,disable-legacy=on
 
 iso:
 	nasm 				$(AFLAGS) 		   arch/x86_64/boot/boot.s						-o boot.o

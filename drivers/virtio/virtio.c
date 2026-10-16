@@ -85,3 +85,20 @@ void parse_virtio_gpu_capabilities(void){
         cap_ptr = next_ptr;
     }
 }
+
+void map_virtio_gpu_capablities(void){
+    vmm_map_page(read_cr3(), virtio_gpu.regions.common_bar_addr + virtio_gpu.regions.common_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
+    vmm_map_page(read_cr3(), virtio_gpu.regions.notify_bar_addr + virtio_gpu.regions.notify_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
+    vmm_map_page(read_cr3(), virtio_gpu.regions.device_offset + virtio_gpu.regions.device_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
+}
+
+void init_virtio_gpu_handshake(void){
+    volatile struct virtio_pci_common_cfg *common_cfg = (volatile struct virtio_pci_common_cfg *)COMMON_CFG_VIRT;
+
+    common_cfg->device_status = VIRTIO_STATUS_RESET;
+    pit_wait_ms(10);
+
+    common_cfg->device_status = VIRTIO_STATUS_ACKNOWLEDGE;
+    common_cfg->device_status = VIRTIO_STATUS_DRIVER;
+    serial_print("[VIRTIO] A Handshake\n");
+}

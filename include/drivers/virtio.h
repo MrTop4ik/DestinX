@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/x86_64/drivers/pci.h>
+#include <arch/x86_64/drivers/pit.h>
 
 #define VIRTIO_VENDOR_ID   0x1AF4
 #define VIRTIO_GPU_DEVID   0x1050
@@ -9,6 +10,18 @@
 #define COMMON_CFG_TYPE 1
 #define NOTIFY_CFG_TYPE 2
 #define DEVICE_CFG_TYPE 4
+
+#define COMMON_CFG_VIRT 0xFFFFFFFFFFFFC0000
+#define NOTIFY_CFG_VIRT 0xFFFFFFFFFFFFD0000
+#define DEVICE_CFG_VIRT 0xFFFFFFFFFFFFE0000
+
+
+#define VIRTIO_STATUS_RESET          0x00
+#define VIRTIO_STATUS_ACKNOWLEDGE    0x01
+#define VIRTIO_STATUS_DRIVER         0x02
+#define VIRTIO_STATUS_FEATURES_OK    0x08
+#define VIRTIO_STATUS_DRIVER_OK      0x80
+#define VIRTIO_STATUS_FAILED         0x80
 
 typedef struct {
     uint8_t  common_bar;
@@ -59,3 +72,5 @@ struct virtio_gpu_config {
 
 void find_virtio_gpu(void);
 void parse_virtio_gpu_capabilities(void);
+void map_virtio_gpu_capablities(void);
+void init_virtio_gpu_handshake(void);
