@@ -98,7 +98,7 @@ void init_virtio_gpu_handshake(void){
     common_cfg->device_status = VIRTIO_STATUS_RESET;
     pit_wait_ms(10);
 
-    common_cfg->device_status = VIRTIO_STATUS_ACKNOWLEDGE;
-    common_cfg->device_status = VIRTIO_STATUS_DRIVER;
+    common_cfg->device_status |= VIRTIO_STATUS_ACKNOWLEDGE;
+    common_cfg->device_status |= VIRTIO_STATUS_DRIVER;
     serial_print("[VIRTIO] A Handshake\n");
 }
