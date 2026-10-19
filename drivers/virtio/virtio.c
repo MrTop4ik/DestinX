@@ -132,9 +132,47 @@ void init_virtio_gpu_features(void){
     common_cfg->device_status = VIRTIO_STATUS_FEATURES_OK;
 
     if (!(common_cfg->device_status & VIRTIO_STATUS_FEATURES_OK)){
-        serial_print("[VIRTIO] Smth went wrong during features init\n");
         common_cfg->device_status |= VIRTIO_STATUS_FAILED;
+        serial_print("[VIRTIO] Smth went wrong during features init\n");
+        return;
     }
 
     serial_print("[VIRTIO] Feautes init success\n");    
+}
+
+virtqueue_t create_virtio_gpu_queue(uint16_t count){
+    virtqueue_t vq = {0};
+    
+    uint64_t paddr = pmm_alloc_pages(3); 
+    memset((void*)(paddr + DIRECT_OFFSET), 0, PAGE_SIZE_4KB * 3);
+
+    vq.raw_memory_block = paddr;
+    vq.queue_size = count;
+
+    vq.desc = (struct vring_desc *)paddr;
+    vq.avail = (struct vring_avail *)(paddr + PAGE_MASK_4KB);
+    vq.used = (struct vring_used *)(paddr + PAGE_SIZE_4KB * 2);
+
+    return vq;
+}
+
+virtqueue_t configure_and_start_queue(void){
+    volatile struct virtio_pci_common_cfg *common_cfg = (volatile struct virtio_pci_common_cfg *)COMMON_CFG_VIRT;
+
+    common_cfg->queue_select = 0;
+
+    uint16_t hardware_queue_size = common_cfg->queue_size;
+
+    virtqueue_t vq = create_virtio_gpu_queue(hardware_queue_size);
+
+    common_cfg->queue_size = hardware_queue_size;
+
+    common_cfg->queue_desc  = (uint64_t)vq.desc;
+    common_cfg->queue_avail = (uint64_t)vq.avail;
+    common_cfg->queue_used  = (uint64_t)vq.used;
+
+    common_cfg->queue_enable = 1;
+
+    serial_print("[VIRTIO] Virtqueue 0 Successfully Activated with size %d\n", hardware_queue_size);
+    return vq;
 }

@@ -72,9 +72,43 @@ struct virtio_gpu_config {
     uint32_t reserved;
 }__attribute__((__packed__));
 
+struct vring_desc {
+    uint64_t addr;  
+    uint32_t len;   
+    uint16_t flags; 
+    uint16_t next;  
+};
+
+struct vring_avail {
+    uint16_t flags;
+    uint16_t idx;
+    uint16_t ring[];
+};
+
+struct vring_used_elem {
+    uint32_t id;
+    uint32_t len;
+};
+
+struct vring_used {
+    uint16_t flags;
+    uint16_t idx;
+    struct vring_used_elem ring[];
+};
+
+typedef struct {
+    struct vring_desc  *desc;   
+    struct vring_avail *avail;  
+    struct vring_used  *used;
+    uint16_t queue_size;
+    uint64_t raw_memory_block;     
+} virtqueue_t;
+
 
 void find_virtio_gpu(void);
 void parse_virtio_gpu_capabilities(void);
 void map_virtio_gpu_capablities(void);
 void init_virtio_gpu_handshake(void);
 void init_virtio_gpu_features(void);
+virtqueue_t create_virtio_gpu_queue(uint16_t count);
+virtqueue_t configure_and_start_queue(void);
