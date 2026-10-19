@@ -26,26 +26,6 @@
 #define VIRTIO_STATUS_DRIVER_OK      0x80
 #define VIRTIO_STATUS_FAILED         0x80
 
-typedef struct {
-    uint8_t  common_bar;
-    uint32_t common_offset;
-    uint64_t common_bar_addr;
-    uint8_t  notify_bar;
-    uint32_t notify_offset;
-    uint64_t notify_bar_addr;
-    uint32_t notify_multiplier;
-    uint8_t  device_bar;
-    uint32_t device_offset;
-    uint64_t device_bar_addr;
-} vgpu_regions_t;
-
-typedef struct {
-    uint8_t bus;
-    uint8_t dev;
-    uint8_t func;
-    vgpu_regions_t regions;
-} virtio_gpu_pci_dev_t;
-
 struct virtio_pci_common_cfg {
     uint32_t device_feature_select;
     uint32_t device_feature;       
@@ -104,11 +84,35 @@ typedef struct {
     uint64_t raw_memory_block;     
 } virtqueue_t;
 
+typedef struct {
+    uint8_t  common_bar;
+    uint32_t common_offset;
+    uint64_t common_bar_addr;
+    uint8_t  notify_bar;
+    uint32_t notify_offset;
+    uint64_t notify_bar_addr;
+    uint32_t notify_multiplier;
+    uint8_t  device_bar;
+    uint32_t device_offset;
+    uint64_t device_bar_addr;
+
+    volatile struct virtio_pci_common_cfg *common_cfg;
+    volatile uint64_t *notify_cfg;
+    volatile uint64_t *device_cfg;
+} vgpu_regions_t;
+
+typedef struct {
+    uint8_t bus;
+    uint8_t dev;
+    uint8_t func;
+    vgpu_regions_t regions;
+    virtqueue_t *vq0;
+} virtio_gpu_pci_dev_t;
 
 void find_virtio_gpu(void);
 void parse_virtio_gpu_capabilities(void);
 void map_virtio_gpu_capablities(void);
 void init_virtio_gpu_handshake(void);
 void init_virtio_gpu_features(void);
-virtqueue_t create_virtio_gpu_queue(uint16_t count);
-virtqueue_t configure_and_start_queue(void);
+void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count);
+void configure_and_start_queue(void);
