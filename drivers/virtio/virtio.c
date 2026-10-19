@@ -88,8 +88,8 @@ void parse_virtio_gpu_capabilities(void){
 
 void map_virtio_gpu_capablities(void){
     vmm_map_page(read_cr3(), virtio_gpu.regions.common_bar_addr + virtio_gpu.regions.common_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
-    vmm_map_page(read_cr3(), virtio_gpu.regions.notify_bar_addr + virtio_gpu.regions.notify_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
-    vmm_map_page(read_cr3(), virtio_gpu.regions.device_offset + virtio_gpu.regions.device_offset, COMMON_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
+    vmm_map_page(read_cr3(), virtio_gpu.regions.notify_bar_addr + virtio_gpu.regions.notify_offset, NOTIFY_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
+    vmm_map_page(read_cr3(), virtio_gpu.regions.device_offset + virtio_gpu.regions.device_offset, DEVICE_CFG_VIRT, PAGE_SIZE_4KB, PTE_WRITABLE | PTE_WT | PTE_CD);
 }
 
 void init_virtio_gpu_handshake(void){
@@ -100,5 +100,41 @@ void init_virtio_gpu_handshake(void){
 
     common_cfg->device_status |= VIRTIO_STATUS_ACKNOWLEDGE;
     common_cfg->device_status |= VIRTIO_STATUS_DRIVER;
-    serial_print("[VIRTIO] A Handshake\n");
+    serial_print("[VIRTIO] Handshake\n");
+}
+
+void init_virtio_gpu_features(void){
+    volatile struct virtio_pci_common_cfg *common_cfg = (volatile struct virtio_pci_common_cfg *)COMMON_CFG_VIRT;
+    
+    common_cfg->device_feature_select = 0;
+    uint32_t device_features_low = common_cfg->device_feature;
+
+    common_cfg->device_feature_select = 1;
+    uint32_t device_features_high = common_cfg->device_feature;
+
+    uint64_t device_features = (uint64_t)(device_features_high) << 32 | device_features_low;
+
+    uint64_t driver_features = 0;
+
+    if (device_features & VIRTIO_F_VERSION_1)  driver_features |= VIRTIO_F_VERSION_1;
+    else {
+        common_cfg->device_status |= VIRTIO_STATUS_FAILED;
+        serial_print("[VIRTIO] Modern 1.x Not Supported\n");
+        return;
+    }
+
+    common_cfg->driver_feature_select = 0;
+    common_cfg->driver_feature = (uint32_t)(driver_features & 0xFFFFFFFF);
+
+    common_cfg->driver_feature_select = 1;
+    common_cfg->driver_feature = (uint64_t)(driver_features >> 32);
+
+    common_cfg->device_status = VIRTIO_STATUS_FEATURES_OK;
+
+    if (!(common_cfg->device_status & VIRTIO_STATUS_FEATURES_OK)){
+        serial_print("[VIRTIO] Smth went wrong during features init\n");
+        common_cfg->device_status |= VIRTIO_STATUS_FAILED;
+    }
+
+    serial_print("[VIRTIO] Feautes init success\n");    
 }

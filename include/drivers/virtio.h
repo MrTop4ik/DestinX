@@ -4,8 +4,11 @@
 #include <arch/x86_64/drivers/pci.h>
 #include <arch/x86_64/drivers/pit.h>
 
-#define VIRTIO_VENDOR_ID   0x1AF4
-#define VIRTIO_GPU_DEVID   0x1050
+#define VIRTIO_VENDOR_ID 0x1AF4
+#define VIRTIO_GPU_DEVID 0x1050
+
+#define VIRTIO_GPU_F_VIRGL (1ULL << 0)
+#define VIRTIO_F_VERSION_1 (1ULL << 32)
 
 #define COMMON_CFG_TYPE 1
 #define NOTIFY_CFG_TYPE 2
@@ -74,3 +77,4 @@ void find_virtio_gpu(void);
 void parse_virtio_gpu_capabilities(void);
 void map_virtio_gpu_capablities(void);
 void init_virtio_gpu_handshake(void);
+void init_virtio_gpu_features(void);
