@@ -28,12 +28,12 @@
 
 struct virtio_pci_common_cfg {
     uint32_t device_feature_select;
-    uint32_t device_feature;       
+    uint32_t device_feature;
     uint32_t driver_feature_select;
-    uint32_t driver_feature;       
-    uint16_t msix_config;          
-    uint16_t num_queues;           
-    uint8_t  device_status;        
+    uint32_t driver_feature;
+    uint16_t msix_config;
+    uint16_t num_queues;
+    uint8_t  device_status;
     uint8_t  config_generation;
     uint16_t queue_select;
     uint16_t queue_size;
@@ -77,11 +77,13 @@ struct vring_used {
 };
 
 typedef struct {
-    struct vring_desc  *desc;   
-    struct vring_avail *avail;  
+    struct vring_desc  *desc;
+    struct vring_avail *avail;
     struct vring_used  *used;
+    uint64_t raw_memory_block;
     uint16_t queue_size;
-    uint64_t raw_memory_block;     
+    uint16_t num_free;
+    int16_t free_head;
 } virtqueue_t;
 
 typedef struct {

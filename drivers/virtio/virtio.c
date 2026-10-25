@@ -150,6 +150,12 @@ void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count){
     vq->desc = (struct vring_desc *)paddr;
     vq->avail = (struct vring_avail *)(paddr + PAGE_MASK_4KB);
     vq->used = (struct vring_used *)(paddr + PAGE_SIZE_4KB * 2);
+
+    for (int i = 0; i < count - 1; i++) vq->desc[i].next = i + 1;
+    vq->desc[count - 1].next = -1;
+    vq->queue_size = count;
+    vq->num_free = count;
+    vq->free_head = 0;
 }
 
 void configure_and_start_queue(void){
@@ -169,4 +175,23 @@ void configure_and_start_queue(void){
     virtio_gpu.regions.common_cfg->queue_enable = 1;
 
     serial_print("[VIRTIO] Virtqueue 0 Successfully Activated with qsize %d\n", hardware_queue_size);
+}
+
+int16_t alloc_desc(virtqueue_t *vq){
+    if (!vq->num_free || vq->free_head == -1) return -1;
+
+    int16_t id = vq->free_head;
+    vq->free_head = (int16_t)vq->desc[id].next;
+    vq->num_free--;
+
+    vq->desc[id].flags = 0;
+    vq->desc[id].next= 0;
+
+    return id;
+}
+
+void free_desc(virtqueue_t *vq, uint16_t id){
+    vq->desc[id].next = vq->free_head;
+    vq->free_head = (int16_t)id;
+    vq->num_free++;
 }
