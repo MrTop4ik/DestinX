@@ -7,5 +7,18 @@ set(CMAKE_C_COMPILER x86_64-elf-gcc)
 set(CMAKE_CXX_COMPILER x86_64-elf-g++)
 set(CMAKE_ASM_NASM_COMPILER nasm)
 
-set(CMAKE_C_FLAGS "-std=gnu99 -ffreestanding -O2 -Wall -Wextra -mno-red-zone -mno-red-zone -mno-sse -mno-sse2 -mcmodel=kernel" CACHE STRING "" FORCE)
-set(CMAKE_ASM_NASM_FLAGS "-f elf64 -i ${CMAKE_CURRENT_SOURCE_DIR}/arch/x86_64/boot/" CACHE STRING "" FORCE)
+set(X86_64_KERNEL_C_FLAGS 
+    -ffreestanding 
+    -O2 
+    -Wall 
+    -Wextra 
+    -mno-red-zone 
+    -mno-sse 
+    -mno-sse2 
+    -mcmodel=kernel
+)
+
+set(X86_64_KERNEL_ASM_FLAGS 
+    "-f elf64" 
+    "-i ${CMAKE_SOURCE_DIR}/arch/x86_64/boot/"
+)
