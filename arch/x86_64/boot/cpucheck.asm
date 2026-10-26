@@ -1,4 +1,4 @@
-%include "video.s"
+%include "video.asm"
 
 section .boot_rodata
 msg_no_cpuid: db "ERROR: CPUID NOT SUPPORTED", 0

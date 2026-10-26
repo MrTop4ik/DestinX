@@ -56,7 +56,7 @@ gdt64:
     dw $ - gdt64 - 1
     dq gdt64 + 0xFFFFFFFF80000000
 
-%include "cpucheck.s"
+%include "cpucheck.asm"
 
 section .boot_text
 bits 32

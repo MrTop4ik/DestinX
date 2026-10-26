@@ -90,19 +90,13 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ```bash
 # Clone the repository
 git clone https://github.com/MrTop4ik/DestinX
+
+# Create build dir
 cd DestinX
+mkdir build && cd build 
 
-# Create logs directory
-mkdir logs
-
-# Compile and create ISO image
-make iso
-
-# Compile amd link programs
-make progs
-
-# Make disk image
-make disk
+# Generate build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/x86_64-elf.cmake
 
 # Run in QEMU
 make run
