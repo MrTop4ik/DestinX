@@ -151,8 +151,10 @@ void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count){
     vq->avail = (struct vring_avail *)(paddr + PAGE_MASK_4KB);
     vq->used = (struct vring_used *)(paddr + PAGE_SIZE_4KB * 2);
 
-    for (int i = 0; i < count - 1; i++) vq->desc[i].next = i + 1;
-    vq->desc[count - 1].next = -1;
+    struct vring_desc *desc = (struct vring_desc *)((uint64_t)vq->desc + DIRECT_OFFSET);
+
+    for (int i = 0; i < count - 1; i++) desc[i].next = i + 1;
+    desc[count - 1].next = -1;
     vq->queue_size = count;
     vq->num_free = count;
     vq->free_head = 0;
