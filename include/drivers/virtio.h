@@ -26,6 +26,17 @@
 #define VIRTIO_STATUS_DRIVER_OK      0x80
 #define VIRTIO_STATUS_FAILED         0x80
 
+#define VIRTQ_DESC_F_NEXT   1
+#define VIRTQ_DESC_F_WRITE  2
+
+struct virtio_gpu_ctrl_hdr {
+    uint32_t type;
+    uint32_t flags;
+    uint64_t fence_id;
+    uint32_t ctx_id;
+    uint32_t padding;
+}__attribute__((__packed__));
+
 struct virtio_pci_common_cfg {
     uint32_t device_feature_select;
     uint32_t device_feature;
@@ -84,6 +95,7 @@ typedef struct {
     uint16_t queue_size;
     uint16_t num_free;
     int16_t free_head;
+    uint16_t last_seen_used;
 } virtqueue_t;
 
 typedef struct {
@@ -118,3 +130,4 @@ void init_virtio_gpu_handshake(void);
 void init_virtio_gpu_features(void);
 virtqueue_t *create_virtio_gpu_queue(uint16_t count);
 void configure_and_start_queue(void);
+uint32_t virtio_gpu_send_command(virtqueue_t *vq, void *request, uint32_t req_len, void *response, uint32_t resp_len);
