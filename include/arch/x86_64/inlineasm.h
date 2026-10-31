@@ -19,3 +19,4 @@ void sti(void);
 void cli(void);
 void hlt(void);
 void clts(void);
+void mfence(void);

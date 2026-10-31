@@ -86,3 +86,7 @@ void hlt(void){
 void clts(void){
     __asm__ volatile ("clts" : : : "cc");
 }
+
+void mfence(void){
+    __asm__ volatile ("mfence" : : : "memory");
+}

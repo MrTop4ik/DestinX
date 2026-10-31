@@ -29,4 +29,5 @@ void vmm_init_direct_mapping(uint64_t maxAddr);
 void vmm_map_page(uint64_t pml4_phys, uint64_t paddr, uint64_t vaddr, uint64_t ps, uint64_t flags);
 uint64_t vmm_unmap_page(uint64_t pml4_phys, uint64_t vaddr);
 void *vmm_get_entry(uint64_t pml4_phys, uint64_t vaddr, int *level);
+uint64_t *vmm_get_phys(uint64_t pml4_phys, uint64_t vaddr);
 void init_pat(void);
