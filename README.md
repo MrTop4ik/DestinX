@@ -107,7 +107,7 @@ make run
 * **SYSRETQ**: Currently, `sysretq` does not work correctly, so `iretq` is used instead.
 
 ### Cross-Platform Notice
-The development workflow is heavily tuned for `ArchLinux and WSL2 Ubuntu`. If you are building on other systems, keep in mind:
+The development workflow is heavily tuned for `ArchLinux`. If you are building on other systems, keep in mind:
 * **Native Linux**: Paths to the `OVMF.fd` image vary significantly across distributions (e.g., Debian vs Fedora vs Arch).
 * **Windows (Native)**: Requires specialized environments like `WSL2/MSYS2/Cygwin` to resolve standard GNU utils, toolchains, and grub-mkrescue.
 * **macOS**: Standard QEMU syntax differs, and an explicit `cross-compiler` target configuration is strictly mandatory.
