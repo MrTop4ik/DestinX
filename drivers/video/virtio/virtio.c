@@ -140,7 +140,9 @@ void init_virtio_gpu_features(void){
     serial_print("[VIRTIO] Feautes init success\n");    
 }
 
-void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count){
+virtqueue_t *create_virtio_gpu_queue(uint16_t count){
+    virtqueue_t *vq = kmalloc(sizeof(virtqueue_t));
+
     uint64_t paddr = pmm_alloc_pages(3); 
     memset((void*)(paddr + DIRECT_OFFSET), 0, PAGE_SIZE_4KB * 3);
 
@@ -158,6 +160,8 @@ void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count){
     vq->queue_size = count;
     vq->num_free = count;
     vq->free_head = 0;
+
+    return vq;
 }
 
 void configure_and_start_queue(void){
@@ -165,8 +169,7 @@ void configure_and_start_queue(void){
 
     uint16_t hardware_queue_size = virtio_gpu.regions.common_cfg->queue_size;
 
-    virtio_gpu.vq0 = kmalloc(sizeof(virtqueue_t));
-    create_virtio_gpu_queue(virtio_gpu.vq0, hardware_queue_size);
+    virtio_gpu.vq0 = create_virtio_gpu_queue(hardware_queue_size);    
 
     virtio_gpu.regions.common_cfg->queue_size = hardware_queue_size;
 
@@ -197,3 +200,4 @@ void free_desc(virtqueue_t *vq, uint16_t id){
     vq->free_head = (int16_t)id;
     vq->num_free++;
 }
+

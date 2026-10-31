@@ -116,5 +116,5 @@ void parse_virtio_gpu_capabilities(void);
 void map_virtio_gpu_capablities(void);
 void init_virtio_gpu_handshake(void);
 void init_virtio_gpu_features(void);
-void create_virtio_gpu_queue(virtqueue_t *vq, uint16_t count);
+virtqueue_t *create_virtio_gpu_queue(uint16_t count);
 void configure_and_start_queue(void);
