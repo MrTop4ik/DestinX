@@ -181,7 +181,7 @@ void *vmm_get_entry(uint64_t pml4_phys, uint64_t vaddr, int *level){
     return &pt[pt_indx];
 }
 
-uint64_t *vmm_get_phys(uint64_t pml4_phys, uint64_t vaddr){
+uint64_t vmm_get_paddr(uint64_t pml4_phys, uint64_t vaddr){
     int level;
     void *entry = vmm_get_entry(pml4_phys, vaddr, &level);
     uint64_t paddr = *(uint64_t*)entry & PAGE_MASK_4KB;
