@@ -171,7 +171,7 @@ void *vmm_get_entry(uint64_t pml4_phys, uint64_t vaddr, int *level){
 
     if (!(pd[pd_indx] & PTE_PRESENT)) return NULL;
     if (pd[pd_indx] & PTE_PAGE_SIZE){
-        *level = 2;
+        *level = 1;
         return &pd[pd_indx];
     }
 
@@ -184,7 +184,9 @@ void *vmm_get_entry(uint64_t pml4_phys, uint64_t vaddr, int *level){
 uint64_t vmm_get_paddr(uint64_t pml4_phys, uint64_t vaddr){
     int level;
     void *entry = vmm_get_entry(pml4_phys, vaddr, &level);
-    uint64_t paddr = *(uint64_t*)entry & PAGE_MASK_4KB;
+    uint64_t paddr;
+    if (!level) paddr =(*(uint64_t*)entry & PAGE_MASK_4KB) + (vaddr & ~PAGE_MASK_4KB);
+    if (level == 1) paddr =(*(uint64_t*)entry & PAGE_MASK_2MB) + (vaddr & ~PAGE_MASK_2MB);
     return paddr;
 }
 
