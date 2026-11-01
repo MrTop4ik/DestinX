@@ -107,9 +107,16 @@ void init_virtio_gpu_handshake(void){
 
 void init_virtio_gpu_features(void){
     virtio_gpu.regions.common_cfg->device_feature_select = 0;
+    mfence();
+    pit_wait_ms(3);
+
     uint32_t device_features_low = virtio_gpu.regions.common_cfg->device_feature;
+    mfence();
 
     virtio_gpu.regions.common_cfg->device_feature_select = 1;
+    mfence();
+    pit_wait_ms(3);
+
     uint32_t device_features_high = virtio_gpu.regions.common_cfg->device_feature;
 
     uint64_t device_features = (uint64_t)(device_features_high) << 32 | device_features_low;
@@ -119,20 +126,29 @@ void init_virtio_gpu_features(void){
     if (device_features & VIRTIO_F_VERSION_1)  driver_features |= VIRTIO_F_VERSION_1;
     else {
         virtio_gpu.regions.common_cfg->device_status |= VIRTIO_STATUS_FAILED;
+        mfence();
         serial_print("[VIRTIO] Modern 1.x Not Supported\n");
         return;
     }
 
     virtio_gpu.regions.common_cfg->driver_feature_select = 0;
+    mfence();
     virtio_gpu.regions.common_cfg->driver_feature = (uint32_t)(driver_features & 0xFFFFFFFF);
+    mfence();
 
     virtio_gpu.regions.common_cfg->driver_feature_select = 1;
+    mfence();
     virtio_gpu.regions.common_cfg->driver_feature = (uint64_t)(driver_features >> 32);
+    mfence();
 
     virtio_gpu.regions.common_cfg->device_status = VIRTIO_STATUS_FEATURES_OK;
+    mfence();
+
+    pit_wait_ms(6);
 
     if (!(virtio_gpu.regions.common_cfg->device_status & VIRTIO_STATUS_FEATURES_OK)){
         virtio_gpu.regions.common_cfg->device_status |= VIRTIO_STATUS_FAILED;
+        mfence();
         serial_print("[VIRTIO] Smth went wrong during features init\n");
         return;
     }
@@ -169,15 +185,19 @@ void configure_and_start_queue(void){
 
     uint16_t hardware_queue_size = virtio_gpu.regions.common_cfg->queue_size;
 
-    virtio_gpu.vq0 = create_virtio_gpu_queue(hardware_queue_size);    
+    virtio_gpu.vq0 = create_virtio_gpu_queue(hardware_queue_size);
 
     virtio_gpu.regions.common_cfg->queue_size = hardware_queue_size;
-
     virtio_gpu.regions.common_cfg->queue_desc  = (uint64_t)virtio_gpu.vq0->desc;
     virtio_gpu.regions.common_cfg->queue_avail = (uint64_t)virtio_gpu.vq0->avail;
     virtio_gpu.regions.common_cfg->queue_used  = (uint64_t)virtio_gpu.vq0->used;
+    mfence();
 
     virtio_gpu.regions.common_cfg->queue_enable = 1;
+    mfence();
+
+    virtio_gpu.regions.common_cfg->device_status |= VIRTIO_STATUS_DRIVER_OK;
+    mfence();
 
     serial_print("[VIRTIO] Virtqueue 0 Successfully Activated with qsize %d\n", hardware_queue_size);
 }
