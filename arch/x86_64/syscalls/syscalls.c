@@ -113,8 +113,7 @@ void syscall_handler(struct SyscallRegisters *regs){
                 t->state = DEAD;
                 t->next = dead_list_head;
                 dead_list_head = t;
-                if (t == current_thread) continue;
-                dequeue_thread(t);
+                if (t != current_thread) dequeue_thread(t);
                 t = t->next_pthread;
             }
             yield();
