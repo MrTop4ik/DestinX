@@ -23,8 +23,8 @@ void init_scheduler(void){
     enqueue_thread(main_thread);
     current_thread = main_thread;
 
-    thread_t *kr_thread = create_thread(&kring_flush, 4096);
-    thread_t *cln_thread = create_thread(&cleanup_threads, 4096);
+    thread_t *kr_thread = create_thread(kring_flush, 4096);
+    thread_t *cln_thread = create_thread(cleanup_threads, 4096);
 
     main_thread->next_pthread = kr_thread;
     kr_thread->next_pthread = cln_thread;
@@ -35,8 +35,7 @@ void init_scheduler(void){
 }
 
 uint64_t scheduler_handler(uint64_t old_rsp){
-    if (!ready_list_head || ready_list_head->next == ready_list_head) return old_rsp;
-
+    
     __asm__ volatile(
         "mov %%cr0, %%rax\n\t"
         "or $0x8, %%rax\n\t"
@@ -47,35 +46,25 @@ uint64_t scheduler_handler(uint64_t old_rsp){
     );
 
     thread_t *old_thread = current_thread;
+    thread_t *next_thread = current_thread->next;
 
-    thread_t *starting_point = old_thread->next;
-
-    if (old_thread->state == DEAD){
-        dequeue_thread(old_thread);
-        old_thread->next = dead_list_head;
-        dead_list_head = old_thread;
-    } else if (old_thread->state == BLOCKED){
-        old_thread->rsp = old_rsp;
-        dequeue_thread(old_thread);
-    } else {
-        old_thread->rsp = old_rsp;
-        old_thread->state = READY;
+    switch (old_thread->state){
+        case BLOCKED:
+            old_thread->rsp = old_rsp;
+            dequeue_thread(old_thread);
+            break;
+        case DEAD:
+            dequeue_thread(old_thread);
+            old_thread->next = dead_list_head;
+            dead_list_head = old_thread;
+            break;
+        default:
+            old_thread->rsp = old_rsp;
+            old_thread->state = READY;
+            break;
     }
 
-    if (old_thread->state == DEAD || old_thread->state == BLOCKED) starting_point = ready_list_head;
-    thread_t *next_thread = starting_point;
-
-    if (!next_thread) return old_rsp;
-
-    while (next_thread->state != READY && next_thread->state != RUNNING){
-        next_thread = next_thread->next;
-        if (next_thread == starting_point){
-            if (old_thread->state == DEAD || old_thread->state == BLOCKED) for(;;);
-            old_thread->state = RUNNING;
-            return old_rsp;
-        }
-        
-    }
+    if (!ready_list_head) for(;;);;
 
     next_thread->state = RUNNING;
     current_thread = next_thread;
