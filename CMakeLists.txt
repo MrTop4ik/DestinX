@@ -42,7 +42,7 @@ add_custom_command(
 )
 
 add_custom_command(
-    OUTPUT disk.img
+    OUTPUT "${CMAKE_BINARY_DIR}/disk.img"
     DEPENDS 
         "${CMAKE_CURRENT_SOURCE_DIR}/files/test.txt"
         "${CMAKE_CURRENT_SOURCE_DIR}/files/test.bin"
@@ -56,7 +56,7 @@ add_custom_command(
     COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_SOURCE_DIR}/files/test.elf" /usr/bin/test.elf
 )
 
-add_custom_target(dfs_disk ALL DEPENDS disk.img)
+add_custom_target(dfs_disk ALL DEPENDS "${CMAKE_BINARY_DIR}/disk.img")
 
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
     set(QEMU_ARCH_BINARY "qemu-system-x86_64")
