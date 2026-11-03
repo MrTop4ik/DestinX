@@ -182,10 +182,8 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
     
-    uint64_t rflags = read_rflags();
-    uint64_t saved_rflags = rflags;
-    rflags &= ~0x200;
-    write_rflags(rflags);
+    uint64_t saved_rflags = read_rflags();
+    write_rflags(saved_rflags & ~0x200);
     main_ahci.read_blcoked_thread = current_thread;
     main_ahci.read_blcoked_thread->state = BLOCKED;
     port->ci = (1 << 0);

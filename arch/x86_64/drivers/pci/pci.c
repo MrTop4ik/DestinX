@@ -14,7 +14,7 @@ uint32_t pci_read_dword(uint8_t bus, uint8_t dev, uint8_t func, uint8_t offset){
 
 void pci_enable_msi(uint8_t bus, uint8_t dev, uint8_t func, uint8_t vector, uint8_t lapic_id){
     uint32_t cap_reg = pci_read_dword(bus, dev, func, 0x34);
-    uint16_t cap_ptr = (uint16_t)(cap_reg & 0xFFFF);
+    uint8_t cap_ptr = cap_reg & 0xFF;
 
     while (cap_ptr != 0){
         uint32_t cap_header = pci_read_dword(bus, dev, func, cap_ptr);
