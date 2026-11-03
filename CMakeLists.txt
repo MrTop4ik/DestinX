@@ -72,6 +72,7 @@ set(QEMUFLAGS
     -cpu host,migratable=no,+invtsc 
     -machine q35,acpi=on 
     -serial stdio 
+    -display gtk,zoom-to-fit=off
     -drive id=disk,file=disk.img,format=raw,if=none 
     -device ide-hd,drive=disk,bus=ide.0 
     -device virtio-gpu-pci,disable-legacy=on
