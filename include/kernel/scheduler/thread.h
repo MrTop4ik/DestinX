@@ -44,7 +44,6 @@ void destroy_thread(thread_t *t);
 void thread_exit(void);
 void enqueue_thread(thread_t *t);
 void dequeue_thread(thread_t *t);
-void yield(void);
 void cleanup_dead_threads(void);
 void cleanup_threads(void);
 void kring_flush(void);

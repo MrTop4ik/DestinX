@@ -32,7 +32,7 @@ void mutex_lock(mutex_t *mutex){
     
     spin_lock_irqrestore(&mutex->lock, rflags);
 
-    yield();
+    yield(0);
 }
 
 void mutex_unlock(mutex_t *mutex){

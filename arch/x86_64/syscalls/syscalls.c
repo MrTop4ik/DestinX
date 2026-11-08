@@ -116,7 +116,7 @@ void syscall_handler(struct SyscallRegisters *regs){
                 if (t != current_thread) dequeue_thread(t);
                 t = t->next_pthread;
             }
-            yield();
+            yield(0);
             break;
 
         default:

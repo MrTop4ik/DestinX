@@ -208,7 +208,7 @@ void thread_exit(void){
     cli();
     serial_print("[THREAD %d] Done\n", current_thread->tid);
     current_thread->state = DEAD;
-    yield();
+    yield(0);
 }
 
 void enqueue_thread(thread_t *t){

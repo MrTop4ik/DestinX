@@ -155,6 +155,8 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
     uint64_t bytes_left = seccount * 512;
 
     for (int i = 0; i < page_count; i++){
+        for (int j = 0; j < 4096; j += 64) __asm__ volatile ("clflush (%0)" :: "r"(pages[i] + DIRECT_OFFSET + j) : "memory");
+        
         uint32_t chunk_size = (bytes_left > 4096) ? 4096 : bytes_left;
 
         cmd_table->prdt[i].dba = (uint32_t)(pages[i] & 0xFFFFFFFF);
@@ -186,10 +188,10 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
     write_rflags(saved_rflags & ~0x200);
     main_ahci.read_blcoked_thread = current_thread;
     main_ahci.read_blcoked_thread->state = BLOCKED;
+    mfence();
     port->ci = (1 << 0);
-    write_rflags(saved_rflags);
-
-    yield();
+    mfence();
+    yield(1);
 
     int status = 0;
 
@@ -260,16 +262,14 @@ int ahci_write(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint6
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
     
-    uint64_t rflags = read_rflags();
-    uint64_t saved_rflags = rflags;
-    rflags &= ~0x200;
-    write_rflags(rflags);
+    uint64_t saved_rflags = read_rflags();
+    write_rflags(saved_rflags & ~0x200);
     main_ahci.write_blocked_thread = current_thread;
     main_ahci.write_blocked_thread->state = BLOCKED;
+    mfence();
     port->ci = (1 << 1);
-    write_rflags(saved_rflags);
-
-    yield();
+    mfence();
+    yield(1);
 
     int status = 0;
 

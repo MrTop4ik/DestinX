@@ -6,7 +6,6 @@ extern void* isr255();
 
 extern void page_fault_handler(struct InterruptRegisters *regs);
 extern void vector_ctx_switch(struct InterruptRegisters *regs);
-extern void* yield_handler();
 
 char *exceptions[] = {
     "Division By Zero.",
@@ -91,8 +90,6 @@ void init_IDT(void){
     for (uint8_t vector = 32; vector < 48; vector++){
         setIDTGate(vector, (uint64_t)irq_stub_table[vector - 32], 0x8E, 0);
     }
-
-    setIDTGate(0x81, (uint64_t)yield_handler, 0x8E, 0);
 
     setIDTGate(0xFF, (uint64_t)isr255, 0x8E, 0);
 

@@ -1,6 +1,6 @@
 bits 64
-section .text
 
+section .text
 extern scheduler_handler
 extern lapic_eoi
 extern lapic_timer_reload_oneshot

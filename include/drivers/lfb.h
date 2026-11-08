@@ -37,6 +37,8 @@ typedef struct framebuffer_struct {
     uint32_t cursor_y;
 } framebuffer_t;
 
+extern framebuffer_t lfb;
+
 void init_LFB(unsigned int physBootInfo);
 void lfb_swap(void);
 void lfb_scroll(void);

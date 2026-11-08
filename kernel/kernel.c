@@ -3,6 +3,7 @@
 #include <arch/x86_64/apic/lapic.h>
 #include <arch/x86_64/drivers/lapic_timer.h>
 #include <arch/x86_64/drivers/pit.h>
+#include <arch/x86_64/drivers/keyboard.h>
 #include <arch/x86_64/drivers/serial.h>
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/idt.h>
@@ -12,11 +13,11 @@
 #include <drivers/ahci.h>
 #include <drivers/lfb.h>
 #include <drivers/virtio.h>
+#include <drivers/virtgpu.h>
 #include <fs/dfs.h>
 #include <kernel/sync/mutex.h>
 #include <kernel/scheduler/scheduler.h>
 #include <kernel/time/time.h>
-#include <arch/x86_64/drivers/keyboard.h>
 #include <mm/kmalloc.h>
 #include <mm/vmalloc.h>
 #include <multiboot2.h>

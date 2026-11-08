@@ -27,7 +27,9 @@ void init_scheduler(void){
     thread_t *cln_thread = create_thread(cleanup_threads, 4096);
 
     main_thread->next_pthread = kr_thread;
+    kr_thread->process = kp;
     kr_thread->next_pthread = cln_thread;
+    cln_thread->process = kp;
 
     kp->threads = main_thread;
 
@@ -64,7 +66,7 @@ uint64_t scheduler_handler(uint64_t old_rsp){
             break;
     }
 
-    if (!ready_list_head) for(;;);;
+    if (!ready_list_head) for(;;);
 
     next_thread->state = RUNNING;
     current_thread = next_thread;

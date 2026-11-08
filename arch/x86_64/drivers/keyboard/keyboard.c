@@ -111,11 +111,11 @@ void keyboard_handler(struct InterruptRegisters *regs){
         default:
             if (!press){
                 if (ext){
-                    ext = 0;
-                    char *key = extended[scanCode];
-                    int len = strlen(key);
-                    kring_write(key, len, 0);
-                    kring_write(key, len, 1);
+                    // ext = 0;
+                    // char *key = extended[scanCode];
+                    // int len = strlen(key);
+                    // kring_write(key, len, 0);
+                    // kring_write(key, len, 1);
                 }
                 else {
                     char *key = ((!shift && !capslock) || (shift && capslock)) ? lowercase[scanCode] : uppercase[scanCode];

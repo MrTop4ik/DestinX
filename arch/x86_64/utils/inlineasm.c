@@ -1,5 +1,7 @@
 #include <arch/x86_64/inlineasm.h>
 
+extern void* yield_handler(void);
+
 void outb(uint16_t port, uint8_t val){
     __asm__ volatile ("outb %0, %1" : : "a" (val), "dN"(port));
 }
@@ -67,8 +69,19 @@ uint64_t rdtsc(void){
     return ((uint64_t)high >> 32) | low;
 }
 
-void yield(void){
-    __asm__ volatile ("int $0x81" : : : "memory");
+__attribute__((naked)) void naked_yield(uint8_t _sti){
+    __asm__ volatile (
+        "call yield_handler\n\t"
+        "ret"
+        :
+        : "r" (_sti)
+    );
+}
+
+void yield(uint8_t _sti){
+    __asm__ volatile ("" : : : "memory");
+    naked_yield(_sti);
+    __asm__ volatile ("" : : : "memory");
 }
 
 void sti(void){
