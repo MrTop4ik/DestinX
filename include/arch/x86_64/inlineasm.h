@@ -22,3 +22,4 @@ void cli(void);
 void hlt(void);
 void clts(void);
 void mfence(void);
+void sfence(void);

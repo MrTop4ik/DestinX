@@ -103,3 +103,7 @@ void clts(void){
 void mfence(void){
     __asm__ volatile ("mfence" : : : "memory");
 }
+
+void sfence(void){
+    __asm__ volatile ("sfence" : : : "memory");
+}

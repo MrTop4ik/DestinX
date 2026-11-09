@@ -154,9 +154,7 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
 
     uint64_t bytes_left = seccount * 512;
 
-    for (int i = 0; i < page_count; i++){
-        for (int j = 0; j < 4096; j += 64) __asm__ volatile ("clflush (%0)" :: "r"(pages[i] + DIRECT_OFFSET + j) : "memory");
-        
+    for (int i = 0; i < page_count; i++){   
         uint32_t chunk_size = (bytes_left > 4096) ? 4096 : bytes_left;
 
         cmd_table->prdt[i].dba = (uint32_t)(pages[i] & 0xFFFFFFFF);
@@ -183,7 +181,11 @@ int ahci_read(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint64
 
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
-    
+
+    for (int i = 0; i < sizeof(ahci_cmd_table_t); i += 64) __asm__ volatile ("clwb (%0)" : : "r"(i + phys_cmd_table + DIRECT_OFFSET) : "memory");
+   __asm__ volatile ("clwb (%0)" : : "r"(phys_cmd_list + DIRECT_OFFSET) : "memory");
+   sfence();
+
     uint64_t saved_rflags = read_rflags();
     write_rflags(saved_rflags & ~0x200);
     main_ahci.read_blcoked_thread = current_thread;
@@ -233,8 +235,6 @@ int ahci_write(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint6
     uint64_t bytes_left = seccount * 512;
 
     for (int i = 0; i < page_count; i++){
-        for (int j = 0; j < 4096; j += 64) __asm__ volatile ("clflush (%0)" :: "r"(pages[i] + DIRECT_OFFSET + j) : "memory");
-
         uint32_t chunk_size = (bytes_left > 4096) ? 4096 : bytes_left;
 
         cmd_table->prdt[i].dba = (uint32_t)(pages[i] & 0xFFFFFFFF);
@@ -261,6 +261,10 @@ int ahci_write(volatile hba_port_t *port, uint64_t lba, uint32_t seccount, uint6
 
     fis->countl = (uint8_t)(seccount & 0xFF);
     fis->counth = (uint8_t)((seccount >> 8) & 0xFF);
+
+    for (int i = 0; i < 4096; i += 64) __asm__ volatile ("clwb (%0)" : : "r"(i + phys_cmd_table + DIRECT_OFFSET) : "memory");
+   __asm__ volatile ("clwb (%0)" : : "r"(phys_cmd_list + DIRECT_OFFSET) : "memory");
+   sfence();
     
     uint64_t saved_rflags = read_rflags();
     write_rflags(saved_rflags & ~0x200);
