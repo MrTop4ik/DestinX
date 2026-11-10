@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 
 #define CMOS_ADDRESS_PORT 0x70
 #define CMOS_DATA_PORT    0x71

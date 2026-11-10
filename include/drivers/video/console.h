@@ -1,6 +1,6 @@
 #pragma once
 #include <fs/vfs.h>
-#include <drivers/kring.h>
+#include <drivers/video/kring.h>
 
 extern vfs_ops_t terminal_ops;
 extern struct FILE stdin;

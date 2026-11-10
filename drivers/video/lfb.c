@@ -1,4 +1,4 @@
-#include <drivers/lfb.h>
+#include <drivers/video/lfb.h>
 
 extern void avx_lfb_memcpy(void *dest, void *src, uint64_t count);
 extern void sse_lfb_memcpy(void *dest, void *src, uint64_t count);

@@ -1,4 +1,4 @@
-#include <drivers/virtgpu.h>
+#include <drivers/virtio/virtgpu.h>
 
 uint64_t fence_count = 0;
 

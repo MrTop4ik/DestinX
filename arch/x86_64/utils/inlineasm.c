@@ -1,4 +1,4 @@
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 
 extern void* yield_handler(void);
 

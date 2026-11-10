@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <drivers/lfb.h>
-#include <arch/x86_64/inlineasm.h>
+#include <drivers/video/lfb.h>
+#include <arch/x86_64/utils.h>
 #include <kernel/scheduler/thread.h>
 #include <mm/brk.h>
 #include <mm/mmap.h>
-#include <drivers/console.h>
+#include <drivers/video/console.h>
 #include <mm/page_cache.h>
 #include <kernel/time/time.h>
 

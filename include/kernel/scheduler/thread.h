@@ -2,10 +2,10 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <mm/stack.h>
-#include <arch/x86_64/idt.h>
-#include <drivers/lfb.h>
-#include <arch/x86_64/inlineasm.h>
-#include <drivers/kring.h>
+#include <arch/x86_64/tables/idt.h>
+#include <drivers/video/lfb.h>
+#include <arch/x86_64/utils.h>
+#include <drivers/video/kring.h>
 #include <kernel/scheduler/process.h>
 
 typedef enum {

@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <mm/kmalloc.h>
-#include <drivers/lfb.h>
+#include <drivers/video/lfb.h>
 #include <kernel/scheduler/process.h>
 #include <mm/vmalloc.h>
 

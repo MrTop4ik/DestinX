@@ -1,4 +1,4 @@
-#include <drivers/ahci.h>
+#include <drivers/storage/ahci.h>
 
 extern void *ahci_handler_stub();
 

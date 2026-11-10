@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 
 #define COM1_PORT 0x3F8
 

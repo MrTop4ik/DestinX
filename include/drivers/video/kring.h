@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <multiboot2.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 #include <libc/string.h>
 #include <arch/x86_64/drivers/serial.h>
 #include <kernel/sync/spinlock.h>
 #include <mm/kmalloc.h>
-#include <drivers/lfb.h>
+#include <drivers/video/lfb.h>
 
 #define KRING_BUF_MAX 4096
 #define KRING_BUF_MASK (KRING_BUF_MAX - 1)

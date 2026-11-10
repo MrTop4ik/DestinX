@@ -1,4 +1,4 @@
-#include <drivers/kring.h>
+#include <drivers/video/kring.h>
 
 extern int backspace;
 

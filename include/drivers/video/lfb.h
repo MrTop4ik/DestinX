@@ -1,13 +1,13 @@
 #pragma once
 #include <stdint.h>
 #include <multiboot2.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 #include <libc/string.h>
 #include <arch/x86_64/drivers/serial.h>
 #include <mm/kmalloc.h>
-#include <drivers/font8x16.h>
+#include <drivers/video/font8x16.h>
 #include <kernel/sync/spinlock.h>
-#include <drivers/kring.h>
+#include <drivers/video/kring.h>
 #include <mm/vmalloc.h>
 #include <arch/x86_64/utils.h>
 

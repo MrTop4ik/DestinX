@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include <drivers/lfb.h>
-#include <arch/x86_64/inlineasm.h>
+#include <drivers/video/lfb.h>
+#include <arch/x86_64/utils.h>
 #include <libc/string.h>
 #include <mm/kmalloc.h>
 #include <multiboot2.h>

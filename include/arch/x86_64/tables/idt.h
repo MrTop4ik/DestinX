@@ -1,9 +1,9 @@
 #pragma once
 #include <stdint.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 #include <arch/x86_64/apic/lapic.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <arch/x86_64/drivers/lapic_timer.h>
+#include <arch/x86_64/drivers/timers/lapic_timer.h>
 
 struct idt_entry_struct {
     uint16_t offset_1;

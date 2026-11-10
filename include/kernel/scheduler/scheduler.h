@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <mm/stack.h>
-#include <arch/x86_64/idt.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/tables/idt.h>
+#include <arch/x86_64/utils.h>
 #include <kernel/scheduler/thread.h>
 #include <arch/x86_64/apic/lapic.h>
-#include <arch/x86_64/gdt.h>
+#include <arch/x86_64/tables/gdt.h>
 #include <arch/x86_64/syscalls.h>
 #include <kernel/scheduler/process.h>
 

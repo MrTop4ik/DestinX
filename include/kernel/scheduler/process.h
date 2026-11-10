@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <mm/stack.h>
-#include <arch/x86_64/idt.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/tables/idt.h>
+#include <arch/x86_64/utils.h>
 #include <arch/x86_64/elf.h>
 #include <mm/vmalloc.h>
 #include <fs/vfs.h>
-#include <drivers/console.h>
+#include <drivers/video/console.h>
 #include <arch/x86_64/utils.h>
 
 #define MAX_FD 128

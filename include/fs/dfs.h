@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include <drivers/ahci.h>
+#include <drivers/storage/ahci.h>
 #include <mm/vmalloc.h>
 #include <fs/vfs.h>
 #include <mm/page_cache.h>

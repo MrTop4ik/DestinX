@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/x86_64/drivers/pci.h>
-#include <arch/x86_64/drivers/pit.h>
-#include <arch/x86_64/idt.h>
+#include <arch/x86_64/drivers/timers/pit.h>
+#include <arch/x86_64/tables/idt.h>
 #include <arch/x86_64/drivers/pci.h>
 #include <kernel/scheduler/thread.h>
 

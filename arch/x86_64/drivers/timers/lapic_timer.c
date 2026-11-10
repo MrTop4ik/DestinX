@@ -1,4 +1,4 @@
-#include <arch/x86_64/drivers/lapic_timer.h>
+#include <arch/x86_64/drivers/timers/lapic_timer.h>
 #include <kernel/scheduler/thread.h>
 
 extern void* lapic_timer_handler();

@@ -1,4 +1,4 @@
-#include <drivers/console.h>
+#include <drivers/video/console.h>
 #include <kernel/scheduler/thread.h>
 #include <kernel/sync/mutex.h>
 

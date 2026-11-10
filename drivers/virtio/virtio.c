@@ -1,4 +1,4 @@
-#include <drivers/virtio.h>
+#include <drivers/virtio/virtio.h>
 
 virtio_gpu_pci_dev_t virtio_gpu;
 

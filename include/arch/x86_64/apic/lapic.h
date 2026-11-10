@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <arch/x86_64/apic/acpi.h>
 #include <mm/kmalloc.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 
 #define LAPIC_VIRT 0xffffffffffffa000
 

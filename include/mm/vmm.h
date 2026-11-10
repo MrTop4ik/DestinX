@@ -3,7 +3,7 @@
 #include <multiboot2.h>
 #include <libc/string.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 #include <mm/pmm.h>
 
 #define KERNEL_OFFSET 0xFFFFFFFF80000000

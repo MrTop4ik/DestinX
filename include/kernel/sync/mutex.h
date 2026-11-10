@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <drivers/lfb.h>
-#include <arch/x86_64/inlineasm.h>
+#include <drivers/video/lfb.h>
+#include <arch/x86_64/utils.h>
 #include <mm/kmalloc.h>
 #include <kernel/scheduler/scheduler.h>
 #include <kernel/sync/spinlock.h>

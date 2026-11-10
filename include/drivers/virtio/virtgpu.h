@@ -4,7 +4,7 @@
 #include <arch/x86_64/drivers/serial.h>
 #include <libc/string.h>
 #include <mm/vmalloc.h>
-#include <drivers/virtio.h>
+#include <drivers/virtio/virtio.h>
 
 #define VIRTIO_GPU_CMD_RESOURCE_CREATE_2D      0x0101
 #define VIRTIO_GPU_RESP_OK_NODATA              0x1100

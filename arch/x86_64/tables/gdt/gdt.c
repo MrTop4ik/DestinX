@@ -1,4 +1,4 @@
-#include <arch/x86_64/gdt.h>
+#include <arch/x86_64/tables/gdt.h>
 
 extern uint8_t ist1_stack_top;
 extern void gdt_flush(uint64_t);

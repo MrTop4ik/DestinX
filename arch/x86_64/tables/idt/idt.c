@@ -1,4 +1,4 @@
-#include <arch/x86_64/idt.h>
+#include <arch/x86_64/tables/idt.h>
 
 extern void* isr_stub_table[];
 extern void* irq_stub_table[];

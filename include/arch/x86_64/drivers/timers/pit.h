@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include <arch/x86_64/idt.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/tables/idt.h>
+#include <arch/x86_64/utils.h>
 #include <arch/x86_64/drivers/serial.h>
 #include <arch/x86_64/apic/ioapic.h>
 

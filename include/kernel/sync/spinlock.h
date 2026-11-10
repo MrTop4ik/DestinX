@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/utils.h>
 
 typedef struct {
     volatile int lock;

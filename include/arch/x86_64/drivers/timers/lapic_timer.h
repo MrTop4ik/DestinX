@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-#include <arch/x86_64/idt.h>
+#include <arch/x86_64/tables/idt.h>
 #include <arch/x86_64/drivers/serial.h>
-#include <arch/x86_64/drivers/pit.h>
-#include <drivers/lfb.h>
-#include <arch/x86_64/inlineasm.h>
+#include <arch/x86_64/drivers/timers/pit.h>
+#include <drivers/video/lfb.h>
+#include <arch/x86_64/utils.h>
 #include <mm/kmalloc.h>
 #include <arch/x86_64/apic/lapic.h>
 #include <arch/x86_64/apic/ioapic.h>

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <arch/x86_64/idt.h>
+#include <arch/x86_64/tables/idt.h>
 #include <kernel/scheduler/thread.h>
 
 thread_t *ctx_thread = NULL;
