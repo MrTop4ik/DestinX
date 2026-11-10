@@ -33,27 +33,27 @@ add_custom_command(
 )
 
 add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/files/test.bin" "${CMAKE_CURRENT_SOURCE_DIR}/files/test.elf"
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm
-    COMMAND nasm -f bin ${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm -o "${CMAKE_CURRENT_SOURCE_DIR}/files/test.bin"
-    COMMAND nasm -f elf64 ${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm -o test_user.o
-    COMMAND x86_64-elf-ld test_user.o -o "${CMAKE_CURRENT_SOURCE_DIR}/files/test.elf"
-    COMMAND ${CMAKE_COMMAND} -E remove test_user.o
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test.bin" "${CMAKE_CURRENT_BINARY_DIR}/test.elf"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm"
+    COMMAND nasm -f bin "${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm" -o "${CMAKE_CURRENT_BINARY_DIR}/test.bin"
+    COMMAND nasm -f elf64 "${CMAKE_CURRENT_SOURCE_DIR}/files/test.asm" -o "${CMAKE_CURRENT_BINARY_DIR}/test_user.o"
+    COMMAND x86_64-elf-ld "${CMAKE_CURRENT_BINARY_DIR}/test_user.o" -o "${CMAKE_CURRENT_BINARY_DIR}/test.elf"
+    COMMAND ${CMAKE_COMMAND} -E remove "${CMAKE_CURRENT_BINARY_DIR}/test_user.o"
 )
 
 add_custom_command(
     OUTPUT "${CMAKE_BINARY_DIR}/disk.img"
     DEPENDS 
         "${CMAKE_CURRENT_SOURCE_DIR}/files/test.txt"
-        "${CMAKE_CURRENT_SOURCE_DIR}/files/test.bin"
-        "${CMAKE_CURRENT_SOURCE_DIR}/files/test.elf"
+        "${CMAKE_CURRENT_BINARY_DIR}/test.bin"
+        "${CMAKE_CURRENT_BINARY_DIR}/test.elf"
     COMMAND mkfs.dfs disk.img 32
     COMMAND dfs-tools disk.img mkdir /usr
     COMMAND dfs-tools disk.img mkdir /usr/bin
     COMMAND dfs-tools disk.img mkdir /usr/txt
     COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_SOURCE_DIR}/files/test.txt" /usr/txt/test.txt
-    COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_SOURCE_DIR}/files/test.bin" /usr/bin/test.bin
-    COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_SOURCE_DIR}/files/test.elf" /usr/bin/test.elf
+    COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_BINARY_DIR}/test.bin" /usr/bin/test.bin
+    COMMAND dfs-tools disk.img add "${CMAKE_CURRENT_BINARY_DIR}/test.elf" /usr/bin/test.elf
 )
 
 add_custom_target(dfs_disk ALL DEPENDS "${CMAKE_BINARY_DIR}/disk.img")
