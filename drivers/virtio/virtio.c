@@ -40,7 +40,7 @@ void find_virtio_gpu(void){
 
 void parse_virtio_gpu_capabilities(void){
     uint32_t cap_reg = pci_read_dword(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x34);
-    uint16_t cap_ptr = (uint16_t)(cap_reg & 0xFFFF);
+    uint8_t cap_ptr = cap_reg & 0xFF;
 
     while (cap_ptr != 0){
         uint32_t cap_header = pci_read_dword(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, cap_ptr);
@@ -56,7 +56,7 @@ void parse_virtio_gpu_capabilities(void){
             uint32_t bar_info = pci_read_dword(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x10 + bar_num * 4);
             uint8_t bar_flags = bar_info & 0x0F;
             uint64_t bar_address = bar_info & 0xFFFFFFF0;
-            if (bar_info & (1 << 2)) bar_address |= (uint64_t)(pci_read_dword(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x10 + bar_num * 4 + 4)) << 32;
+            if (bar_flags & (1 << 2)) bar_address |= (uint64_t)(pci_read_dword(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x10 + bar_num * 4 + 4)) << 32;
 
             switch (cfg_type){
                 case COMMON_CFG_TYPE:
@@ -165,17 +165,9 @@ virtqueue_t *create_virtio_gpu_queue(uint16_t count){
     vq->raw_memory_block = paddr;
     vq->queue_size = count;
 
-    vq->desc = (struct vring_desc *)paddr;
-    vq->avail = (struct vring_avail *)(paddr + PAGE_MASK_4KB);
-    vq->used = (struct vring_used *)(paddr + PAGE_SIZE_4KB * 2);
-
-    struct vring_desc *desc = (struct vring_desc *)((uint64_t)vq->desc + DIRECT_OFFSET);
-
-    for (int i = 0; i < count - 1; i++) desc[i].next = i + 1;
-    desc[count - 1].next = -1;
-    vq->queue_size = count;
-    vq->num_free = count;
-    vq->free_head = 0;
+    vq->desc = (struct vring_desc *)(paddr + DIRECT_OFFSET);
+    vq->avail = (struct vring_avail *)(paddr + PAGE_SIZE_4KB + DIRECT_OFFSET);
+    vq->used = (struct vring_used *)(paddr + PAGE_SIZE_4KB * 2 + DIRECT_OFFSET);
 
     return vq;
 }
@@ -188,9 +180,9 @@ void configure_and_start_queue(void){
     virtio_gpu.vq0 = create_virtio_gpu_queue(hardware_queue_size);
 
     virtio_gpu.regions.common_cfg->queue_size = hardware_queue_size;
-    virtio_gpu.regions.common_cfg->queue_desc  = (uint64_t)virtio_gpu.vq0->desc;
-    virtio_gpu.regions.common_cfg->queue_avail = (uint64_t)virtio_gpu.vq0->avail;
-    virtio_gpu.regions.common_cfg->queue_used  = (uint64_t)virtio_gpu.vq0->used;
+    virtio_gpu.regions.common_cfg->queue_desc  = (uint64_t)virtio_gpu.vq0->desc - DIRECT_OFFSET;
+    virtio_gpu.regions.common_cfg->queue_avail = (uint64_t)virtio_gpu.vq0->avail - DIRECT_OFFSET;
+    virtio_gpu.regions.common_cfg->queue_used  = (uint64_t)virtio_gpu.vq0->used - DIRECT_OFFSET;
     mfence();
 
     virtio_gpu.regions.common_cfg->queue_enable = 1;
@@ -202,63 +194,8 @@ void configure_and_start_queue(void){
     serial_print("[VIRTIO] Virtqueue 0 Successfully Activated with qsize %d\n", hardware_queue_size);
 }
 
-int16_t alloc_desc(virtqueue_t *vq){
-    if (!vq->num_free || vq->free_head == -1) return -1;
-
-    int16_t id = vq->free_head;
-    vq->free_head = (int16_t)vq->desc[id].next;
-    vq->num_free--;
-
-    vq->desc[id].flags = 0;
-    vq->desc[id].next= 0;
-
-    return id;
-}
-
-void free_desc(virtqueue_t *vq, uint16_t id){
-    vq->desc[id].next = vq->free_head;
-    vq->free_head = (int16_t)id;
-    vq->num_free++;
-}
-
-uint32_t virtio_gpu_send_command(virtqueue_t *vq, void *request, uint32_t req_len, void *response, uint32_t resp_len){
-    int16_t desc_req = alloc_desc(vq);
-    int16_t desc_resp = alloc_desc(vq);
-
-    if (desc_req == -1 || desc_resp == -1){
-        serial_print("[VITRIO] No Free Descriptors\n");
-        if (desc_req != -1) free_desc(vq, desc_req);
-        return 0;
-    }
-
-    vq->desc[desc_req].addr = vmm_get_paddr(read_cr3(), (uint64_t)request);
-    vq->desc[desc_req].len = req_len;
-    vq->desc[desc_req].flags = VIRTQ_DESC_F_NEXT;
-    vq->desc[desc_req].next = (uint16_t)desc_resp;
-
-    vq->desc[desc_resp].addr = vmm_get_paddr(read_cr3(), (uint64_t)response);
-    vq->desc[desc_resp].len = resp_len;
-    vq->desc[desc_resp].flags = VIRTQ_DESC_F_WRITE;
-    vq->desc[desc_resp].next = 0;
-    mfence();
-
-    vq->avail->idx++;
-    mfence();
-
-    virtio_gpu.regions.notify_cfg = 0;
-    mfence();
-
-    while (vq->used->idx == vq->last_seen_used) __asm__ volatile ("pause");
-
-    uint16_t used_slot = vq->last_seen_used % vq->queue_size;
-    uint16_t desc_head = vq->used->ring[used_slot].id;
-    vq->last_seen_used = vq->used->idx;
-    
-    uint16_t desc_next = vq->desc[desc_head].next;
-
-    free_desc(vq, desc_head);
-    free_desc(vq, desc_next);
-
-    struct virtio_gpu_ctrl_hdr *resp_hdr = (struct virtio_gpu_ctrl_hdr *)response;
-    return resp_hdr->type;
+void virtgpu_handler(struct InterruptRegisters *regs){
+    virtio_gpu.virtgpu_blocked_thread->state = READY;
+    enqueue_thread(virtio_gpu.virtgpu_blocked_thread);
+    lapic_eoi();
 }

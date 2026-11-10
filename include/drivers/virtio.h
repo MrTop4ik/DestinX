@@ -3,6 +3,9 @@
 #include <stddef.h>
 #include <arch/x86_64/drivers/pci.h>
 #include <arch/x86_64/drivers/pit.h>
+#include <arch/x86_64/idt.h>
+#include <arch/x86_64/drivers/pci.h>
+#include <kernel/scheduler/thread.h>
 
 #define VIRTIO_VENDOR_ID 0x1AF4
 #define VIRTIO_GPU_DEVID 0x1050
@@ -29,13 +32,7 @@
 #define VIRTQ_DESC_F_NEXT   1
 #define VIRTQ_DESC_F_WRITE  2
 
-struct virtio_gpu_ctrl_hdr {
-    uint32_t type;
-    uint32_t flags;
-    uint64_t fence_id;
-    uint32_t ctx_id;
-    uint32_t padding;
-}__attribute__((__packed__));
+#define VIRTGPU_MSI_VECTOR 0x32
 
 struct virtio_pci_common_cfg {
     uint32_t device_feature_select;
@@ -93,8 +90,6 @@ typedef struct {
     struct vring_used  *used;
     uint64_t raw_memory_block;
     uint16_t queue_size;
-    uint16_t num_free;
-    int16_t free_head;
     uint16_t last_seen_used;
 } virtqueue_t;
 
@@ -121,7 +116,10 @@ typedef struct {
     uint8_t func;
     vgpu_regions_t regions;
     virtqueue_t *vq0;
+    thread_t *virtgpu_blocked_thread;
 } virtio_gpu_pci_dev_t;
+
+extern virtio_gpu_pci_dev_t virtio_gpu;;
 
 void find_virtio_gpu(void);
 void parse_virtio_gpu_capabilities(void);
@@ -130,4 +128,4 @@ void init_virtio_gpu_handshake(void);
 void init_virtio_gpu_features(void);
 virtqueue_t *create_virtio_gpu_queue(uint16_t count);
 void configure_and_start_queue(void);
-uint32_t virtio_gpu_send_command(virtqueue_t *vq, void *request, uint32_t req_len, void *response, uint32_t resp_len);
+void virtgpu_handler(struct InterruptRegisters *regs);
