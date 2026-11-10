@@ -68,6 +68,7 @@ A hobby operating system kernel written from scratch in **C** and **x86 Assembly
 ---
 
 ## Roadmap & In Progress
+- [ ] **MSI-X**: support MSI-X interrupts.
 - [ ] **VirtIO-GPU Driver**: driver for virtio gpu to use gpu render.
 - [ ] **Sleep**: blocking thread for certain time.
 - [ ] **Writeback Thread**: thread that writebacks dirty pages from cache to disk.
