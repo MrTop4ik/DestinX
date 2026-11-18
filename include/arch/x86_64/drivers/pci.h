@@ -8,6 +8,8 @@
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA    0xCFC
 
+#define MSIX_TABLE_VIRT 0xFFFFFFFFFFFB1000
+
 typedef struct {
     uint32_t msg_addr_lo;
     uint32_t msg_addr_hi;
