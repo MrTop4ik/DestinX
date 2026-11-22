@@ -173,7 +173,20 @@ virtqueue_t *create_virtio_gpu_queue(uint16_t count){
 }
 
 void configure_and_start_queue(void){
+    virtio_gpu.regions.common_cfg->queue_msix_vector = 0;
+    mfence();
+
     virtio_gpu.regions.common_cfg->queue_select = 0;
+    mfence();
+
+    setIDTGate(0x32, (uint64_t)virtgpu_handler, 0x8E, 0);
+
+    pci_enable_bus_master(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func);
+    pci_set_msix_vector(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x32, 0, 0);
+    pci_enable_msix(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func);
+
+    virtio_gpu.regions.common_cfg->queue_msix_vector = 0;
+    mfence();
 
     uint16_t hardware_queue_size = virtio_gpu.regions.common_cfg->queue_size;
 

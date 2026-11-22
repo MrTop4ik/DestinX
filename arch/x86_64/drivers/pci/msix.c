@@ -28,7 +28,7 @@ void pci_enable_msix(uint8_t bus, uint8_t dev, uint8_t func){
     }
 }
 
-void set_msix_vector(uint8_t bus, uint8_t dev, uint8_t func, uint8_t idt_vector, uint16_t msix_vector, uint8_t lapic_id){
+void pci_set_msix_vector(uint8_t bus, uint8_t dev, uint8_t func, uint8_t idt_vector, uint16_t msix_vector, uint8_t lapic_id){
     uint32_t cap_reg = pci_read_dword(bus, dev, func, 0x34);
     uint8_t cap_ptr = cap_reg & 0xFF;
 
@@ -65,11 +65,13 @@ void set_msix_vector(uint8_t bus, uint8_t dev, uint8_t func, uint8_t idt_vector,
             table[msix_vector].msg_addr_hi = 0x0;
             table[msix_vector].msg_data = idt_vector;
 
-            __asm__ volatile ("" ::: "memory");
+            mfence();
             table[msix_vector].vector_ctrl = 0x0;
 
+            serial_print("[PCI] Enabled MSI-X (Vector: %x)\n", msix_vector);
             return;
         }
         cap_ptr = next_ptr;
     }
+    serial_print("[PCI] MSI-X not supported\n");
 }

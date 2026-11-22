@@ -22,4 +22,4 @@ uint32_t pci_read_dword(uint8_t bus, uint8_t dev, uint8_t func, uint8_t offset);
 void pci_enable_msi(uint8_t bus, uint8_t dev, uint8_t func, uint8_t vector, uint8_t lapic_id);
 void pci_enable_bus_master(uint8_t bus, uint8_t dev, uint8_t func);
 void pci_enable_msix(uint8_t bus, uint8_t dev, uint8_t func);
-void set_msix_vector(uint8_t bus, uint8_t dev, uint8_t func, uint8_t idt_vector, uint16_t msix_vector, uint8_t lapic_id);
+void pci_set_msix_vector(uint8_t bus, uint8_t dev, uint8_t func, uint8_t idt_vector, uint16_t msix_vector, uint8_t lapic_id);
