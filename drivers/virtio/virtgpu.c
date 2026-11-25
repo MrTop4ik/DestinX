@@ -70,7 +70,7 @@ void virtio_gpu_flush_commands(virtqueue_t *vq){
     serial_print("[VIRTIO] Commands loaded: %d", load_cmd_count);
 }
 
-void virtio_gpu_create_canvas(uint32_t width, uint32_t height){
+void virtio_gpu_create_canvas(uint32_t resource_id, uint32_t width, uint32_t height){
     struct virtio_gpu_resource_create_2d cmd = {0};
 
     cmd.hdr.type = VIRTIO_GPU_CMD_RESOURCE_CREATE_2D;
@@ -78,7 +78,7 @@ void virtio_gpu_create_canvas(uint32_t width, uint32_t height){
     cmd.hdr.fence_id = 0;
     cmd.hdr.ctx_id = 0;
 
-    cmd.resource_id = 1;
+    cmd.resource_id = resource_id;
     cmd.format = VIRTIO_GPU_FORMAT_B8G8R8X8_UNORM;
     cmd.width = width;
     cmd.height = height;

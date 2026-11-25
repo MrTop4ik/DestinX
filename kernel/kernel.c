@@ -65,5 +65,8 @@ void kernel_main(uint64_t magic, unsigned int physBootInfo){
 
     create_user_process("/usr/bin/test.elf");
 
+    virtio_gpu_create_canvas(1, 1024, 768);
+    virtio_gpu_flush_commands(virtio_gpu.vq0);
+
     for (;;);
 }

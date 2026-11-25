@@ -46,5 +46,5 @@ typedef struct virtio_gpu_cmd_node {
 
 void virtio_gpu_push_command(void *cmd, uint32_t cmd_len, uint32_t resp_len);
 void virtio_gpu_flush_commands(virtqueue_t *vq);
-void virtio_gpu_create_canvas(uint32_t width, uint32_t height);
+void virtio_gpu_create_canvas(uint32_t resource_id, uint32_t width, uint32_t height);
 void add_cmd_to_list(virtio_gpu_cmd_node_t *node);

@@ -1,5 +1,7 @@
 #include <drivers/virtio/virtio.h>
 
+extern void virtgpu_handler_stub(void);
+
 virtio_gpu_pci_dev_t virtio_gpu;
 
 void find_virtio_gpu(void){
@@ -173,17 +175,17 @@ virtqueue_t *create_virtio_gpu_queue(uint16_t count){
 }
 
 void configure_and_start_queue(void){
-    virtio_gpu.regions.common_cfg->queue_msix_vector = 0;
-    mfence();
-
-    virtio_gpu.regions.common_cfg->queue_select = 0;
-    mfence();
-
-    setIDTGate(0x32, (uint64_t)virtgpu_handler, 0x8E, 0);
+    setIDTGate(0x32, (uint64_t)virtgpu_handler_stub, 0x8E, 0);
 
     pci_enable_bus_master(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func);
     pci_set_msix_vector(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func, 0x32, 0, 0);
     pci_enable_msix(virtio_gpu.bus, virtio_gpu.dev, virtio_gpu.func);
+
+    virtio_gpu.regions.common_cfg->msix_config = 0;
+    mfence();
+
+    virtio_gpu.regions.common_cfg->queue_select = 0;
+    mfence();
 
     virtio_gpu.regions.common_cfg->queue_msix_vector = 0;
     mfence();
@@ -210,5 +212,4 @@ void configure_and_start_queue(void){
 void virtgpu_handler(struct InterruptRegisters *regs){
     virtio_gpu.virtgpu_blocked_thread->state = READY;
     enqueue_thread(virtio_gpu.virtgpu_blocked_thread);
-    lapic_eoi();
 }
